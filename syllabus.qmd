@@ -7,11 +7,6 @@ format:
     number-sections: false
 ---
 
-::: {.callout-note}
-### Download Official Syllabus
-You can download the official GPH-formatted Word syllabus here: [📥 GPH-GU 2182 Syllabus (DOCX)](https://raw.githubusercontent.com/gph-2182/gph-2182.github.io/main/syllabus/GPH-GU_2182_Syllabus_Fall_2026.docx).
-:::
-
 ## Course Information
 
 | Field | Details |
