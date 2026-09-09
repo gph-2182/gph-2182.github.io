@@ -40,6 +40,7 @@ No prior programming or statistics experience is required.
 | Schedule | [Week-by-week schedule](schedule.qmd) |
 | Syllabus | [Full syllabus](syllabus.qmd) |
 | AI policy | [The three zones](ai-policy.qmd) |
+| Weekly workflow | [Doing a weekly exercise](weekly.qmd) |
 | Setup help | [R, RStudio, Git, and GitHub guides](guides/index.qmd) |
 
 ## Getting started (before Week 1)

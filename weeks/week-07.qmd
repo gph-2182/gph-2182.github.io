@@ -22,7 +22,7 @@ subtitle: "Oct 21, 2026 · 2:00–4:40 PM · Bobst LL138"
 
 - 📊 **Lecture Slides:** [Interactive Presentation (HTML)](slides/week-07-slides.html)
 - 📝 **In-Class Exercise:** [View Worksheet (HTML)](inclass/week-07-inclass.html) · [Download Starter Code (`.qmd`)](https://gph-2182.github.io/weeks/inclass/week-07-inclass.qmd) · *or run `get_worksheet(7)` in your in-class repo*
-- 💻 **Weekly Exercise 7:** [Accept Assignment on Classroom 50](https://classroom50.org/gph-2182/gph-gu-2182-fall-2026/assignments/weekly-exercise-07/accept)
+- 💻 **Weekly Exercise 7:** [Accept Assignment on Classroom 50](https://classroom50.org/gph-2182/gph-gu-2182-fall-2026/assignments/weekly-exercise-07/accept) · [How to do it, start to finish](../weekly.qmd)
 
 ## Due
 

@@ -21,7 +21,7 @@ subtitle: "Sep 2, 2026 · 2:00–4:40 PM · Bobst LL138"
 
 - 📊 **Lecture Slides:** [Interactive Presentation (HTML)](slides/week-01-slides.html)
 - 📝 **In-Class Exercise:** [View Worksheet (HTML)](inclass/week-01-inclass.html) · [Download Starter Code (`.qmd`)](https://gph-2182.github.io/weeks/inclass/week-01-inclass.qmd) · *or run `get_worksheet(1)` in your in-class repo*
-- 💻 **Weekly Exercise 1:** [Accept Assignment on Classroom 50](https://classroom50.org/gph-2182/gph-gu-2182-fall-2026/assignments/weekly-exercise-01/accept)
+- 💻 **Weekly Exercise 1:** [Accept Assignment on Classroom 50](https://classroom50.org/gph-2182/gph-gu-2182-fall-2026/assignments/weekly-exercise-01/accept) · [How to do it, start to finish](../weekly.qmd)
 - 🗂️ **In-Class Repository:** [Accept on Classroom 50](https://classroom50.org/gph-2182/gph-gu-2182-fall-2026/assignments/in-class-exercises/accept) *(one time; this same repository is used for every week's in-class exercise)*
 
 ::: {.callout-important}

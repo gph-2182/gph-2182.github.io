@@ -1,0 +1,442 @@
+## ---------------------------------------------------------------------------
+## GPH-GU 2182 Statistical Programming in R  |  course helpers
+##
+## Load these commands with one line in the RStudio Console:
+##
+##     source("https://gph-2182.github.io/gph2182.R")
+##
+## Then:
+##     gph_setup()        once per computer: connect RStudio to GitHub
+##     gph_start(2)       open Weekly Exercise 2 as an RStudio project
+##     gph_check()        run the autograder's checks on your own machine
+##     gph_submit()       stage, commit, push, and report the result
+##     gph_doctor()       tell me what is wrong with my setup
+##     gph_help()         show the loop again
+## ---------------------------------------------------------------------------
+
+gph_version <- "2026-09-09"
+
+.gph_org       <- "gph-2182"
+.gph_classroom <- "gph-gu-2182-fall-2026"
+.gph_home      <- "~/gph2182"
+.gph_site      <- "https://gph-2182.github.io"
+.gph_n_max     <- 8L
+
+## -- small output helpers ---------------------------------------------------
+
+.gph_utf8 <- function() isTRUE(l10n_info()[["UTF-8"]])
+.gph_ok   <- function(...) cat(if (.gph_utf8()) "✓ " else "[ok] ", ..., "\n", sep = "")
+.gph_no   <- function(...) cat(if (.gph_utf8()) "✗ " else "[!!] ", ..., "\n", sep = "")
+.gph_dot  <- function(...) cat("  ", ..., "\n", sep = "")
+.gph_rule <- function(title) {
+  cat("\n", title, "\n", strrep("-", max(nchar(title), 10)), "\n", sep = "")
+}
+
+.gph_stop <- function(...) stop(paste0(...), call. = FALSE)
+
+## -- identity and naming ----------------------------------------------------
+
+#' Your GitHub login, read from the token RStudio has stored.
+#' Returns NULL if no usable token is present.
+.gph_login <- function() {
+  if (!requireNamespace("gh", quietly = TRUE)) return(NULL)
+  tryCatch(gh::gh("/user")$login, error = function(e) NULL)
+}
+
+.gph_n <- function(exercise) {
+  if (missing(exercise) || length(exercise) != 1 || !is.numeric(exercise) ||
+      is.na(exercise) || exercise != as.integer(exercise)) {
+    .gph_stop("Give the exercise number, for example gph_start(2).")
+  }
+  n <- as.integer(exercise)
+  if (n < 1L || n > .gph_n_max) {
+    .gph_stop("There are only exercises 1 to ", .gph_n_max, ". You asked for ", n, ".")
+  }
+  n
+}
+
+.gph_spec <- function(n, login) {
+  sprintf("%s/%s-weekly-exercise-%02d-%s", .gph_org, .gph_classroom, n, tolower(login))
+}
+
+.gph_accept_url <- function(n) {
+  sprintf("https://classroom50.org/%s/%s/assignments/weekly-exercise-%02d/accept",
+          .gph_org, .gph_classroom, n)
+}
+
+.gph_repo_exists <- function(spec) {
+  tryCatch({ gh::gh(paste0("/repos/", spec)); TRUE }, error = function(e) FALSE)
+}
+
+#' owner/repo for the repository open in this project, from its git remote.
+.gph_slug <- function(path = ".") {
+  url <- tryCatch(gert::git_remote_list(repo = path)$url[1], error = function(e) NA_character_)
+  if (is.na(url)) return(NA_character_)
+  sub("\\.git$", "", sub("^.*github\\.com[:/]", "", url))
+}
+
+.gph_exercise_here <- function(path = ".") {
+  slug <- .gph_slug(path)
+  src  <- if (is.na(slug)) basename(normalizePath(path, mustWork = FALSE)) else slug
+  m <- regmatches(src, regexpr("weekly-exercise-([0-9]{2})", src))
+  if (!length(m)) return(NA_integer_)
+  as.integer(sub("weekly-exercise-", "", m))
+}
+
+.gph_open <- function(path) {
+  if (requireNamespace("rstudioapi", quietly = TRUE) && rstudioapi::isAvailable()) {
+    rstudioapi::openProject(path)
+  } else {
+    .gph_dot("Open this folder in RStudio: ", path)
+  }
+  invisible(path)
+}
+
+## -- gph_help ---------------------------------------------------------------
+
+#' Print the weekly loop.
+gph_help <- function() {
+  cat("
+GPH-GU 2182  |  the weekly loop
+===============================
+
+ONCE per computer
+  gph_setup()                 connect RStudio to GitHub
+
+ONCE per exercise
+  Accept it on Classroom 50   (link on the week's page)
+  gph_start(N)                clone and open it, N is the exercise number
+
+THEN repeat until everything passes
+  edit exercise.qmd
+  gph_check()                 run the autograder's checks locally
+  gph_submit()                stage, commit, push, report the result
+
+Pushing many times is normal and expected. Only your last push before the
+deadline is graded, so a failing check on an early try costs you nothing.
+
+Stuck?  gph_doctor()
+")
+  invisible(NULL)
+}
+
+## -- gph_setup --------------------------------------------------------------
+
+#' One-time setup: install what is missing, set your Git identity, store a token.
+gph_setup <- function() {
+  .gph_rule("Step 1 of 3: packages")
+  need <- setdiff(c("usethis", "gitcreds", "gh", "gert"),
+                  rownames(installed.packages()))
+  if (length(need)) {
+    .gph_dot("Installing: ", paste(need, collapse = ", "))
+    utils::install.packages(need)
+  }
+  missing_still <- need[!vapply(need, requireNamespace, logical(1), quietly = TRUE)]
+  if (length(missing_still)) {
+    .gph_no("Could not install: ", paste(missing_still, collapse = ", "))
+    .gph_dot("Install them yourself, then run gph_setup() again.")
+    return(invisible(FALSE))
+  }
+  .gph_ok("Packages ready")
+
+  .gph_rule("Step 2 of 3: who you are")
+  nm <- tryCatch(gert::git_config_global(), error = function(e) NULL)
+  cur_name  <- if (!is.null(nm)) nm$value[nm$name == "user.name"][1]  else NA_character_
+  cur_email <- if (!is.null(nm)) nm$value[nm$name == "user.email"][1] else NA_character_
+
+  if (is.na(cur_name) || is.na(cur_email) || !nzchar(cur_name) || !nzchar(cur_email)) {
+    if (!interactive()) {
+      .gph_no("Git does not know your name and email yet.")
+      .gph_dot("Run this, with your own details:")
+      .gph_dot('  usethis::use_git_config(user.name = "Your Name", user.email = "you@nyu.edu")')
+      return(invisible(FALSE))
+    }
+    new_name  <- trimws(readline("Your full name: "))
+    new_email <- trimws(readline("The email on your GitHub account: "))
+    if (!nzchar(new_name) || !nzchar(new_email)) {
+      .gph_no("Both are required. Run gph_setup() again.")
+      return(invisible(FALSE))
+    }
+    usethis::use_git_config(user.name = new_name, user.email = new_email)
+    .gph_ok("Saved as: ", new_name, " <", new_email, ">")
+  } else {
+    .gph_ok("Already set: ", cur_name, " <", cur_email, ">")
+  }
+
+  .gph_rule("Step 3 of 3: your GitHub token")
+  login <- .gph_login()
+  if (!is.null(login)) {
+    .gph_ok("Token works. GitHub sees you as: ", login)
+    .gph_rule("Setup complete")
+    .gph_dot("Next: accept the exercise on Classroom 50, then run gph_start(N).")
+    return(invisible(TRUE))
+  }
+
+  .gph_no("No working token yet. Two steps, in order:")
+  .gph_dot("")
+  .gph_dot("1. usethis::create_github_token()")
+  .gph_dot("   A GitHub page opens. Set Expiration to Custom, then Dec 31 2026.")
+  .gph_dot("   Leave the ticked boxes alone. Click Generate token and COPY it.")
+  .gph_dot("")
+  .gph_dot("2. gitcreds::gitcreds_set()")
+  .gph_dot("   Paste the token when it asks.")
+  .gph_dot("")
+  .gph_dot("Then run gph_setup() again to confirm.")
+  invisible(FALSE)
+}
+
+## -- gph_start --------------------------------------------------------------
+
+#' Clone and open a weekly exercise as an RStudio project.
+gph_start <- function(exercise) {
+  n <- .gph_n(exercise)
+
+  login <- .gph_login()
+  if (is.null(login)) {
+    .gph_no("I cannot tell who you are on GitHub, so I cannot find your repository.")
+    .gph_dot("Run gph_setup() first, then try gph_start(", n, ") again.")
+    return(invisible(FALSE))
+  }
+  .gph_ok("GitHub sees you as: ", login)
+
+  spec <- .gph_spec(n, login)
+  if (!.gph_repo_exists(spec)) {
+    .gph_no("You have not accepted Weekly Exercise ", n, " yet.")
+    .gph_dot("")
+    .gph_dot("Accept it here, then run gph_start(", n, ") again:")
+    .gph_dot("  ", .gph_accept_url(n))
+    .gph_dot("")
+    .gph_dot("If that page says you are not a member of the organization, accept")
+    .gph_dot("the emailed invitation first, then link your NetID at")
+    .gph_dot("  https://classroom50.org/", .gph_org, "/", .gph_classroom, "/onboard")
+    return(invisible(FALSE))
+  }
+  .gph_ok("Found your repository: ", spec)
+
+  home <- path.expand(.gph_home)
+  dir.create(home, recursive = TRUE, showWarnings = FALSE)
+  dest <- file.path(home, basename(spec))
+
+  if (dir.exists(dest)) {
+    .gph_ok("You already have it. Opening ", dest)
+    return(invisible(.gph_open(dest)))
+  }
+
+  .gph_dot("Downloading into ", dest, " ...")
+  usethis::create_from_github(spec, destdir = home, open = TRUE)
+}
+
+## -- gph_check --------------------------------------------------------------
+
+#' Run the autograder's own checks locally, in a separate R process.
+#'
+#' A separate process matters twice over: some exercise repos ship a test
+#' runner that calls quit(), which would close RStudio if run in your session,
+#' and a clean process cannot be fooled by objects left over in your
+#' Environment. What passes here is what passes on GitHub.
+gph_check <- function(quiet = FALSE) {
+  runner <- "tests/run_tests.R"
+  if (!file.exists(runner)) {
+    .gph_no("No ", runner, " here, so this is not an exercise project.")
+    .gph_dot("Open one with gph_start(N), then run gph_check() again.")
+    return(invisible(NA))
+  }
+  if (!file.exists("exercise.qmd")) {
+    .gph_no("No exercise.qmd here. Open an exercise project with gph_start(N).")
+    return(invisible(NA))
+  }
+
+  rscript <- file.path(R.home("bin"), if (.Platform$OS.type == "windows") "Rscript.exe" else "Rscript")
+  if (!quiet) cat("Running the same checks the autograder runs ...\n\n")
+  code <- suppressWarnings(system2(
+    rscript,
+    c("--no-save", "--no-restore", "--no-init-file", shQuote(runner)),
+    stdout = "", stderr = ""
+  ))
+  passed <- identical(as.integer(code), 0L)
+  cat("\n")
+  if (passed) {
+    .gph_ok("Everything passes. Send it in with gph_submit()")
+  } else {
+    .gph_no("Not everything passes yet. Fix the FAIL lines above, then run gph_check() again.")
+    .gph_dot("You can still submit a partial answer; only your last push is graded.")
+  }
+  invisible(passed)
+}
+
+## -- gph_submit -------------------------------------------------------------
+
+.gph_wait_run <- function(slug, sha, timeout = 180) {
+  cat("Waiting for GitHub to check your work (up to ", timeout, "s) ", sep = "")
+  deadline <- Sys.time() + timeout
+  repeat {
+    runs <- tryCatch(
+      gh::gh(paste0("/repos/", slug, "/actions/runs"), head_sha = sha, per_page = 1)$workflow_runs,
+      error = function(e) NULL
+    )
+    if (length(runs) && identical(runs[[1]]$status, "completed")) {
+      cat("\n")
+      return(runs[[1]]$conclusion)
+    }
+    if (Sys.time() > deadline) { cat("\n"); return(NA_character_) }
+    cat(".")
+    Sys.sleep(5)
+  }
+}
+
+#' Stage everything, commit, push, and report what GitHub says.
+gph_submit <- function(message = NULL, wait = TRUE) {
+  if (!requireNamespace("gert", quietly = TRUE)) {
+    .gph_stop("The gert package is missing. Run gph_setup() first.")
+  }
+  info <- tryCatch(gert::git_info(repo = "."), error = function(e) NULL)
+  if (is.null(info)) {
+    .gph_no("This folder is not a Git repository, so there is nothing to push.")
+    .gph_dot("Open your exercise with gph_start(N). Do not open the folder by hand.")
+    return(invisible(FALSE))
+  }
+
+  if (is.null(message)) {
+    n <- .gph_exercise_here()
+    message <- if (is.na(n)) {
+      paste("Update", format(Sys.time(), "%b %d %H:%M"))
+    } else {
+      sprintf("Weekly exercise %d: update %s", n, format(Sys.time(), "%b %d %H:%M"))
+    }
+  }
+
+  gert::git_add(".", repo = ".")
+  staged <- tryCatch(gert::git_status(staged = TRUE, repo = "."), error = function(e) NULL)
+  if (!is.null(staged) && nrow(staged) > 0) {
+    gert::git_commit(message, repo = ".")
+    .gph_ok("Committed ", nrow(staged), " file(s): ", message)
+  } else {
+    .gph_dot("Nothing new to commit; checking whether anything still needs pushing.")
+  }
+
+  push_err <- NULL
+  pushed <- tryCatch({ gert::git_push(repo = ".", verbose = FALSE); TRUE },
+                     error = function(e) { push_err <<- conditionMessage(e); FALSE })
+  if (!pushed) {
+    .gph_dot("First push did not go through (", push_err, ").")
+    .gph_dot("Pulling anything new from GitHub, then pushing again.")
+    ok <- tryCatch({
+      gert::git_pull(repo = ".")
+      gert::git_push(repo = ".", verbose = FALSE)
+      TRUE
+    }, error = function(e) { .gph_no("Push failed: ", conditionMessage(e)); FALSE })
+    if (!ok) {
+      .gph_dot("Run gph_doctor() and send its output if you cannot see why.")
+      return(invisible(FALSE))
+    }
+  }
+  .gph_ok("Pushed to GitHub")
+
+  slug <- .gph_slug()
+  if (is.na(slug)) return(invisible(TRUE))
+  actions <- paste0("https://github.com/", slug, "/actions")
+
+  if (!isTRUE(wait)) {
+    .gph_dot("Results will appear here in a minute or two: ", actions)
+    return(invisible(TRUE))
+  }
+
+  sha <- tryCatch(gert::git_commit_id(repo = "."), error = function(e) NA_character_)
+  concl <- if (is.na(sha)) NA_character_ else .gph_wait_run(slug, sha)
+
+  if (identical(concl, "success")) {
+    .gph_ok("GitHub checked your work: everything passes. You are done.")
+  } else if (identical(concl, "failure")) {
+    .gph_no("GitHub checked your work: something still fails.")
+    .gph_dot("Run gph_check() to see which questions, fix them, and gph_submit() again.")
+  } else {
+    .gph_dot("No result yet. Look here in a minute: ", actions)
+  }
+  invisible(TRUE)
+}
+
+#' Open this exercise's GitHub Actions page in your browser.
+gph_actions <- function() {
+  slug <- .gph_slug()
+  if (is.na(slug)) {
+    .gph_no("This folder has no GitHub remote. Open your exercise with gph_start(N).")
+    return(invisible(FALSE))
+  }
+  url <- paste0("https://github.com/", slug, "/actions")
+  .gph_dot(url)
+  utils::browseURL(url)
+  invisible(url)
+}
+
+## -- gph_doctor -------------------------------------------------------------
+
+#' Print a checklist of everything that has to be true, and what is not.
+gph_doctor <- function() {
+  .gph_rule("Your setup")
+  cat("helpers version ", gph_version, "\n", sep = "")
+
+  for (p in c("usethis", "gitcreds", "gh", "gert")) {
+    if (requireNamespace(p, quietly = TRUE)) .gph_ok("package ", p) else .gph_no("package ", p, " is missing (run gph_setup())")
+  }
+
+  cfg <- tryCatch(gert::git_config_global(), error = function(e) NULL)
+  gname  <- if (!is.null(cfg)) cfg$value[cfg$name == "user.name"][1]  else NA_character_
+  gemail <- if (!is.null(cfg)) cfg$value[cfg$name == "user.email"][1] else NA_character_
+  if (!is.na(gname) && nzchar(gname)) .gph_ok("git name: ", gname) else .gph_no("git name is not set (run gph_setup())")
+  if (!is.na(gemail) && nzchar(gemail)) .gph_ok("git email: ", gemail) else .gph_no("git email is not set (run gph_setup())")
+
+  login <- .gph_login()
+  if (!is.null(login)) .gph_ok("GitHub token works, you are ", login) else .gph_no("no working GitHub token (run gph_setup())")
+
+  .gph_rule("This project")
+  .gph_dot("folder: ", getwd())
+  info <- tryCatch(gert::git_info(repo = "."), error = function(e) NULL)
+  if (is.null(info)) {
+    .gph_no("not a Git repository, so nothing here can be pushed")
+    .gph_dot("open an exercise with gph_start(N) instead of opening the folder")
+    return(invisible(FALSE))
+  }
+  slug <- .gph_slug()
+  .gph_ok("git repository, branch ", info$shorthand)
+  if (!is.na(slug)) .gph_ok("GitHub repository: ", slug) else .gph_no("no GitHub remote")
+
+  if (file.exists("exercise.qmd")) .gph_ok("exercise.qmd is here") else .gph_no("no exercise.qmd here")
+
+  st <- tryCatch(gert::git_status(repo = "."), error = function(e) NULL)
+  n_dirty <- if (is.null(st)) NA_integer_ else nrow(st)
+  if (!is.na(n_dirty)) {
+    if (n_dirty == 0) .gph_ok("no uncommitted changes") else .gph_no(n_dirty, " uncommitted change(s): run gph_submit()")
+  }
+
+  ab <- tryCatch(gert::git_ahead_behind(repo = "."), error = function(e) NULL)
+  if (!is.null(ab)) {
+    if (ab$ahead > 0)  .gph_no(ab$ahead, " commit(s) not yet on GitHub: run gph_submit()") else .gph_ok("everything committed is on GitHub")
+    if (ab$behind > 0) .gph_no(ab$behind, " commit(s) on GitHub you do not have: gph_submit() will pull them")
+  }
+
+  if (!is.na(slug) && !is.null(login)) {
+    runs <- tryCatch(gh::gh(paste0("/repos/", slug, "/actions/runs"), per_page = 1)$workflow_runs,
+                     error = function(e) NULL)
+    if (length(runs)) {
+      r <- runs[[1]]
+      lbl <- if (identical(r$status, "completed")) r$conclusion else r$status
+      if (identical(lbl, "success")) .gph_ok("last GitHub check: passed") else .gph_no("last GitHub check: ", lbl)
+    } else {
+      .gph_dot("GitHub has not checked anything yet (push once with gph_submit())")
+    }
+  }
+  invisible(TRUE)
+}
+
+## -- banner used by each exercise project's .Rprofile ----------------------
+
+.gph_banner <- function() {
+  n <- .gph_exercise_here()
+  cat("\n")
+  if (is.na(n)) cat("GPH-GU 2182 helpers loaded.\n") else cat("GPH-GU 2182  |  Weekly Exercise ", n, "\n", sep = "")
+  cat("Edit exercise.qmd, then:  gph_check()  ->  gph_submit()\n")
+  cat("Stuck? gph_doctor()   Full loop? gph_help()\n\n")
+  invisible(NULL)
+}
+
+invisible(NULL)

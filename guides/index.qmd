@@ -10,6 +10,14 @@ projects, and saving that work with commits and pushes.
 We will walk through all of it together in class. These pages exist so that you
 never have to reconstruct it from memory or from your notes. Bookmark this page.
 
+::: {.callout-tip appearance="simple"}
+## Just want to get the homework in?
+
+[**Doing a weekly exercise**](../weekly.qmd) is the short version: three
+commands, start to finish. Come back here when you want to understand what
+those commands are doing, or when something breaks.
+:::
+
 ## Start here
 
 If you are setting up for the first time, work through the guides in this

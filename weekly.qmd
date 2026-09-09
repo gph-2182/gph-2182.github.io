@@ -1,0 +1,225 @@
+---
+title: "Doing a weekly exercise"
+subtitle: "The same five steps, every week"
+---
+
+```{=html}
+<style>
+.gphloop { max-width: 100%; height: auto; margin: 1.4rem 0; }
+.gphloop .box   { fill: none; stroke: currentColor; stroke-width: 1.5; opacity: .55; }
+.gphloop .boxhi { fill: none; stroke: #2c7fb8; stroke-width: 2.2; }
+.gphloop .lbl   { fill: currentColor; font: 600 14px system-ui, sans-serif; }
+.gphloop .cmd   { fill: currentColor; font: 600 13px ui-monospace, monospace; }
+.gphloop .note  { fill: currentColor; font: 400 12px system-ui, sans-serif; opacity: .7; }
+.gphloop .arr   { fill: none; stroke: currentColor; stroke-width: 1.5; opacity: .55; }
+.gphloop .arrhi { fill: none; stroke: #2c7fb8; stroke-width: 2; }
+.gphloop .hd    { fill: currentColor; font: 700 11px system-ui, sans-serif; letter-spacing: .08em; opacity: .55; }
+</style>
+```
+
+```{=html}
+<svg class="gphloop" viewBox="0 0 870 300" role="img"
+     aria-label="Once per computer, run gph_setup. Once per exercise, accept on Classroom 50 then run gph_start. Then repeat: edit exercise.qmd, run gph_check, run gph_submit, going round again until everything passes.">
+  <defs>
+    <marker id="ga" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="currentColor" opacity=".55"/>
+    </marker>
+    <marker id="gb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2c7fb8"/>
+    </marker>
+  </defs>
+
+  <text class="hd" x="0" y="14">ONCE PER COMPUTER</text>
+  <rect class="box" x="0" y="24" width="180" height="44" rx="6"/>
+  <text class="cmd" x="16" y="52">gph_setup()</text>
+
+  <text class="hd" x="230" y="14">ONCE PER EXERCISE</text>
+  <rect class="box" x="230" y="24" width="200" height="44" rx="6"/>
+  <text class="lbl" x="246" y="52">Accept on Classroom 50</text>
+  <path class="arr" d="M436,46 L470,46" marker-end="url(#ga)"/>
+  <rect class="box" x="478" y="24" width="170" height="44" rx="6"/>
+  <text class="cmd" x="494" y="52">gph_start(N)</text>
+
+  <path class="arr" d="M563,74 L563,108" marker-end="url(#ga)"/>
+
+  <text class="hd" x="0" y="122">THEN REPEAT UNTIL EVERYTHING PASSES</text>
+  <rect class="box" x="0" y="132" width="730" height="126" rx="8" stroke-dasharray="5 4"/>
+
+  <rect class="boxhi" x="30" y="158" width="180" height="48" rx="6"/>
+  <text class="lbl" x="46" y="180">Edit</text>
+  <text class="cmd" x="46" y="198">exercise.qmd</text>
+
+  <path class="arrhi" d="M216,182 L262,182" marker-end="url(#gb)"/>
+
+  <rect class="boxhi" x="270" y="158" width="190" height="48" rx="6"/>
+  <text class="cmd" x="286" y="180">gph_check()</text>
+  <text class="note" x="286" y="198">passes locally?</text>
+
+  <path class="arrhi" d="M466,182 L512,182" marker-end="url(#gb)"/>
+
+  <rect class="boxhi" x="520" y="158" width="190" height="48" rx="6"/>
+  <text class="cmd" x="536" y="180">gph_submit()</text>
+  <text class="note" x="536" y="198">pushes, then reports</text>
+
+  <path class="arrhi" d="M615,206 L615,228 L120,228 L120,210" marker-end="url(#gb)"/>
+  <text class="note" x="367" y="248" text-anchor="middle">something still fails, so go round again</text>
+
+  <path class="arr" d="M716,182 L752,182" marker-end="url(#ga)"/>
+  <rect class="box" x="760" y="158" width="104" height="48" rx="6"/>
+  <text class="lbl" x="812" y="180" text-anchor="middle">Done</text>
+  <text class="note" x="812" y="198" text-anchor="middle">all green</text>
+</svg>
+```
+
+That is the whole workflow. Everything below is detail.
+
+::: {.callout-important appearance="simple"}
+## Load the commands first
+
+Paste this once each time you open RStudio. It is one line, and it never
+changes:
+
+```r
+source("https://gph-2182.github.io/gph2182.R")
+```
+
+Inside an exercise project it loads by itself, so you will rarely need to type
+it after the first exercise.
+:::
+
+## Once per computer: `gph_setup()`
+
+```r
+gph_setup()
+```
+
+It installs anything missing, asks for your name and email, and walks you
+through creating and storing a GitHub token. Run it again any time to confirm
+things are still connected; it is safe to repeat.
+
+If you would rather understand each piece, the long version is in
+[Connecting RStudio to GitHub](guides/github-setup.qmd).
+
+## Once per exercise: accept, then `gph_start(N)`
+
+1. **Accept the assignment.** The link is on that week's page, for example
+   [Weekly Exercise 2](weeks/week-02.qmd). This creates a private GitHub
+   repository that belongs to you. Do it once per exercise.
+2. **Open it in RStudio.** In the Console:
+
+   ```r
+   gph_start(2)
+   ```
+
+   Use the exercise number you are working on. That is the whole step: no URL
+   to copy, no dialog to fill in, no folder to choose. It works out which
+   repository is yours, downloads it into `~/gph2182`, and opens it as a
+   project.
+
+If you have not accepted yet, `gph_start()` says so and prints the link you
+need. If you already have the exercise on your computer, it just opens it.
+
+## Then repeat: edit, check, submit
+
+### Edit
+
+Open `exercise.qmd`. Put your name in the `author:` field. Answer each question
+by replacing `NULL` with your code.
+
+Keep the object names exactly as given (`q1`, `q2`, and so on). The checks look
+for those names, so renaming them loses points even when your code is right.
+
+### Check
+
+```r
+gph_check()
+```
+
+This runs **the same checks GitHub will run**, on your machine, in about two
+seconds. You get a PASS or FAIL line per question. Fix the FAIL lines and run
+it again. Nothing is submitted and nobody sees the result.
+
+::: {.callout-note appearance="simple"}
+`gph_check()` runs in a separate, clean R session on purpose. That means it
+cannot be fooled by an answer that only exists in your Environment pane rather
+than in the file, which is the most common reason work passes locally and fails
+on GitHub.
+:::
+
+### Submit
+
+```r
+gph_submit()
+```
+
+One command does all of it: stages your files, commits them, pushes to GitHub,
+then waits for GitHub's own check and tells you the result in the Console. You
+do not have to visit the Actions tab, though `gph_actions()` opens it if you
+want to look.
+
+## What the results mean
+
+| What you see | What it means | What to do |
+|---|---|---|
+| `Everything passes` from `gph_check()` | Your file is right on your machine | `gph_submit()` |
+| `Pushed to GitHub` | Your work is submitted and safe | Wait for the check result |
+| `everything passes. You are done.` | GitHub agrees. Finished | Nothing |
+| `something still fails` | Your push arrived but a question is wrong | `gph_check()`, fix, `gph_submit()` |
+| `No result yet` | GitHub is busy | Wait a minute, or run `gph_actions()` |
+
+**Submitting many times is normal and expected.** Only your last push before
+the deadline is graded, so a failing check on an early attempt costs you
+nothing. Push early and often: work on GitHub cannot be lost.
+
+## When something goes wrong
+
+```r
+gph_doctor()
+```
+
+It prints a ✓ or ✗ for every single thing that has to be true, in order:
+packages, your Git name and email, your token, whether this folder is really a
+repository, whether anything is uncommitted, whether anything is unpushed, and
+what GitHub said about your last submission. The first ✗ is your problem, and
+each line tells you which command fixes it.
+
+If you are still stuck, look the exact error message up on the
+[error messages page](guides/troubleshooting.qmd), then send me or Sabrina the
+output of `gph_doctor()`. That output contains no secrets and usually makes the
+answer obvious in one reply.
+
+## Doing it by hand
+
+The commands above are a convenience, not a hiding place. Git and GitHub are
+part of what this course teaches, and you should be able to do this without the
+helpers by the end of the semester.
+
+::: {.callout-tip collapse="true"}
+## The same five steps, done manually
+
+1. **Clone:** copy your repository URL from GitHub, then in RStudio
+   **File > New Project > Version Control > Git**, paste the URL, choose your
+   `~/gph2182` folder, and click **Create Project**.
+2. **Edit:** open `exercise.qmd` and answer the questions.
+3. **Stage:** in the **Git** tab, tick the box next to each changed file.
+4. **Commit:** click **Commit**, read the diff, write a message, click
+   **Commit**.
+5. **Push:** click the green **Push** arrow. Then open your repository on
+   github.com and click the **Actions** tab to see the result.
+
+Each of these is explained in full in
+[RStudio projects and cloning a repository](guides/rstudio-projects.qmd) and
+[Committing, pushing, and pulling](guides/commit-push.qmd).
+:::
+
+## Every command, in one place
+
+| Command | What it does |
+|---|---|
+| `gph_setup()` | Connect RStudio to GitHub. Once per computer |
+| `gph_start(N)` | Download and open exercise `N`. Once per exercise |
+| `gph_check()` | Run the autograder's checks locally |
+| `gph_submit()` | Stage, commit, push, and report the result |
+| `gph_actions()` | Open this exercise's Actions page in a browser |
+| `gph_doctor()` | Check everything and say what is wrong |
+| `gph_help()` | Print the loop again |

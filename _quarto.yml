@@ -4,6 +4,7 @@ project:
   pre-render: tools/prepare-release.sh
   resources:
     - "weeks/inclass/*.qmd"
+    - "gph2182.R"
 
 website:
   site-url: "https://gph-2182.github.io/"
@@ -18,6 +19,8 @@ website:
         text: Syllabus
       - href: schedule.qmd
         text: Schedule
+      - href: weekly.qmd
+        text: Weekly Exercise
       - href: guides/index.qmd
         text: Guides
       - href: project.qmd
