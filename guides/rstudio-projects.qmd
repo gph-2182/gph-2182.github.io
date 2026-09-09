@@ -134,6 +134,67 @@ project name is always shown in the top-right corner of the RStudio window, so
 you can tell at a glance which one you have open.
 
 ## Did it work?
+```{=html}
+<style>
+.gphide { max-width: 100%; height: auto; margin: 1.2rem 0; }
+.gphide .win  { fill: none; stroke: currentColor; stroke-width: 1.4; opacity: .45; }
+.gphide .pane { fill: none; stroke: currentColor; stroke-width: 1.2; opacity: .35; }
+.gphide .hi   { fill: none; stroke: #2c7fb8; stroke-width: 2.2; }
+.gphide .tab  { fill: currentColor; font: 500 11px system-ui, sans-serif; opacity: .6; }
+.gphide .tabhi{ fill: #2c7fb8; font: 700 11px system-ui, sans-serif; }
+.gphide .pn   { fill: currentColor; font: 600 12px system-ui, sans-serif; opacity: .75; }
+.gphide .cal  { fill: #2c7fb8; font: 600 12px system-ui, sans-serif; }
+.gphide .calline { fill: none; stroke: #2c7fb8; stroke-width: 1.4; }
+</style>
+```
+
+```{=html}
+<svg class="gphide" viewBox="0 0 700 400" role="img"
+     aria-label="Schematic of the RStudio window. The project name sits in the top right corner of the title bar. The top right pane holds the Environment, History and Git tabs; Git is the one you need. The Source editor is top left and the Console is bottom left.">
+  <rect class="win" x="10" y="34" width="680" height="330" rx="6"/>
+  <line class="win" x1="10" y1="60" x2="690" y2="60"/>
+
+  <text class="pn" x="22" y="53">RStudio</text>
+  <rect class="hi" x="540" y="39" width="144" height="17" rx="3"/>
+  <text class="tabhi" x="548" y="52">weekly-exercise-02</text>
+  <path class="calline" d="M612,32 L612,14" marker-end="url(#c1)"/>
+  <defs>
+    <marker id="c1" viewBox="0 0 10 10" refX="5" refY="9" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,10 L5,0 L10,10 z" fill="#2c7fb8"/>
+    </marker>
+  </defs>
+  <text class="cal" x="684" y="11" text-anchor="end">the project name, not "Project: (None)"</text>
+
+  <rect class="pane" x="22" y="72" width="320" height="130" rx="4"/>
+  <text class="tab" x="32" y="88">exercise.qmd</text>
+  <text class="pn"  x="32" y="140">Source</text>
+  <text class="tab" x="32" y="158">where you write your answers</text>
+
+  <rect class="pane" x="22" y="214" width="320" height="138" rx="4"/>
+  <text class="tab" x="32" y="230">Console</text>
+  <text class="tab" x="104" y="230">Terminal</text>
+  <text class="pn"  x="32" y="286">Console</text>
+  <text class="tab" x="32" y="304">where gph_check() and</text>
+  <text class="tab" x="32" y="320">gph_submit() are typed</text>
+
+  <rect class="hi" x="356" y="72" width="322" height="130" rx="4"/>
+  <text class="tab"   x="366" y="88">Environment</text>
+  <text class="tab"   x="446" y="88">History</text>
+  <rect class="hi" x="496" y="76" width="34" height="17" rx="3"/>
+  <text class="tabhi" x="502" y="89">Git</text>
+  <text class="pn"    x="366" y="140">Git</text>
+  <text class="tab"   x="366" y="158">no Git tab here means you opened a</text>
+  <text class="tab"   x="366" y="174">plain folder, not a project</text>
+
+  <rect class="pane" x="356" y="214" width="322" height="138" rx="4"/>
+  <text class="tab" x="366" y="230">Files</text>
+  <text class="tab" x="404" y="230">Plots</text>
+  <text class="tab" x="444" y="230">Packages</text>
+  <text class="tab" x="510" y="230">Help</text>
+  <text class="pn"  x="366" y="290">Files</text>
+</svg>
+```
+
 
 Three checks, in order of usefulness:
 
