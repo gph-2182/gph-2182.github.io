@@ -14,11 +14,11 @@
 ##     gph_help()         show the loop again
 ## ---------------------------------------------------------------------------
 
-gph_version <- "2026-09-09"
+gph_version <- "2026-09-09b"
 
 .gph_org       <- "gph-2182"
 .gph_classroom <- "gph-gu-2182-fall-2026"
-.gph_home      <- "~/gph2182"
+.gph_home_default <- "~/gph2182"
 .gph_site      <- "https://gph-2182.github.io"
 .gph_n_max     <- 8L
 
@@ -92,6 +92,195 @@ gph_version <- "2026-09-09"
   invisible(path)
 }
 
+## -- where exercises live ---------------------------------------------------
+
+.gph_config_file <- function() file.path(path.expand("~"), ".gph2182")
+
+.gph_home_get <- function() {
+  f <- .gph_config_file()
+  if (file.exists(f)) {
+    p <- trimws(readLines(f, warn = FALSE))
+    p <- p[nzchar(p)]
+    if (length(p) && dir.exists(p[1])) return(p[1])
+  }
+  path.expand(.gph_home_default)
+}
+
+#' Show or change the folder your exercises are kept in.
+#'
+#' gph_where()               show it
+#' gph_where("~/Desktop/r")  change it, and remember the change
+gph_where <- function(path = NULL) {
+  if (is.null(path)) {
+    cur <- .gph_home_get()
+    .gph_dot("New exercises go into: ", cur)
+    if (!dir.exists(cur)) .gph_dot("(it does not exist yet; it is created when you need it)")
+    .gph_dot('Change it with gph_where("some/other/folder")')
+    return(invisible(cur))
+  }
+  path <- normalizePath(path.expand(path), mustWork = FALSE)
+  dir.create(path, recursive = TRUE, showWarnings = FALSE)
+  if (!dir.exists(path)) {
+    .gph_no("Could not create ", path)
+    return(invisible(FALSE))
+  }
+  writeLines(path, .gph_config_file())
+  .gph_ok("New exercises will go into ", path)
+  invisible(path)
+}
+
+#' Keep future exercises next to the one you already have open.
+gph_adopt <- function() {
+  if (is.null(tryCatch(gert::git_info(repo = "."), error = function(e) NULL))) {
+    .gph_no("This folder is not a Git repository, so there is nothing to adopt.")
+    .gph_dot("Open one of your exercise projects first, then run gph_adopt().")
+    return(invisible(FALSE))
+  }
+  parent <- dirname(normalizePath(".", mustWork = FALSE))
+  gph_where(parent)
+  .gph_dot("Future gph_start() calls will put exercises beside this one.")
+  invisible(parent)
+}
+
+#' Every project RStudio remembers you opening.
+.gph_recent_projects <- function() {
+  local_app <- Sys.getenv("LOCALAPPDATA", "")
+  files <- c(
+    file.path(path.expand("~"), ".local", "share", "rstudio", "monitored", "lists", "project_mru"),
+    file.path(path.expand("~"), ".rstudio-desktop", "monitored", "lists", "project_mru"),
+    if (nzchar(local_app)) file.path(local_app, "RStudio", "monitored", "lists", "project_mru"),
+    if (nzchar(local_app)) file.path(local_app, "RStudio-Desktop", "monitored", "lists", "project_mru")
+  )
+  out <- character()
+  for (f in files) {
+    if (file.exists(f)) {
+      out <- c(out, tryCatch(readLines(f, warn = FALSE), error = function(e) character()))
+    }
+  }
+  out <- trimws(out)
+  out <- out[nzchar(out)]
+  unique(dirname(path.expand(out)))
+}
+
+#' Does the git remote in `dir` point at `spec` (owner/repo)?
+.gph_remote_is <- function(dir, spec) {
+  url <- tryCatch(gert::git_remote_list(repo = dir)$url[1], error = function(e) NA_character_)
+  if (is.na(url)) return(FALSE)
+  identical(tolower(sub("\\.git$", "", sub("^.*github\\.com[:/]", "", url))), tolower(spec))
+}
+
+#' Search one root, breadth-first, for a directory called `target`.
+#'
+#' Returns hits plus whether the search finished. Each root gets its own
+#' budget so that one enormous cloud-synced tree cannot starve the search of
+#' the places a student is actually likely to have used.
+.gph_scan_root <- function(root, target, max_depth = 3L, budget = 2500L, deadline = NULL) {
+  frontier <- root
+  seen <- 0L
+  for (depth in seq_len(max_depth + 1L)) {
+    hit <- frontier[basename(frontier) == target]
+    if (length(hit)) return(list(hits = hit, complete = TRUE))
+    nxt <- character()
+    for (d in frontier) {
+      if (seen > budget) return(list(hits = character(), complete = FALSE))
+      if (!is.null(deadline) && Sys.time() > deadline) {
+        return(list(hits = character(), complete = FALSE))
+      }
+      kids <- tryCatch(list.dirs(d, recursive = FALSE, full.names = TRUE),
+                       error = function(e) character())
+      if (!length(kids)) next
+      kids <- kids[!basename(kids) %in% .gph_skip_dirs & !startsWith(basename(kids), ".")]
+      seen <- seen + length(kids)
+      nxt <- c(nxt, kids)
+    }
+    if (!length(nxt)) break
+    frontier <- unique(nxt)
+  }
+  list(hits = character(), complete = TRUE)
+}
+
+.gph_skip_dirs <- c("Library", "Applications", "Music", "Movies", "Pictures",
+                    "node_modules", "renv", "packrat", ".git", ".Trash",
+                    "site_libs", "_freeze")
+
+#' Hunt for an existing copy, likeliest places first, with a wall-clock cap.
+#'
+#' `complete = FALSE` means the search ran out of room, so a negative result
+#' is not proof the student has no copy. Callers must say so.
+.gph_scan <- function(target, seconds = 8) {
+  deadline <- Sys.time() + seconds
+  roots <- c(
+    .gph_home_get(),
+    path.expand(c("~/Desktop", "~/Documents", "~/Downloads", "~/GitHub",
+                  "~/Documents/GitHub", "~/Projects", "~/src"))
+  )
+  depths <- rep(3L, length(roots))
+  roots  <- c(roots, path.expand("~"))
+  depths <- c(depths, 2L)
+  cloud  <- Sys.glob(path.expand(c("~/Dropbox*", "~/OneDrive*",
+                                   "~/Library/CloudStorage/*")))
+  roots  <- c(roots, cloud)
+  depths <- c(depths, rep(3L, length(cloud)))
+
+  keep   <- dir.exists(roots) & !duplicated(roots)
+  roots  <- roots[keep]
+  depths <- depths[keep]
+
+  complete <- TRUE
+  for (i in seq_along(roots)) {
+    res <- .gph_scan_root(roots[i], target, max_depth = depths[i], deadline = deadline)
+    if (length(res$hits)) return(list(hits = res$hits, complete = TRUE))
+    if (!res$complete) complete <- FALSE
+  }
+  list(hits = character(), complete = complete)
+}
+
+#' The cheap checks: is it open, in the remembered folder, or in RStudio's
+#' recent-projects list?
+.gph_find_quick <- function(spec) {
+  name <- basename(spec)
+  if (.gph_remote_is(".", spec)) {
+    return(list(path = normalizePath(".", mustWork = FALSE), how = "open"))
+  }
+  p <- file.path(.gph_home_get(), name)
+  if (dir.exists(p)) return(list(path = p, how = "home"))
+  for (d in .gph_recent_projects()) {
+    if (!dir.exists(d)) next
+    if (identical(basename(d), name) || .gph_remote_is(d, spec)) {
+      return(list(path = d, how = "recent"))
+    }
+  }
+  NULL
+}
+
+.gph_cloudy <- function(path) {
+  grepl("dropbox|onedrive|cloudstorage|google ?drive|icloud", path, ignore.case = TRUE)
+}
+
+.gph_use_existing <- function(hit, n) {
+  if (identical(hit$how, "open")) {
+    .gph_ok("Weekly Exercise ", n, " is already open. Nothing to download.")
+    .gph_dot("Next: gph_check(), then gph_submit()")
+    return(invisible(hit$path))
+  }
+  .gph_ok("You already have Weekly Exercise ", n, " at:")
+  .gph_dot("  ", hit$path)
+  st <- tryCatch(gert::git_status(repo = hit$path), error = function(e) NULL)
+  if (!is.null(st) && nrow(st) > 0) {
+    .gph_dot("It has ", nrow(st), " change(s) not yet committed. They are safe: I am")
+    .gph_dot("opening this copy rather than downloading a second one.")
+  } else {
+    .gph_dot("Opening it. I did not download a second copy.")
+  }
+  if (.gph_cloudy(hit$path)) {
+    .gph_dot("")
+    .gph_dot("Note: this is inside a cloud-synced folder (Dropbox, OneDrive, iCloud).")
+    .gph_dot("Git and sync clients fight over the same files. It will probably work,")
+    .gph_dot("but a plain local folder is safer. See gph_where().")
+  }
+  .gph_open(hit$path)
+}
+
 ## -- gph_help ---------------------------------------------------------------
 
 #' Print the weekly loop.
@@ -116,6 +305,8 @@ Pushing many times is normal and expected. Only your last push before the
 deadline is graded, so a failing check on an early try costs you nothing.
 
 Stuck?  gph_doctor()
+Keep exercises somewhere else?  gph_where(\"your/folder\")
+Already have one open elsewhere? gph_adopt()
 ")
   invisible(NULL)
 }
@@ -188,8 +379,13 @@ gph_setup <- function() {
 ## -- gph_start --------------------------------------------------------------
 
 #' Clone and open a weekly exercise as an RStudio project.
-gph_start <- function(exercise) {
+#'
+#' If you already have this exercise somewhere on your computer, this opens
+#' that copy instead of downloading a second one. Pass `where` to choose a
+#' different folder for new exercises; the choice is remembered.
+gph_start <- function(exercise, where = NULL) {
   n <- .gph_n(exercise)
+  if (!is.null(where)) gph_where(where)
 
   login <- .gph_login()
   if (is.null(login)) {
@@ -200,6 +396,14 @@ gph_start <- function(exercise) {
   .gph_ok("GitHub sees you as: ", login)
 
   spec <- .gph_spec(n, login)
+  name <- basename(spec)
+
+  ## Already on this computer? Open that, never duplicate it.
+  hit <- .gph_find_quick(spec)
+  if (!is.null(hit)) return(.gph_use_existing(hit, n))
+
+  ## Not found cheaply, so it has to exist on GitHub for there to be anything
+  ## to download.
   if (!.gph_repo_exists(spec)) {
     .gph_no("You have not accepted Weekly Exercise ", n, " yet.")
     .gph_dot("")
@@ -211,18 +415,27 @@ gph_start <- function(exercise) {
     .gph_dot("  https://classroom50.org/", .gph_org, "/", .gph_classroom, "/onboard")
     return(invisible(FALSE))
   }
-  .gph_ok("Found your repository: ", spec)
+  .gph_ok("Found your repository on GitHub: ", spec)
 
-  home <- path.expand(.gph_home)
+  ## Look harder before making a second copy.
+  .gph_dot("Checking whether you already have it somewhere ...")
+  scan <- .gph_scan(name)
+  found <- scan$hits[dir.exists(scan$hits)]
+  if (length(found)) return(.gph_use_existing(list(path = found[1], how = "scan"), n))
+
+  home <- .gph_home_get()
   dir.create(home, recursive = TRUE, showWarnings = FALSE)
-  dest <- file.path(home, basename(spec))
-
-  if (dir.exists(dest)) {
-    .gph_ok("You already have it. Opening ", dest)
-    return(invisible(.gph_open(dest)))
+  .gph_dot("No local copy found. Downloading into ", home)
+  if (!isTRUE(scan$complete)) {
+    .gph_dot("")
+    .gph_dot("I could not search your whole computer, so if you know you already")
+    .gph_dot("have this exercise somewhere, stop and open that project instead:")
+    .gph_dot("gph_check() and gph_submit() work from inside it, and gph_start()")
+    .gph_dot("is never required. Run gph_adopt() there and I will remember where")
+    .gph_dot("you keep them.")
+    .gph_dot("")
   }
-
-  .gph_dot("Downloading into ", dest, " ...")
+  .gph_dot('(to keep exercises elsewhere: gph_where("your/folder") then gph_start(', n, "))")
   usethis::create_from_github(spec, destdir = home, open = TRUE)
 }
 

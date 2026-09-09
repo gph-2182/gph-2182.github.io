@@ -117,7 +117,28 @@ If you would rather understand each piece, the long version is in
    project.
 
 If you have not accepted yet, `gph_start()` says so and prints the link you
-need. If you already have the exercise on your computer, it just opens it.
+need.
+
+::: {.callout-note}
+## Already keep your work somewhere else?
+
+`gph_start()` never makes a second copy. Before downloading anything it checks
+whether the exercise is already open, already in your course folder, or in any
+project RStudio remembers you opening, and then searches the usual places on
+your disk. If it finds a copy, it opens that one and says where it is.
+
+Two commands give you control over this:
+
+```r
+gph_where("~/Desktop/R class")   # keep new exercises here from now on
+gph_adopt()                      # run inside a project you already have:
+                                 # future exercises go next to it
+```
+
+And the safety net: **if you already have an exercise open, you do not need
+`gph_start()` at all.** `gph_check()` and `gph_submit()` work from inside any
+copy of the repository, wherever it lives.
+:::
 
 ## Then repeat: edit, check, submit
 
@@ -222,4 +243,6 @@ Each of these is explained in full in
 | `gph_submit()` | Stage, commit, push, and report the result |
 | `gph_actions()` | Open this exercise's Actions page in a browser |
 | `gph_doctor()` | Check everything and say what is wrong |
+| `gph_where()` | Show or change where new exercises are downloaded |
+| `gph_adopt()` | Keep future exercises next to the one you have open |
 | `gph_help()` | Print the loop again |
