@@ -14,7 +14,7 @@
 ##     gph_help()         show the loop again
 ## ---------------------------------------------------------------------------
 
-gph_version <- "2026-09-10b"
+.gph_version <- "2026-09-10b"
 
 .gph_org       <- "gph-2182"
 .gph_classroom <- "gph-gu-2182-fall-2026"
@@ -158,7 +158,7 @@ gph_version <- "2026-09-10b"
     writeLines(guess, f)
     .gph_ok("Keeping course projects where your others already are:")
     .gph_dot("  ", guess)
-    .gph_dot('(change it any time with gph_where("path/to/your/folder"))')
+    .gph_dot('(to use a different folder: gph_start(N, where = "your/folder"))')
     return(guess)
   }
   default <- path.expand(.gph_home_default)
@@ -173,20 +173,20 @@ gph_version <- "2026-09-10b"
   dir.create(chosen, recursive = TRUE, showWarnings = FALSE)
   writeLines(chosen, f)
   .gph_ok("Course projects will live in ", chosen)
-  .gph_dot('(change it any time with gph_where("path/to/your/folder"))')
+  .gph_dot('(to use a different folder: gph_start(N, where = "your/folder"))')
   chosen
 }
 
 #' Show or change the folder your exercises are kept in.
 #'
-#' gph_where()               show it
-#' gph_where("~/Desktop/r")  change it, and remember the change
-gph_where <- function(path = NULL) {
+#' .gph_where()               show it
+#' .gph_where("~/Desktop/r")  change it, and remember the change
+.gph_where <- function(path = NULL) {
   if (is.null(path)) {
     cur <- .gph_home_get()
     .gph_dot("New exercises go into: ", cur)
     if (!dir.exists(cur)) .gph_dot("(it does not exist yet; it is created when you need it)")
-    .gph_dot('Change it with gph_where("path/to/your/folder")')
+    .gph_dot('Change it with .gph_where("path/to/your/folder")')
     return(invisible(cur))
   }
   path <- normalizePath(path.expand(path), mustWork = FALSE)
@@ -198,22 +198,6 @@ gph_where <- function(path = NULL) {
   writeLines(path, .gph_config_file())
   .gph_ok("New exercises will go into ", path)
   invisible(path)
-}
-
-#' Keep future exercises next to the one you already have open.
-#'
-#' Rarely needed: gph_start() now works this out by itself. Kept for anyone
-#' who wants to set it explicitly.
-gph_adopt <- function() {
-  if (is.null(tryCatch(gert::git_info(repo = "."), error = function(e) NULL))) {
-    .gph_no("This folder is not a Git repository, so there is nothing to adopt.")
-    .gph_dot("Open one of your exercise projects first, then run gph_adopt().")
-    return(invisible(FALSE))
-  }
-  parent <- dirname(normalizePath(".", mustWork = FALSE))
-  gph_where(parent)
-  .gph_dot("Future gph_start() calls will put exercises beside this one.")
-  invisible(parent)
 }
 
 #' Every project RStudio remembers you opening.
@@ -386,13 +370,13 @@ gph_adopt <- function() {
     .gph_dot("")
     .gph_dot("Note: this is inside a cloud-synced folder (Dropbox, OneDrive, iCloud).")
     .gph_dot("Git and sync clients fight over the same files. It will probably work,")
-    .gph_dot("but a plain local folder is safer. See gph_where().")
+    .gph_dot("but a plain local folder is safer.")
   }
   if (!is.null(after_open)) for (l in after_open) .gph_dot(l)
   .gph_open(hit$path)
 }
 
-## -- gph_autoload -----------------------------------------------------------
+## -- .gph_autoload -----------------------------------------------------------
 
 .gph_rc    <- function() file.path(path.expand("~"), ".Rprofile")
 .gph_cache <- function() file.path(path.expand("~"), ".gph2182-helpers.R")
@@ -402,8 +386,8 @@ gph_adopt <- function() {
 #'
 #' Without this you must run the source() line once in each new session. This
 #' saves a copy of the helpers in your home folder and loads it at startup, so
-#' it keeps working offline. Undo with gph_autoload(remove = TRUE).
-gph_autoload <- function(remove = FALSE) {
+#' it keeps working offline. Undo with .gph_autoload(remove = TRUE).
+.gph_autoload <- function(remove = FALSE) {
   rc <- .gph_rc()
   old <- if (file.exists(rc)) readLines(rc, warn = FALSE) else character()
 
@@ -425,7 +409,7 @@ gph_autoload <- function(remove = FALSE) {
   )
   if (is.null(src) || !length(src)) {
     .gph_no("Could not fetch the helpers just now.")
-    .gph_dot("Check your internet connection and run gph_autoload() again.")
+    .gph_dot("Check your internet connection and run .gph_autoload() again.")
     return(invisible(FALSE))
   }
   writeLines(src, .gph_cache())
@@ -436,8 +420,8 @@ gph_autoload <- function(remove = FALSE) {
 
   .gph_ok("Done. The course commands will now load in every R session.")
   .gph_dot("Restart R to see it work: Session > Restart R, or just reopen RStudio.")
-  .gph_dot("Run gph_autoload() again any time to pick up newer versions.")
-  .gph_dot("Undo with gph_autoload(remove = TRUE)")
+  .gph_dot("Run gph_setup() again any time to pick up newer versions.")
+  .gph_dot("Undo with .gph_autoload(remove = TRUE)")
   invisible(TRUE)
 }
 
@@ -446,32 +430,30 @@ gph_autoload <- function(remove = FALSE) {
 #' Print the weekly loop.
 gph_help <- function() {
   cat("
-GPH-GU 2182  |  the weekly loop
-===============================
+GPH-GU 2182  |  seven commands, and that is all of them
+=======================================================
 
 ONCE per computer
-  gph_setup()                 connect RStudio to GitHub
+  gph_setup()      connect to GitHub, and load these in every session
 
 ONCE for the whole semester
-  Accept the in-class assignment on Classroom 50
-  gph_inclass()               opens the repository you reuse every week
+  gph_inclass()    open the in-class repository you reuse every week
 
 ONCE per exercise
-  Accept it on Classroom 50   (link on the week's page)
-  gph_start(N)                downloads and opens it, N is the exercise number
+  gph_start(N)     download and open weekly exercise N
 
-THEN repeat until everything passes
-  edit exercise.qmd
-  gph_check()                 run the autograder's checks locally
-  gph_submit()                stage, commit, push, report the result
+EVERY time, until it passes
+  gph_check()      run the autograder's checks on your own machine
+  gph_submit()     stage, commit, push, and report the result
 
-Pushing many times is normal and expected. Only your last push before the
-deadline is graded, so a failing check on an early try costs you nothing.
+WHEN STUCK
+  gph_doctor()     check everything and say what is wrong
+  gph_help()       print this
 
-Tired of typing the source() line every session?  gph_autoload()
+Pushing many times is normal. Only your last push before the deadline is
+graded, so a failing check on an early try costs you nothing.
 
-Stuck?  gph_doctor()
-Keep your projects somewhere else?  gph_where(\"path/to/your/folder\")
+Keep projects elsewhere:  gph_start(N, where = \"your/folder\")
 ")
   invisible(NULL)
 }
@@ -480,7 +462,7 @@ Keep your projects somewhere else?  gph_where(\"path/to/your/folder\")
 
 #' One-time setup: install what is missing, set your Git identity, store a token.
 gph_setup <- function() {
-  .gph_rule("Step 1 of 3: packages")
+  .gph_rule("Step 1 of 4: packages")
   need <- setdiff(c("usethis", "gitcreds", "gh", "gert"),
                   rownames(installed.packages()))
   if (length(need)) {
@@ -495,7 +477,7 @@ gph_setup <- function() {
   }
   .gph_ok("Packages ready")
 
-  .gph_rule("Step 2 of 3: who you are")
+  .gph_rule("Step 2 of 4: who you are")
   nm <- tryCatch(gert::git_config_global(), error = function(e) NULL)
   cur_name  <- if (!is.null(nm)) nm$value[nm$name == "user.name"][1]  else NA_character_
   cur_email <- if (!is.null(nm)) nm$value[nm$name == "user.email"][1] else NA_character_
@@ -519,10 +501,22 @@ gph_setup <- function() {
     .gph_ok("Already set: ", cur_name, " <", cur_email, ">")
   }
 
-  .gph_rule("Step 3 of 3: your GitHub token")
+  .gph_rule("Step 3 of 4: your GitHub token")
   login <- .gph_login()
   if (!is.null(login)) {
     .gph_ok("Token works. GitHub sees you as: ", login)
+
+    .gph_rule("Step 4 of 4: loading these commands automatically")
+    rc <- .gph_rc()
+    if (file.exists(rc) && any(trimws(readLines(rc, warn = FALSE)) == .gph_mark[1])) {
+      .gph_ok("Already on. The commands load in every R session.")
+    } else {
+      .gph_dot("Without this you must run the source() line once per session.")
+      ans <- if (interactive()) tolower(trimws(readline("Load them automatically from now on? [Y/n]: "))) else "n"
+      if (ans %in% c("", "y", "yes")) .gph_autoload() else
+        .gph_dot("Left off. Run gph_setup() again if you change your mind.")
+    }
+
     .gph_rule("Setup complete")
     .gph_dot("Next: accept the exercise on Classroom 50, then run gph_start(N).")
     return(invisible(TRUE))
@@ -550,7 +544,7 @@ gph_setup <- function() {
 #' than making a second one. Pass `where` to choose the folder explicitly.
 gph_start <- function(exercise, where = NULL) {
   n <- .gph_n(exercise)
-  if (!is.null(where)) gph_where(where)
+  if (!is.null(where)) .gph_where(where)
 
   login <- .gph_login()
   if (is.null(login)) {
@@ -576,7 +570,7 @@ gph_start <- function(exercise, where = NULL) {
 #'
 #' You accept this one once for the whole semester and reuse it every week.
 gph_inclass <- function(where = NULL) {
-  if (!is.null(where)) gph_where(where)
+  if (!is.null(where)) .gph_where(where)
 
   login <- .gph_login()
   if (is.null(login)) {
@@ -737,25 +731,12 @@ gph_submit <- function(message = NULL, wait = TRUE) {
   invisible(TRUE)
 }
 
-#' Open this exercise's GitHub Actions page in your browser.
-gph_actions <- function() {
-  slug <- .gph_slug()
-  if (is.na(slug)) {
-    .gph_no("This folder has no GitHub remote. Open your exercise with gph_start(N).")
-    return(invisible(FALSE))
-  }
-  url <- paste0("https://github.com/", slug, "/actions")
-  .gph_dot(url)
-  utils::browseURL(url)
-  invisible(url)
-}
-
 ## -- gph_doctor -------------------------------------------------------------
 
 #' Print a checklist of everything that has to be true, and what is not.
 gph_doctor <- function() {
   .gph_rule("Your setup")
-  cat("helpers version ", gph_version, "\n", sep = "")
+  cat("helpers version ", .gph_version, "\n", sep = "")
 
   for (p in c("usethis", "gitcreds", "gh", "gert")) {
     if (requireNamespace(p, quietly = TRUE)) .gph_ok("package ", p) else .gph_no("package ", p, " is missing (run gph_setup())")
@@ -773,7 +754,7 @@ gph_doctor <- function() {
   rc <- .gph_rc()
   auto <- file.exists(rc) && any(trimws(readLines(rc, warn = FALSE)) == .gph_mark[1])
   if (auto) .gph_ok("commands load automatically each session") else
-    .gph_dot("commands load only when you source() them (gph_autoload() fixes that)")
+    .gph_dot("commands load only when you source() them (gph_setup() can fix that)")
 
   .gph_rule("This project")
   .gph_dot("folder: ", getwd())

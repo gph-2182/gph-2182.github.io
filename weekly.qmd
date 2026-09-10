@@ -95,14 +95,10 @@ Error in gph_inclass() : could not find function "gph_inclass"
 That error always means the same thing: run the `source()` line, then try
 again. Nothing is broken.
 
-**To stop typing it altogether**, run this once:
-
-```r
-gph_autoload()
-```
-
-Then restart R (**Session > Restart R**) and the commands will be there in
-every session from now on, in every project, even offline.
+**To stop typing it altogether**, run `gph_setup()` and answer yes when it
+offers to load the commands automatically. Then restart R
+(**Session > Restart R**) and they will be there in every session from now on,
+in every project, even offline.
 :::
 
 ## Once per computer: `gph_setup()`
@@ -148,10 +144,10 @@ none yet, it asks once and remembers the answer.
 It also never makes a second copy: if you already have that exercise, it opens
 the copy you have and tells you where it is.
 
-To move future exercises somewhere else, replacing the path with your own:
+To keep them somewhere else, pass the folder once and it is remembered:
 
 ```r
-gph_where("path/to/your/folder")
+gph_start(3, where = "path/to/your/folder")
 ```
 
 And the safety net: **if you already have an exercise open, you do not need
@@ -228,7 +224,7 @@ gph_submit()
 
 One command does all of it: stages your files, commits them, pushes to GitHub,
 then waits for GitHub's own check and tells you the result in the Console. You
-do not have to visit the Actions tab, though `gph_actions()` opens it if you
+do not have to visit the Actions tab; the link it prints is clickable if you
 want to look.
 
 **It pauses for up to a couple of minutes at the end, and that is normal.**
@@ -243,7 +239,7 @@ back. You can stop waiting at any time without affecting your submission.
 | `Pushed to GitHub` | Your work is submitted and safe | Wait for the check result |
 | `everything passes. You are done.` | GitHub agrees. Finished | Nothing |
 | `something still fails` | Your push arrived but a question is wrong | `gph_check()`, fix, `gph_submit()` |
-| `No result yet` | GitHub is busy | Wait a minute, or run `gph_actions()` |
+| `Still running` | GitHub is busy | Wait a minute, then check the link it printed |
 
 **Submitting many times is normal and expected.** Only your last push before
 the deadline is graded, so a failing check on an early attempt costs you
@@ -292,15 +288,19 @@ Each of these is explained in full in
 
 ## Every command, in one place
 
-| Command | What it does |
+| Command | When |
 |---|---|
-| `gph_setup()` | Connect RStudio to GitHub. Once per computer |
-| `gph_start(N)` | Download and open weekly exercise `N`. Once per exercise |
-| `gph_check()` | Run the autograder's checks locally |
-| `gph_submit()` | Stage, commit, push, and report the result |
-| `gph_actions()` | Open this exercise's Actions page in a browser |
-| `gph_doctor()` | Check everything and say what is wrong |
-| `gph_inclass()` | Download and open your in-class repository. Once per semester |
-| `gph_where()` | Show or change where new projects are downloaded |
-| `gph_autoload()` | Load these commands in every session, so you never source again |
-| `gph_help()` | Print the loop again |
+| `gph_setup()` | Once per computer. Connects to GitHub and loads these commands in every session |
+| `gph_inclass()` | Once for the semester. Opens your in-class repository |
+| `gph_start(N)` | Once per exercise. Downloads and opens weekly exercise `N` |
+| `gph_check()` | Every time. Runs the autograder's checks on your machine |
+| `gph_submit()` | Every time. Stages, commits, pushes, reports the result |
+| `gph_doctor()` | When stuck. Checks everything and says what is wrong |
+| `gph_help()` | Prints the list above |
+
+That is the whole set. To keep projects in a folder of your own choosing, pass
+it to `gph_start()` once and it is remembered:
+
+```r
+gph_start(3, where = "path/to/your/folder")
+```

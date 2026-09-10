@@ -56,9 +56,9 @@ source("https://gph-2182.github.io/gph2182.R")
 You will know it worked when `gph_start`, `gph_check` and the others appear
 under **Functions** in the Environment pane.
 
-**Permanent fix:** run `gph_autoload()` once. It saves a copy in your home
-folder and loads it at every startup, so you never type the `source()` line
-again. Undo it with `gph_autoload(remove = TRUE)`.
+**Permanent fix:** run `gph_setup()` and say yes when it offers to load the
+commands automatically. It saves a copy in your home folder and loads it at
+every startup, so you never type the `source()` line again.
 
 ---
 
