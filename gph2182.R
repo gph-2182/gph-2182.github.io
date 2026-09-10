@@ -14,7 +14,7 @@
 ##     gph_help()         show the loop again
 ## ---------------------------------------------------------------------------
 
-gph_version <- "2026-09-09b"
+gph_version <- "2026-09-10"
 
 .gph_org       <- "gph-2182"
 .gph_classroom <- "gph-gu-2182-fall-2026"
@@ -64,6 +64,15 @@ gph_version <- "2026-09-09b"
           .gph_org, .gph_classroom, n)
 }
 
+.gph_inclass_spec <- function(login) {
+  sprintf("%s/%s-in-class-exercises-%s", .gph_org, .gph_classroom, tolower(login))
+}
+
+.gph_inclass_accept_url <- function() {
+  sprintf("https://classroom50.org/%s/%s/assignments/in-class-exercises/accept",
+          .gph_org, .gph_classroom)
+}
+
 .gph_repo_exists <- function(spec) {
   tryCatch({ gh::gh(paste0("/repos/", spec)); TRUE }, error = function(e) FALSE)
 }
@@ -106,6 +115,68 @@ gph_version <- "2026-09-09b"
   path.expand(.gph_home_default)
 }
 
+#' Has this student already got course repositories somewhere? If so, that
+#' folder is where the next one belongs, whatever it happens to be called.
+.gph_infer_home <- function() {
+  pat <- paste0("^", .gph_classroom, "-")
+  cands <- character()
+  for (d in .gph_recent_projects()) {
+    if (dir.exists(d) && grepl(pat, basename(d))) cands <- c(cands, dirname(d))
+  }
+  if (!length(cands)) {
+    roots <- unique(c(.gph_home_get(), path.expand(c("~", "~/Desktop", "~/Documents"))))
+    for (r in roots[dir.exists(roots)]) {
+      kids <- tryCatch(list.dirs(r, recursive = FALSE, full.names = TRUE),
+                       error = function(e) character())
+      hit <- kids[grepl(pat, basename(kids))]
+      if (length(hit)) { cands <- c(cands, r); break }
+      for (k in kids[!startsWith(basename(kids), ".")][1:min(60, length(kids))]) {
+        gk <- tryCatch(list.dirs(k, recursive = FALSE, full.names = TRUE),
+                       error = function(e) character())
+        if (any(grepl(pat, basename(gk)))) { cands <- c(cands, k); break }
+      }
+      if (length(cands)) break
+    }
+  }
+  if (!length(cands)) return(NULL)
+  names(sort(table(cands), decreasing = TRUE))[1]
+}
+
+#' Decide, once, where this student keeps course projects.
+#'
+#' Order: a folder they already chose, then the folder their existing course
+#' repositories already live in, then ask, then the default. The answer is
+#' remembered so this never asks twice.
+.gph_resolve_home <- function() {
+  f <- .gph_config_file()
+  if (file.exists(f)) {
+    p <- trimws(readLines(f, warn = FALSE)); p <- p[nzchar(p)]
+    if (length(p) && dir.exists(p[1])) return(p[1])
+  }
+  guess <- .gph_infer_home()
+  if (!is.null(guess)) {
+    writeLines(guess, f)
+    .gph_ok("Keeping course projects where your others already are:")
+    .gph_dot("  ", guess)
+    .gph_dot('(change it any time with gph_where("path/to/your/folder"))')
+    return(guess)
+  }
+  default <- path.expand(.gph_home_default)
+  if (interactive()) {
+    cat("\nWhere should your course projects live?\n")
+    cat("  Press Enter for ", default, ", or type a folder path.\n", sep = "")
+    ans <- trimws(readline("Folder: "))
+    chosen <- if (nzchar(ans)) normalizePath(path.expand(ans), mustWork = FALSE) else default
+  } else {
+    chosen <- default
+  }
+  dir.create(chosen, recursive = TRUE, showWarnings = FALSE)
+  writeLines(chosen, f)
+  .gph_ok("Course projects will live in ", chosen)
+  .gph_dot('(change it any time with gph_where("path/to/your/folder"))')
+  chosen
+}
+
 #' Show or change the folder your exercises are kept in.
 #'
 #' gph_where()               show it
@@ -115,7 +186,7 @@ gph_where <- function(path = NULL) {
     cur <- .gph_home_get()
     .gph_dot("New exercises go into: ", cur)
     if (!dir.exists(cur)) .gph_dot("(it does not exist yet; it is created when you need it)")
-    .gph_dot('Change it with gph_where("some/other/folder")')
+    .gph_dot('Change it with gph_where("path/to/your/folder")')
     return(invisible(cur))
   }
   path <- normalizePath(path.expand(path), mustWork = FALSE)
@@ -130,6 +201,9 @@ gph_where <- function(path = NULL) {
 }
 
 #' Keep future exercises next to the one you already have open.
+#'
+#' Rarely needed: gph_start() now works this out by itself. Kept for anyone
+#' who wants to set it explicitly.
 gph_adopt <- function() {
   if (is.null(tryCatch(gert::git_info(repo = "."), error = function(e) NULL))) {
     .gph_no("This folder is not a Git repository, so there is nothing to adopt.")
@@ -257,13 +331,49 @@ gph_adopt <- function() {
   grepl("dropbox|onedrive|cloudstorage|google ?drive|icloud", path, ignore.case = TRUE)
 }
 
-.gph_use_existing <- function(hit, n) {
+.gph_fetch <- function(spec, accept_url, what, not_accepted_hint = NULL,
+                       after_open = NULL) {
+  name <- basename(spec)
+
+  hit <- .gph_find_quick(spec)
+  if (!is.null(hit)) return(.gph_use_existing(hit, what, after_open))
+
+  if (!.gph_repo_exists(spec)) {
+    .gph_no("You have not accepted ", what, " yet.")
+    .gph_dot("")
+    .gph_dot("Accept it here, then run the same command again:")
+    .gph_dot("  ", accept_url)
+    if (!is.null(not_accepted_hint)) { .gph_dot(""); for (l in not_accepted_hint) .gph_dot(l) }
+    return(invisible(FALSE))
+  }
+  .gph_ok("Found ", what, " on GitHub: ", spec)
+
+  home <- .gph_resolve_home()
+  .gph_dot("Checking whether you already have it somewhere ...")
+  scan <- .gph_scan(name)
+  found <- scan$hits[dir.exists(scan$hits)]
+  if (length(found)) return(.gph_use_existing(list(path = found[1], how = "scan"), what, after_open))
+
+  dir.create(home, recursive = TRUE, showWarnings = FALSE)
+  .gph_dot("Downloading into ", home)
+  if (!isTRUE(scan$complete)) {
+    .gph_dot("")
+    .gph_dot("I could not search your whole computer. If you know you already have")
+    .gph_dot("this somewhere, stop and open that project instead: gph_check() and")
+    .gph_dot("gph_submit() work from inside any copy.")
+    .gph_dot("")
+  }
+  usethis::create_from_github(spec, destdir = home, open = TRUE)
+}
+
+.gph_use_existing <- function(hit, n, after_open = NULL) {
   if (identical(hit$how, "open")) {
-    .gph_ok("Weekly Exercise ", n, " is already open. Nothing to download.")
+    .gph_ok(if (is.numeric(n)) paste("Weekly Exercise", n) else n, " is already open. Nothing to download.")
     .gph_dot("Next: gph_check(), then gph_submit()")
+    if (!is.null(after_open)) for (l in after_open) .gph_dot(l)
     return(invisible(hit$path))
   }
-  .gph_ok("You already have Weekly Exercise ", n, " at:")
+  .gph_ok("You already have ", if (is.numeric(n)) paste("Weekly Exercise", n) else n, " at:")
   .gph_dot("  ", hit$path)
   st <- tryCatch(gert::git_status(repo = hit$path), error = function(e) NULL)
   if (!is.null(st) && nrow(st) > 0) {
@@ -278,6 +388,7 @@ gph_adopt <- function() {
     .gph_dot("Git and sync clients fight over the same files. It will probably work,")
     .gph_dot("but a plain local folder is safer. See gph_where().")
   }
+  if (!is.null(after_open)) for (l in after_open) .gph_dot(l)
   .gph_open(hit$path)
 }
 
@@ -292,9 +403,13 @@ GPH-GU 2182  |  the weekly loop
 ONCE per computer
   gph_setup()                 connect RStudio to GitHub
 
+ONCE for the whole semester
+  Accept the in-class assignment on Classroom 50
+  gph_inclass()               opens the repository you reuse every week
+
 ONCE per exercise
   Accept it on Classroom 50   (link on the week's page)
-  gph_start(N)                clone and open it, N is the exercise number
+  gph_start(N)                downloads and opens it, N is the exercise number
 
 THEN repeat until everything passes
   edit exercise.qmd
@@ -305,8 +420,7 @@ Pushing many times is normal and expected. Only your last push before the
 deadline is graded, so a failing check on an early try costs you nothing.
 
 Stuck?  gph_doctor()
-Keep exercises somewhere else?  gph_where(\"your/folder\")
-Already have one open elsewhere? gph_adopt()
+Keep your projects somewhere else?  gph_where(\"path/to/your/folder\")
 ")
   invisible(NULL)
 }
@@ -378,11 +492,11 @@ gph_setup <- function() {
 
 ## -- gph_start --------------------------------------------------------------
 
-#' Clone and open a weekly exercise as an RStudio project.
+#' Download and open a weekly exercise as an RStudio project.
 #'
-#' If you already have this exercise somewhere on your computer, this opens
-#' that copy instead of downloading a second one. Pass `where` to choose a
-#' different folder for new exercises; the choice is remembered.
+#' Works out which repository is yours, puts it wherever you keep your course
+#' projects, and opens it. If you already have it, this opens that copy rather
+#' than making a second one. Pass `where` to choose the folder explicitly.
 gph_start <- function(exercise, where = NULL) {
   n <- .gph_n(exercise)
   if (!is.null(where)) gph_where(where)
@@ -395,48 +509,49 @@ gph_start <- function(exercise, where = NULL) {
   }
   .gph_ok("GitHub sees you as: ", login)
 
-  spec <- .gph_spec(n, login)
-  name <- basename(spec)
+  .gph_fetch(
+    spec       = .gph_spec(n, login),
+    accept_url = .gph_accept_url(n),
+    what       = paste("Weekly Exercise", n),
+    not_accepted_hint = c(
+      "If that page says you are not a member of the organization, accept the",
+      "emailed invitation first, then link your NetID at",
+      paste0("  https://classroom50.org/", .gph_org, "/", .gph_classroom, "/onboard")
+    )
+  )
+}
 
-  ## Already on this computer? Open that, never duplicate it.
-  hit <- .gph_find_quick(spec)
-  if (!is.null(hit)) return(.gph_use_existing(hit, n))
+#' Download and open your in-class exercise repository.
+#'
+#' You accept this one once for the whole semester and reuse it every week.
+gph_inclass <- function(where = NULL) {
+  if (!is.null(where)) gph_where(where)
 
-  ## Not found cheaply, so it has to exist on GitHub for there to be anything
-  ## to download.
-  if (!.gph_repo_exists(spec)) {
-    .gph_no("You have not accepted Weekly Exercise ", n, " yet.")
-    .gph_dot("")
-    .gph_dot("Accept it here, then run gph_start(", n, ") again:")
-    .gph_dot("  ", .gph_accept_url(n))
-    .gph_dot("")
-    .gph_dot("If that page says you are not a member of the organization, accept")
-    .gph_dot("the emailed invitation first, then link your NetID at")
-    .gph_dot("  https://classroom50.org/", .gph_org, "/", .gph_classroom, "/onboard")
+  login <- .gph_login()
+  if (is.null(login)) {
+    .gph_no("I cannot tell who you are on GitHub, so I cannot find your repository.")
+    .gph_dot("Run gph_setup() first, then try gph_inclass() again.")
     return(invisible(FALSE))
   }
-  .gph_ok("Found your repository on GitHub: ", spec)
+  .gph_ok("GitHub sees you as: ", login)
 
-  ## Look harder before making a second copy.
-  .gph_dot("Checking whether you already have it somewhere ...")
-  scan <- .gph_scan(name)
-  found <- scan$hits[dir.exists(scan$hits)]
-  if (length(found)) return(.gph_use_existing(list(path = found[1], how = "scan"), n))
-
-  home <- .gph_home_get()
-  dir.create(home, recursive = TRUE, showWarnings = FALSE)
-  .gph_dot("No local copy found. Downloading into ", home)
-  if (!isTRUE(scan$complete)) {
-    .gph_dot("")
-    .gph_dot("I could not search your whole computer, so if you know you already")
-    .gph_dot("have this exercise somewhere, stop and open that project instead:")
-    .gph_dot("gph_check() and gph_submit() work from inside it, and gph_start()")
-    .gph_dot("is never required. Run gph_adopt() there and I will remember where")
-    .gph_dot("you keep them.")
-    .gph_dot("")
-  }
-  .gph_dot('(to keep exercises elsewhere: gph_where("your/folder") then gph_start(', n, "))")
-  usethis::create_from_github(spec, destdir = home, open = TRUE)
+  .gph_fetch(
+    spec       = .gph_inclass_spec(login),
+    accept_url = .gph_inclass_accept_url(),
+    what       = "your in-class exercise repository",
+    not_accepted_hint = c(
+      "You accept this one only once, and reuse it for every in-class exercise.",
+      "If that page says you are not a member of the organization, accept the",
+      "emailed invitation first, then link your NetID at",
+      paste0("  https://classroom50.org/", .gph_org, "/", .gph_classroom, "/onboard")
+    ),
+    after_open = c(
+      "",
+      "To get this week's worksheet, run this inside the project:",
+      "  source(\"get_worksheet.R\"); get_worksheet(3)",
+      "using the current week's number."
+    )
+  )
 }
 
 ## -- gph_check --------------------------------------------------------------
@@ -479,8 +594,10 @@ gph_check <- function(quiet = FALSE) {
 
 ## -- gph_submit -------------------------------------------------------------
 
-.gph_wait_run <- function(slug, sha, timeout = 180) {
-  cat("Waiting for GitHub to check your work (up to ", timeout, "s) ", sep = "")
+.gph_wait_run <- function(slug, sha, timeout = 150) {
+  cat("\nYour work is already submitted. Now waiting for GitHub's check,\n")
+  cat("which usually takes under a minute. Safe to stop waiting at any time.\n")
+  cat("waiting ")
   deadline <- Sys.time() + timeout
   repeat {
     runs <- tryCatch(
@@ -493,7 +610,7 @@ gph_check <- function(quiet = FALSE) {
     }
     if (Sys.time() > deadline) { cat("\n"); return(NA_character_) }
     cat(".")
-    Sys.sleep(5)
+    Sys.sleep(4)
   }
 }
 
@@ -563,7 +680,8 @@ gph_submit <- function(message = NULL, wait = TRUE) {
     .gph_no("GitHub checked your work: something still fails.")
     .gph_dot("Run gph_check() to see which questions, fix them, and gph_submit() again.")
   } else {
-    .gph_dot("No result yet. Look here in a minute: ", actions)
+    .gph_dot("Still running. Your work is submitted either way; the result will")
+    .gph_dot("appear here shortly: ", actions)
   }
   invisible(TRUE)
 }

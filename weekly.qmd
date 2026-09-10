@@ -120,24 +120,58 @@ If you have not accepted yet, `gph_start()` says so and prints the link you
 need.
 
 ::: {.callout-note}
-## Already keep your work somewhere else?
+## Where does it put things?
 
-`gph_start()` never makes a second copy. Before downloading anything it checks
-whether the exercise is already open, already in your course folder, or in any
-project RStudio remembers you opening, and then searches the usual places on
-your disk. If it finds a copy, it opens that one and says where it is.
+Wherever you already keep your course work. `gph_start()` looks at where your
+other course projects live and puts the new one beside them, so if your folder
+is called `~/NYU/stats` or `~/grad/fall2026`, that is where it goes. If you have
+none yet, it asks once and remembers the answer.
 
-Two commands give you control over this:
+It also never makes a second copy: if you already have that exercise, it opens
+the copy you have and tells you where it is.
+
+To move future exercises somewhere else, replacing the path with your own:
 
 ```r
-gph_where("~/Desktop/R class")   # keep new exercises here from now on
-gph_adopt()                      # run inside a project you already have:
-                                 # future exercises go next to it
+gph_where("path/to/your/folder")
 ```
 
 And the safety net: **if you already have an exercise open, you do not need
 `gph_start()` at all.** `gph_check()` and `gph_submit()` work from inside any
 copy of the repository, wherever it lives.
+:::
+
+## Once for the whole semester: your in-class repository
+
+In-class exercises are different from the weekly exercises. They all live in
+**one** repository that you set up once and reuse every week.
+
+1. [**Accept the in-class assignment**](https://classroom50.org/gph-2182/gph-gu-2182-fall-2026/assignments/in-class-exercises/accept)
+   on Classroom 50. Once, for the semester.
+2. In the Console:
+
+   ```r
+   gph_inclass()
+   ```
+
+Each week, from inside that project, fetch the worksheet with the week's
+number:
+
+```r
+source("get_worksheet.R"); get_worksheet(3)
+```
+
+Then add both partners' names, do the work, and commit and push before the end
+of class.
+
+::: {.callout-warning}
+## Do not create this repository yourself
+
+It has to be the one Classroom 50 makes, because that is the copy owned by the
+class and visible to the instructor. A repository you create under your own
+GitHub account is invisible to us, and if it is public your classmates can read
+your answers. If you have already made one by hand, run `gph_inclass()` to get
+the proper one and copy your worksheet files across.
 :::
 
 ## Then repeat: edit, check, submit
@@ -177,6 +211,10 @@ One command does all of it: stages your files, commits them, pushes to GitHub,
 then waits for GitHub's own check and tells you the result in the Console. You
 do not have to visit the Actions tab, though `gph_actions()` opens it if you
 want to look.
+
+**It pauses for up to a couple of minutes at the end, and that is normal.**
+Your work is already submitted by then; the wait is only for GitHub to report
+back. You can stop waiting at any time without affecting your submission.
 
 ## What the results mean
 
@@ -238,11 +276,11 @@ Each of these is explained in full in
 | Command | What it does |
 |---|---|
 | `gph_setup()` | Connect RStudio to GitHub. Once per computer |
-| `gph_start(N)` | Download and open exercise `N`. Once per exercise |
+| `gph_start(N)` | Download and open weekly exercise `N`. Once per exercise |
 | `gph_check()` | Run the autograder's checks locally |
 | `gph_submit()` | Stage, commit, push, and report the result |
 | `gph_actions()` | Open this exercise's Actions page in a browser |
 | `gph_doctor()` | Check everything and say what is wrong |
-| `gph_where()` | Show or change where new exercises are downloaded |
-| `gph_adopt()` | Keep future exercises next to the one you have open |
+| `gph_inclass()` | Download and open your in-class repository. Once per semester |
+| `gph_where()` | Show or change where new projects are downloaded |
 | `gph_help()` | Print the loop again |
