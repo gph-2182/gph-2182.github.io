@@ -14,7 +14,7 @@
 ##     gph_help()         show the loop again
 ## ---------------------------------------------------------------------------
 
-.gph_version <- "2026-09-10b"
+.gph_version <- "2026-09-10c"
 
 .gph_org       <- "gph-2182"
 .gph_classroom <- "gph-gu-2182-fall-2026"
@@ -768,7 +768,20 @@ gph_doctor <- function() {
   .gph_ok("git repository, branch ", info$shorthand)
   if (!is.na(slug)) .gph_ok("GitHub repository: ", slug) else .gph_no("no GitHub remote")
 
-  if (file.exists("exercise.qmd")) .gph_ok("exercise.qmd is here") else .gph_no("no exercise.qmd here")
+  in_class <- !is.na(slug) && grepl("in-class-exercises", slug, fixed = TRUE)
+  if (in_class) {
+    sheets <- sort(list.files(".", pattern = "^week-[0-9]{2}-inclass\\.qmd$"))
+    if (length(sheets)) {
+      .gph_ok(length(sheets), " worksheet(s) here: ", paste(sheets, collapse = ", "))
+    } else {
+      .gph_no("no worksheets here yet")
+      .gph_dot('get them with: source("get_worksheet.R"); get_worksheet(N)')
+    }
+  } else if (file.exists("exercise.qmd")) {
+    .gph_ok("exercise.qmd is here")
+  } else {
+    .gph_no("no exercise.qmd here")
+  }
 
   st <- tryCatch(gert::git_status(repo = "."), error = function(e) NULL)
   n_dirty <- if (is.null(st)) NA_integer_ else nrow(st)
@@ -782,7 +795,9 @@ gph_doctor <- function() {
     if (ab$behind > 0) .gph_no(ab$behind, " commit(s) on GitHub you do not have: gph_submit() will pull them")
   }
 
-  if (!is.na(slug) && !is.null(login)) {
+  if (in_class) {
+    .gph_dot("in-class work has no autograder; it is graded on completion")
+  } else if (!is.na(slug) && !is.null(login)) {
     runs <- tryCatch(gh::gh(paste0("/repos/", slug, "/actions/runs"), per_page = 1)$workflow_runs,
                      error = function(e) NULL)
     if (length(runs)) {
