@@ -8,7 +8,7 @@ subtitle: "Sep 16, 2026 · 2:00–4:40 PM · Bobst LL138"
 - **Read:** R02Pro Ch 4–5
 - Review the newly released weekly exercise and prepare questions.
 - Complete Weekly Exercise 2 (due tonight at 11:59 PM).
-- 📝 **Quiz 1 (20 min, covers Weeks 1–2)** will be held at the end of class.
+- 📝 **Quiz 1 (20 min, covers Weeks 1–2)** will be held during the last 30 minutes of class.
 - 🔍 **Proofreading corner:** spot a typo or unclear passage in Ch 4–5? [Submit a PR or issue](https://github.com/r02pro/r02pro_source/blob/main/CONTRIBUTING.md) for extra credit (see [syllabus](../syllabus.qmd)).
 
 ## Topics

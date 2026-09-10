@@ -8,7 +8,7 @@ subtitle: "Oct 21, 2026 · 2:00–4:40 PM · Bobst LL138"
 - **Read:** R02Pro Ch 10, Ch 3.6, Ch 3.11
 - Review the newly released weekly exercise and prepare questions.
 - Complete Weekly Exercise 6 (due tonight at 11:59 PM).
-- 📝 **Quiz 3 (15 min, covers Weeks 5–6)** will be held during the final 20 minutes of class.
+- 📝 **Quiz 3 (20 min, covers Weeks 5–6)** will be held during the last 30 minutes of class.
 - 🔍 **Proofreading corner:** spot a typo or unclear passage in Ch 10, 3.6, or 3.11? [Submit a PR or issue](https://github.com/r02pro/r02pro_source/blob/main/CONTRIBUTING.md) for extra credit (see [syllabus](../syllabus.qmd)).
 
 ## Topics
@@ -28,5 +28,5 @@ subtitle: "Oct 21, 2026 · 2:00–4:40 PM · Bobst LL138"
 
 - Weekly Exercise 6 (due tonight at 11:59 PM)
 - In-class exercise 7 (pushed to GitHub by end of class)
-- Quiz 3 (15 min, covers Weeks 5–6)
+- Quiz 3 (20 min, covers Weeks 5–6)
 

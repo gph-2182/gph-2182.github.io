@@ -38,7 +38,7 @@ format:
 
 * **Homework 2:** Due tonight at 11:59 PM.
 * **Homework 3:** Released today (Matrices, Lists, Data Frames & Import).
-* 📝 **Quiz 1 (Weeks 1–2):** Administered during the last 20 minutes of class (4:20–4:40 PM). Closed-book, paper handout.
+* 📝 **Quiz 1 (Weeks 1–2):** Administered during the last 30 minutes of class (4:10–4:40 PM). Closed-book, paper handout.
 :::
 :::
 
@@ -497,7 +497,7 @@ mean(bp_df$systolic, na.rm = TRUE)
 
 1. **Laptops, tablets, and phones away.**
 2. This is an **individual, closed-book, paper-based quiz** covering **Weeks 1–2**.
-3. You have **15 minutes** (4:20–4:35 PM).
+3. You have **20 minutes** (4:15–4:35 PM).
 4. Hand your paper to the teaching team at 4:35 PM.
 5. We will show the answer key on screen at 4:36 PM!
 

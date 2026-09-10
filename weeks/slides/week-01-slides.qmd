@@ -117,7 +117,7 @@ flowchart LR
 
 * **CAs & Instructor** circulate during exercise blocks to assist.
 * You push your in-class exercises to GitHub for participation credit.
-* Bi-weekly 15-minute no-AI quizzes certify your personal hand-fluency.
+* Bi-weekly 20-minute no-AI quizzes certify your personal hand-fluency.
 
 # Cycle 1: R Fundamentals & Packages {background-color="#2c3e50"}
 

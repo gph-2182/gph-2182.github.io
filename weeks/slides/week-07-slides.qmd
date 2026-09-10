@@ -38,7 +38,7 @@ format:
 
 * **Homework 6:** Due tonight at 11:59 PM.
 * **Homework 7:** Released today (strings, factors, dates).
-* **📝 Quiz 3:** Final 20 minutes of class (covers Weeks 5–6).
+* **📝 Quiz 3:** Last 30 minutes of class (covers Weeks 5–6).
 :::
 :::
 
@@ -398,11 +398,11 @@ str_extract(rx, "\\d+ ?mg")
 
 ---
 
-## 📝 Quiz 3 (Final 20 Minutes)
+## 📝 Quiz 3 (Last 30 Minutes)
 
 * **Coverage:** Weeks 5–6 (dplyr verbs, pipes, grouped summaries, joins, pivoting).
 * **Format:** Paper-based, closed-book, no electronic devices.
-* **Length:** 15 minutes, short answer + code reading.
+* **Length:** 20 minutes, multiple choice.
 
 ::: {.callout-note}
 Laptops closed, please. Your in-class worksheet should already be pushed to GitHub before the quiz begins.

@@ -460,6 +460,6 @@ ggplot(df, aes(x = year, y = rate)) +
 
 * **Homework 4:** Released today (due next Wednesday, Sep 30).
 * **Next Week:** Data Wrangling with `dplyr` & Pipes (filter, mutate, select, arrange).
-* 📝 **Quiz 2 (Weeks 3–4):** In the last 20 minutes of Week 5!
+* 📝 **Quiz 2 (Weeks 3–4):** In the last 30 minutes of Week 5!
 :::
 :::

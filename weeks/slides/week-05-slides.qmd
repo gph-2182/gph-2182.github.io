@@ -38,7 +38,7 @@ format:
 
 * **Homework 4:** Due tonight at 11:59 PM.
 * **Homework 5:** Released today (`dplyr` wrangling).
-* **📝 Quiz 2:** Final 20 minutes of class (covers Weeks 3–4).
+* **📝 Quiz 2:** Last 30 minutes of class (covers Weeks 3–4).
 :::
 :::
 
@@ -489,11 +489,11 @@ mean(asia_sugar$sugar)
 
 ---
 
-## 📝 Quiz 2 (Final 20 Minutes)
+## 📝 Quiz 2 (Last 30 Minutes)
 
 * **Coverage:** Weeks 3–4 (data structures, import, `ggplot2`).
 * **Format:** Paper-based, closed-book, no electronic devices.
-* **Length:** 15 minutes, short answer + code reading.
+* **Length:** 20 minutes, multiple choice.
 
 ::: {.callout-note}
 Laptops closed, please. Your in-class worksheet should already be pushed to GitHub before the quiz begins.
