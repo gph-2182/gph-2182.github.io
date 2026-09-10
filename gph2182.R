@@ -762,10 +762,21 @@ gph_doctor <- function() {
 ## -- banner used by each exercise project's .Rprofile ----------------------
 
 .gph_banner <- function() {
+  slug <- .gph_slug()
+  in_class <- !is.na(slug) && grepl("in-class-exercises", slug, fixed = TRUE)
   n <- .gph_exercise_here()
   cat("\n")
-  if (is.na(n)) cat("GPH-GU 2182 helpers loaded.\n") else cat("GPH-GU 2182  |  Weekly Exercise ", n, "\n", sep = "")
-  cat("Edit exercise.qmd, then:  gph_check()  ->  gph_submit()\n")
+  if (in_class) {
+    cat("GPH-GU 2182  |  in-class exercises\n")
+    cat("This week's worksheet:  source(\"get_worksheet.R\"); get_worksheet(N)\n")
+    cat("Add both partners' names, then commit and push before class ends.\n")
+  } else if (!is.na(n)) {
+    cat("GPH-GU 2182  |  Weekly Exercise ", n, "\n", sep = "")
+    cat("Edit exercise.qmd, then:  gph_check()  ->  gph_submit()\n")
+  } else {
+    cat("GPH-GU 2182 helpers loaded.\n")
+    cat("Weekly exercise: gph_start(N).  In-class repository: gph_inclass()\n")
+  }
   cat("Stuck? gph_doctor()   Full loop? gph_help()\n\n")
   invisible(NULL)
 }
