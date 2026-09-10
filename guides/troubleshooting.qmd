@@ -14,6 +14,7 @@ distinctive phrase from the message you got.
 
 | The message you saw | Jump to |
 |---|---|
+| `could not find function "gph_..."` | [The course commands are not loaded](#not-loaded) |
 | `git: command not found` | [Git is not installed](#git-not-found) |
 | No Git tab in RStudio | [No Git tab](#no-git-tab) |
 | `Please tell me who you are` | [Git does not know your name](#who-are-you) |
@@ -29,6 +30,35 @@ distinctive phrase from the message you got.
 | `this exceeds GitHub's file size limit` | [File too large](#too-large) |
 | `You are in detached HEAD state` | [Detached HEAD](#detached-head) |
 | `Everything up-to-date` but GitHub looks empty | [Pushing the wrong branch](#wrong-branch) |
+
+---
+
+## The course commands are not loaded {#not-loaded}
+
+**You see:**
+
+```
+> gph_inclass()
+Error in gph_inclass() : could not find function "gph_inclass"
+```
+
+**What it means:** the course helper commands are not loaded in this R session.
+They are not part of R, so every new session starts without them. Restarting
+R, opening a different project, or reopening RStudio all give you a fresh
+session.
+
+**Fix:** run this, then try your command again.
+
+```r
+source("https://gph-2182.github.io/gph2182.R")
+```
+
+You will know it worked when `gph_start`, `gph_check` and the others appear
+under **Functions** in the Environment pane.
+
+**Permanent fix:** run `gph_autoload()` once. It saves a copy in your home
+folder and loads it at every startup, so you never type the `source()` line
+again. Undo it with `gph_autoload(remove = TRUE)`.
 
 ---
 

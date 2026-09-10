@@ -14,7 +14,7 @@
 ##     gph_help()         show the loop again
 ## ---------------------------------------------------------------------------
 
-gph_version <- "2026-09-10"
+gph_version <- "2026-09-10b"
 
 .gph_org       <- "gph-2182"
 .gph_classroom <- "gph-gu-2182-fall-2026"
@@ -392,6 +392,55 @@ gph_adopt <- function() {
   .gph_open(hit$path)
 }
 
+## -- gph_autoload -----------------------------------------------------------
+
+.gph_rc    <- function() file.path(path.expand("~"), ".Rprofile")
+.gph_cache <- function() file.path(path.expand("~"), ".gph2182-helpers.R")
+.gph_mark  <- c("# >>> GPH-GU 2182 helpers >>>", "# <<< GPH-GU 2182 helpers <<<")
+
+#' Load the course commands automatically in every R session on this computer.
+#'
+#' Without this you must run the source() line once in each new session. This
+#' saves a copy of the helpers in your home folder and loads it at startup, so
+#' it keeps working offline. Undo with gph_autoload(remove = TRUE).
+gph_autoload <- function(remove = FALSE) {
+  rc <- .gph_rc()
+  old <- if (file.exists(rc)) readLines(rc, warn = FALSE) else character()
+
+  i <- which(trimws(old) == .gph_mark[1])
+  j <- which(trimws(old) == .gph_mark[2])
+  if (length(i) && length(j) && j[1] >= i[1]) old <- old[-(i[1]:j[1])]
+
+  if (isTRUE(remove)) {
+    if (length(old)) writeLines(old, rc) else unlink(rc)
+    unlink(.gph_cache())
+    .gph_ok("Automatic loading removed.")
+    .gph_dot("You will need the source() line once per session again.")
+    return(invisible(TRUE))
+  }
+
+  src <- tryCatch(
+    suppressWarnings(readLines(paste0(.gph_site, "/gph2182.R"), warn = FALSE)),
+    error = function(e) NULL
+  )
+  if (is.null(src) || !length(src)) {
+    .gph_no("Could not fetch the helpers just now.")
+    .gph_dot("Check your internet connection and run gph_autoload() again.")
+    return(invisible(FALSE))
+  }
+  writeLines(src, .gph_cache())
+
+  writeLines(c(old, .gph_mark[1],
+               'if (interactive()) try(suppressWarnings(source("~/.gph2182-helpers.R")), silent = TRUE)',
+               .gph_mark[2]), rc)
+
+  .gph_ok("Done. The course commands will now load in every R session.")
+  .gph_dot("Restart R to see it work: Session > Restart R, or just reopen RStudio.")
+  .gph_dot("Run gph_autoload() again any time to pick up newer versions.")
+  .gph_dot("Undo with gph_autoload(remove = TRUE)")
+  invisible(TRUE)
+}
+
 ## -- gph_help ---------------------------------------------------------------
 
 #' Print the weekly loop.
@@ -418,6 +467,8 @@ THEN repeat until everything passes
 
 Pushing many times is normal and expected. Only your last push before the
 deadline is graded, so a failing check on an early try costs you nothing.
+
+Tired of typing the source() line every session?  gph_autoload()
 
 Stuck?  gph_doctor()
 Keep your projects somewhere else?  gph_where(\"path/to/your/folder\")
@@ -718,6 +769,11 @@ gph_doctor <- function() {
 
   login <- .gph_login()
   if (!is.null(login)) .gph_ok("GitHub token works, you are ", login) else .gph_no("no working GitHub token (run gph_setup())")
+
+  rc <- .gph_rc()
+  auto <- file.exists(rc) && any(trimws(readLines(rc, warn = FALSE)) == .gph_mark[1])
+  if (auto) .gph_ok("commands load automatically each session") else
+    .gph_dot("commands load only when you source() them (gph_autoload() fixes that)")
 
   .gph_rule("This project")
   .gph_dot("folder: ", getwd())

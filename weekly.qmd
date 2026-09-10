@@ -74,17 +74,35 @@ subtitle: "The same five steps, every week"
 That is the whole workflow. Everything below is detail.
 
 ::: {.callout-important appearance="simple"}
-## Load the commands first
+## Load the commands first, once per session
 
-Paste this once each time you open RStudio. It is one line, and it never
-changes:
+Paste this line **every time you open a project or restart R**:
 
 ```r
 source("https://gph-2182.github.io/gph2182.R")
 ```
 
-Inside an exercise project it loads by itself, so you will rarely need to type
-it after the first exercise.
+You will know it worked when `gph_start`, `gph_check` and the rest appear
+under **Functions** in the Environment pane, top right.
+
+If you forget, the first command you try fails like this:
+
+```
+> gph_inclass()
+Error in gph_inclass() : could not find function "gph_inclass"
+```
+
+That error always means the same thing: run the `source()` line, then try
+again. Nothing is broken.
+
+**To stop typing it altogether**, run this once:
+
+```r
+gph_autoload()
+```
+
+Then restart R (**Session > Restart R**) and the commands will be there in
+every session from now on, in every project, even offline.
 :::
 
 ## Once per computer: `gph_setup()`
@@ -151,6 +169,7 @@ In-class exercises are different from the weekly exercises. They all live in
 2. In the Console:
 
    ```r
+   source("https://gph-2182.github.io/gph2182.R")   # unless already loaded
    gph_inclass()
    ```
 
@@ -283,4 +302,5 @@ Each of these is explained in full in
 | `gph_doctor()` | Check everything and say what is wrong |
 | `gph_inclass()` | Download and open your in-class repository. Once per semester |
 | `gph_where()` | Show or change where new projects are downloaded |
+| `gph_autoload()` | Load these commands in every session, so you never source again |
 | `gph_help()` | Print the loop again |
