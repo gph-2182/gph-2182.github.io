@@ -5,6 +5,7 @@ project:
   resources:
     - "weeks/inclass/*.qmd"
     - "gph2182.R"
+    - "quiz-01-sample.pdf"
 
 website:
   site-url: "https://gph-2182.github.io/"
