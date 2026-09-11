@@ -8,6 +8,17 @@ toc: false
 **Wednesdays 2:00–4:40 PM** · 70 Washington Sq S (Bobst), Room LL138 · Sep 2 – Dec 9, 2026 (no class Oct 14)
 :::
 
+::: {.callout-important title="Announcement (Sep 11): excused absences and quiz make-ups"}
+All excused-absence requests now go through the [Excused Absence Request form](https://docs.google.com/forms/d/e/1FAIpQLSdNW-9SqsZRJjH5EytArCURu_N-HPPUT9TdsunAsJIKB_dG_w/viewform).
+
+- **Submit at least 60 minutes before class** (by 1:00 PM on Wednesdays). Later requests, or requests after class, are not excused unless it was a genuine emergency and you attach documentation.
+- **One absence per course needs no documentation.** Every further request must include a supporting document uploaded with the form (clinic note, conference acceptance, interview confirmation, etc.).
+- **You get an automatic email** with the outcome within a minute. If documentation needs review, a second email follows with the decision. Please use the form rather than emailing about absences.
+- **Quizzes cannot be made up.** With an excused absence, your lowest-quiz drop absorbs the first missed quiz; a second excused miss is pro-rated over the quizzes you took. A quiz missed without an excused absence counts as zero.
+
+Details are in the [syllabus](syllabus.qmd).
+:::
+
 Welcome! This course teaches R programming for the full data-analysis workflow:
 wrangling, visualization, simulation, and reproducible reporting with
 [Quarto](https://quarto.org), using public-health data throughout. You will
@@ -39,6 +50,7 @@ No prior programming or statistics experience is required.
 | Textbook | [R02Pro: R Programming, Zero to Pro](https://r02pro.github.io/) (free) |
 | Schedule | [Week-by-week schedule](schedule.qmd) |
 | Syllabus | [Full syllabus](syllabus.qmd) |
+| Absences | [Excused Absence Request form](https://docs.google.com/forms/d/e/1FAIpQLSdNW-9SqsZRJjH5EytArCURu_N-HPPUT9TdsunAsJIKB_dG_w/viewform) (60 min before class) |
 | AI policy | [The three zones](ai-policy.qmd) |
 | Weekly workflow | [Doing a weekly exercise](weekly.qmd) |
 | Setup help | [R, RStudio, Git, and GitHub guides](guides/index.qmd) |
