@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Syllabus – Statistical Programming in R</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-79b52eda205efbf958763b635a45decd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-fa73bcd5bc9612ee74d3fb1886efab1d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-79b52eda205efbf958763b635a45decd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Statistical Programming in R</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./syllabus.html" aria-current="page"> 
+<span class="menu-text">Syllabus</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./schedule.html"> 
+<span class="menu-text">Schedule</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./weekly.html"> 
+<span class="menu-text">Weekly Exercise</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./guides/index.html"> 
+<span class="menu-text">Guides</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./project.html"> 
+<span class="menu-text">Final Project</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./ai-policy.html"> 
+<span class="menu-text">AI Policy</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/yangfengstat"> <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://r02pro.github.io/"> 
+<span class="menu-text">R02Pro</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#course-information" id="toc-course-information" class="nav-link active" data-scroll-target="#course-information">Course Information</a></li>
+  <li><a href="#course-description" id="toc-course-description" class="nav-link" data-scroll-target="#course-description">Course Description</a></li>
+  <li><a href="#course-overview" id="toc-course-overview" class="nav-link" data-scroll-target="#course-overview">Course Overview</a></li>
+  <li><a href="#course-format" id="toc-course-format" class="nav-link" data-scroll-target="#course-format">Course Format</a></li>
+  <li><a href="#learning-objectives-competencies" id="toc-learning-objectives-competencies" class="nav-link" data-scroll-target="#learning-objectives-competencies">Learning Objectives &amp; Competencies</a></li>
+  <li><a href="#pre-requisites" id="toc-pre-requisites" class="nav-link" data-scroll-target="#pre-requisites">Pre-Requisites</a></li>
+  <li><a href="#course-requirements-and-expectations" id="toc-course-requirements-and-expectations" class="nav-link" data-scroll-target="#course-requirements-and-expectations">Course Requirements and Expectations</a></li>
+  <li><a href="#grading-components" id="toc-grading-components" class="nav-link" data-scroll-target="#grading-components">Grading Components</a>
+  <ul class="collapse">
+  <li><a href="#grading-scale-graduate-courses" id="toc-grading-scale-graduate-courses" class="nav-link" data-scroll-target="#grading-scale-graduate-courses">Grading Scale (Graduate Courses)</a></li>
+  <li><a href="#extra-credit-textbook-proofreading-up-to-2" id="toc-extra-credit-textbook-proofreading-up-to-2" class="nav-link" data-scroll-target="#extra-credit-textbook-proofreading-up-to-2">Extra Credit: Textbook Proofreading (up to +2%)</a></li>
+  </ul></li>
+  <li><a href="#statement-on-the-use-of-ai-technology" id="toc-statement-on-the-use-of-ai-technology" class="nav-link" data-scroll-target="#statement-on-the-use-of-ai-technology">Statement on the Use of AI Technology</a></li>
+  <li><a href="#reading-reference-materials" id="toc-reading-reference-materials" class="nav-link" data-scroll-target="#reading-reference-materials">Reading &amp; Reference Materials</a></li>
+  <li><a href="#gph-community-statement" id="toc-gph-community-statement" class="nav-link" data-scroll-target="#gph-community-statement">GPH Community Statement</a></li>
+  <li><a href="#statement-of-academic-integrity" id="toc-statement-of-academic-integrity" class="nav-link" data-scroll-target="#statement-of-academic-integrity">Statement of Academic Integrity</a>
+  <ul class="collapse">
+  <li><a href="#students-with-disabilities" id="toc-students-with-disabilities" class="nav-link" data-scroll-target="#students-with-disabilities">Students with Disabilities</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Syllabus</h1>
+<p class="subtitle lead">GPH-GU 2182: Statistical Programming in R · Fall 2026</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="course-information" class="level2">
+<h2 class="anchored" data-anchor-id="course-information">Course Information</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Field</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Course</strong></td>
+<td>GPH-GU 2182: Statistical Programming in R (3 credits)</td>
+</tr>
+<tr class="even">
+<td><strong>Schedule</strong></td>
+<td>Wednesdays 2:00 PM – 4:40 PM</td>
+</tr>
+<tr class="odd">
+<td><strong>Location</strong></td>
+<td>70 Washington Sq S (Bobst Library), Room LL138</td>
+</tr>
+<tr class="even">
+<td><strong>Semester</strong></td>
+<td>Fall 2026</td>
+</tr>
+<tr class="odd">
+<td><strong>Instructor</strong></td>
+<td>Yang Feng, PhD (<code>yf31@nyu.edu</code>) · Office: 708 Broadway, Room 415</td>
+</tr>
+<tr class="even">
+<td><strong>Instructor Office Hours</strong></td>
+<td>Fridays 3:00 PM (Zoom link available on Brightspace) or by appointment</td>
+</tr>
+<tr class="odd">
+<td><strong>Course Assistant</strong></td>
+<td>Sabrina Wu (<code>jw6557@nyu.edu</code>)</td>
+</tr>
+<tr class="even">
+<td><strong>TA Office Hours</strong></td>
+<td>Wednesdays 10:00 AM (Zoom link available on Brightspace)</td>
+</tr>
+<tr class="odd">
+<td><strong>Course Website</strong></td>
+<td><a href="https://gph-2182.github.io/">https://gph-2182.github.io/</a></td>
+</tr>
+<tr class="even">
+<td><strong>Classroom 50</strong></td>
+<td><a href="https://classroom50.org/">https://classroom50.org/</a></td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="course-description" class="level2">
+<h2 class="anchored" data-anchor-id="course-description">Course Description</h2>
+<p>R is one of the most popular programming languages in statistics and data science. This course will introduce various R programming topics, including R objects, data visualization, data import &amp; export, data manipulation, creating functions and iterations for statistical simulations, and writing high-quality reports with R Markdown. The course will focus on public health datasets as illustrations to best meet the practical needs of GPH students but is also open to those of other backgrounds. By the end of the course, students will be able to comfortably program in R for effective data preprocessing, analysis and presentation. This course does not require prior experience in programming or statistics and serves as a foundation for other courses in biostatistics, epidemiology, and data science.</p>
+<hr>
+</section>
+<section id="course-overview" class="level2">
+<h2 class="anchored" data-anchor-id="course-overview">Course Overview</h2>
+<p>This course equips graduate students with foundational and modern computing skills for reproducible public health data science. Using a dual-track pedagogical approach, students learn fundamental computational primitives alongside modern, expressive tidyverse workflows. The curriculum covers Quarto reproducible publishing, vectors, matrices, lists, data frames, publication-quality graphics with <code>ggplot2</code>, robust data wrangling with <code>dplyr</code> and <code>tidyr</code>, string and factor manipulation, functional programming with <code>purrr</code>, and Monte Carlo simulation. Students will also master responsible, ethical AI-assisted programming to accelerate learning, debugging, and code documentation while building genuine human fluency.</p>
+<hr>
+</section>
+<section id="course-format" class="level2">
+<h2 class="anchored" data-anchor-id="course-format">Course Format</h2>
+<p>This is a 3-credit in-person course, including 14 in-person class sessions (14 × 160 minutes = 2,240 minutes) and 10 minutes of individual final project consultation, totaling 2,250 minutes of instructional time.</p>
+<hr>
+</section>
+<section id="learning-objectives-competencies" class="level2">
+<h2 class="anchored" data-anchor-id="learning-objectives-competencies">Learning Objectives &amp; Competencies</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Learning Objective</th>
+<th>Competency</th>
+<th>Course Component</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>1. Develop R and Quarto code for reproducible data analysis and publication.</strong></td>
+<td>Use statistical software proficiently for data management, manipulation, storage, resource sharing, and analysis. (BC-3)</td>
+<td>Lessons 1, 10, 12, 13; In-class 1, 10, 12, 13; Weekly Exercises 1, 9, 11, 12; Final Project</td>
+</tr>
+<tr class="even">
+<td><strong>2. Create and manipulate foundational R objects (vectors, matrices, lists, and data frames).</strong></td>
+<td>Use statistical software proficiently for data management, manipulation, storage, resource sharing, and analysis. (BC-3)</td>
+<td>Lessons 2, 3, 7; In-class 2, 3, 7; Weekly Exercises 2, 3, 7; Quizzes 1, 3; Final Project</td>
+</tr>
+<tr class="odd">
+<td><strong>3. Apply R for publication-quality data visualization with ggplot2.</strong></td>
+<td>Use statistical software proficiently for data management, manipulation, storage, resource sharing, and analysis. (BC-3)<br>Communicate study results clearly and accurately in written reports and with effective data visualization methods. (BC-4)</td>
+<td>Lessons 4, 12; In-class 4, 12; Weekly Exercises 4, 11; Quiz 2; Final Project</td>
+</tr>
+<tr class="even">
+<td><strong>4. Apply R for real-world data import, type cleaning, validation, and export.</strong></td>
+<td>Use statistical software proficiently for data management, manipulation, storage, resource sharing, and analysis. (BC-3)</td>
+<td>Lessons 3, 6; In-class 3, 6; Weekly Exercises 3, 6; Quizzes 1, 3; Final Project</td>
+</tr>
+<tr class="odd">
+<td><strong>5. Apply R for advanced data wrangling, relational joins, and tidy reshaping.</strong></td>
+<td>Translate hypotheses and associated outcome measures into appropriate study designs. (BC-1)<br>Use statistical software proficiently for data management, manipulation, storage, resource sharing, and analysis. (BC-3)</td>
+<td>Lessons 5, 6, 7; In-class 5, 6, 7; Weekly Exercises 5, 6, 7; Quizzes 2, 3; Final Project</td>
+</tr>
+<tr class="even">
+<td><strong>6. Implement custom functions, iteration, and Monte Carlo statistical simulations.</strong></td>
+<td>Use statistical software proficiently for data management, manipulation, storage, resource sharing, and analysis. (BC-3)</td>
+<td>Lessons 8, 9, 10; In-class 8, 9, 10; Weekly Exercises 8, 9, 10; Quizzes 4, 5; Final Project</td>
+</tr>
+<tr class="odd">
+<td><strong>7. Synthesize findings into a reproducible statistical report with Quarto and responsible AI auditing.</strong></td>
+<td>Use statistical software proficiently for data management, manipulation, storage, resource sharing, and analysis. (BC-3)<br>Communicate study results clearly and accurately in written reports and with effective data visualization methods. (BC-4)</td>
+<td>Lessons 1, 12, 13, 14; In-class 1, 12, 13; Weekly Exercises 1, 11, 12; Final Project</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="pre-requisites" class="level2">
+<h2 class="anchored" data-anchor-id="pre-requisites">Pre-Requisites</h2>
+<p><strong>No Pre-requisites.</strong></p>
+<hr>
+</section>
+<section id="course-requirements-and-expectations" class="level2">
+<h2 class="anchored" data-anchor-id="course-requirements-and-expectations">Course Requirements and Expectations</h2>
+<ul>
+<li><strong>Attendance (5%):</strong> Checked every session. Up to 2 excused absences per semester carry no penalty. To be excused, submit the <a href="https://docs.google.com/forms/d/e/1FAIpQLSdNW-9SqsZRJjH5EytArCURu_N-HPPUT9TdsunAsJIKB_dG_w/viewform">Excused Absence Request form</a> at least 60 minutes before the class start time; you will receive an automatic email with the outcome. Your first excused absence in a course needs no documentation; every further request must include documentation uploaded with the form. Requests inside the 60-minute window or after class are not excused unless it was a genuine emergency and documentation is uploaded with the form; the instructor reviews those case by case.</li>
+<li><strong>In-Class Paired Exercises (10%):</strong> Active paired programming in every session. Graded for completeness and effort (not strict correctness). Lowest 2 scores dropped.</li>
+<li><strong>Weekly Exercises (35%):</strong> 12 autograded assignments submitted via GitHub. Immediate automated feedback upon push. Lowest 2 scores dropped. Late: 20% within 24h, 40% within 48h, zero after 48h.</li>
+<li><strong>In-Class Quizzes (20%):</strong> Five 20-minute paper-based, closed-book quizzes (Weeks 3, 5, 7, 9, 11) during the last 30 minutes of class. The lowest quiz score is dropped (best 4 of 5 count, 5% each). Quizzes cannot be made up. A quiz missed with an excused absence (absence form submitted at least 60 minutes before class) uses the drop; if a second quiz is missed with an excused absence, the quiz component is pro-rated over the quizzes you took. An unexcused missed quiz scores zero.</li>
+<li><strong>Final Individual Project (30%):</strong> Comprehensive reproducible public health analysis with Quarto report, 5-minute video walkthrough, and AI-use appendix. Released Week 10; due Dec 16 at 11:59 PM.</li>
+</ul>
+<hr>
+</section>
+<section id="grading-components" class="level2">
+<h2 class="anchored" data-anchor-id="grading-components">Grading Components</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Component</th>
+<th>Weight</th>
+<th>Policy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Attendance</td>
+<td>5%</td>
+<td>Checked every session; up to 2 excused absences (form due 60 min before class)</td>
+</tr>
+<tr class="even">
+<td>In-Class Exercises (14)</td>
+<td>10%</td>
+<td>Paired programming; lowest 2 dropped</td>
+</tr>
+<tr class="odd">
+<td>Weekly Autograded Exercises (12)</td>
+<td>35%</td>
+<td>Distributed via GitHub; lowest 2 dropped</td>
+</tr>
+<tr class="even">
+<td>In-Class Quizzes (5)</td>
+<td>20%</td>
+<td>Paper-based (Weeks 3, 5, 7, 9, 11); lowest 1 dropped; no make-ups, excused misses pro-rated</td>
+</tr>
+<tr class="odd">
+<td>Final Individual Project</td>
+<td>30%</td>
+<td>Quarto report + Video Walkthrough + AI Appendix</td>
+</tr>
+<tr class="even">
+<td><strong>Total</strong></td>
+<td><strong>100%</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<section id="grading-scale-graduate-courses" class="level3">
+<h3 class="anchored" data-anchor-id="grading-scale-graduate-courses">Grading Scale (Graduate Courses)</h3>
+<ul>
+<li><strong>A:</strong> 94–100 · <strong>A−:</strong> 90–93</li>
+<li><strong>B+:</strong> 87–89 · <strong>B:</strong> 83–86 · <strong>B−:</strong> 80–82</li>
+<li><strong>C+:</strong> 77–79 · <strong>C:</strong> 73–76 · <strong>C−:</strong> 70–72</li>
+<li><strong>F:</strong> Below 70</li>
+</ul>
+</section>
+<section id="extra-credit-textbook-proofreading-up-to-2" class="level3">
+<h3 class="anchored" data-anchor-id="extra-credit-textbook-proofreading-up-to-2">Extra Credit: Textbook Proofreading (up to +2%)</h3>
+<p>Our textbook, <a href="https://r02pro.github.io/"><em>R Programming: Zero to Pro</em></a>, is open source, and you can help improve it while you study. You may earn extra credit added directly to your final course grade:</p>
+<ul>
+<li><strong>+0.5%</strong> for each pull request to <a href="https://github.com/r02pro/r02pro_source">r02pro/r02pro_source</a> that gets merged (typos, grammar, code fixes; use the edit button on any book page).</li>
+<li><strong>+0.25%</strong> for each issue the instructor labels <code>accepted</code> (confusing explanations, wrong output, suggestions you cannot fix yourself).</li>
+<li>Capped at <strong>+2%</strong> total.</li>
+</ul>
+<p>Rules: contributions count from Sep 2 through Dec 16, 2026 (11:59 PM ET); submit under the GitHub account you use for this course; search existing pull requests and issues first, since the first report wins and duplicates earn no credit; each pull request should cover one section; you must personally verify every problem you report (see the course AI policy). Read the <a href="https://github.com/r02pro/r02pro_source/blob/main/CONTRIBUTING.md">contributing guide</a> before your first submission. As a bonus, every contributor is permanently named in the book’s acknowledgments.</p>
+<hr>
+</section>
+</section>
+<section id="statement-on-the-use-of-ai-technology" class="level2">
+<h2 class="anchored" data-anchor-id="statement-on-the-use-of-ai-technology">Statement on the Use of AI Technology</h2>
+<p>This course uses a <strong>Three-Zone AI Policy</strong>: - 🟢 <strong>Green Zone (Permitted with Citation):</strong> Weekly exercises, in-class practice, and final project development. You may consult LLMs (ChatGPT, Claude, GitHub Copilot) for code explanations, syntax queries, and debugging hints. All AI assistance must be acknowledged in an AI-Use Appendix. - 🟡 <strong>Yellow Zone (Guided / Supervised):</strong> In-class AI auditing activities where we evaluate AI-generated code quality and hallucinated arguments. - 🔴 <strong>Red Zone (Strictly Prohibited):</strong> In-class paper quizzes, uncredited code submission, or presenting AI-generated work as your own independent reasoning.</p>
+<p>See the dedicated <a href="./ai-policy.html">AI Policy Page</a> for full guidelines and citation templates.</p>
+<hr>
+</section>
+<section id="reading-reference-materials" class="level2">
+<h2 class="anchored" data-anchor-id="reading-reference-materials">Reading &amp; Reference Materials</h2>
+<ul>
+<li><strong>Primary Textbook:</strong> Feng, Y. (2026). <em>R Programming: Zero to Pro (R02Pro)</em>. Available online: <a href="https://r02pro.github.io/">https://r02pro.github.io/</a></li>
+<li><strong>Supplementary Reference:</strong> Wickham, H., Çetinkaya-Rundel, M., &amp; Grolemund, G. (2023). <em>R for Data Science (2nd ed.)</em>. O’Reilly. Available online: <a href="https://r4ds.hadley.nz/">https://r4ds.hadley.nz/</a></li>
+</ul>
+<hr>
+</section>
+<section id="gph-community-statement" class="level2">
+<h2 class="anchored" data-anchor-id="gph-community-statement">GPH Community Statement</h2>
+<p>The NYU School of Global Public Health (GPH) is committed to maintaining and celebrating a diverse, just, and inclusive environment for all of our students, faculty, and staff around the world. GPH promotes a welcoming learning environment that embraces cultural humility, and respects and values differences. These differences can include race, ethnicity, religion, gender identity, sexual orientation, physical, mental and emotional abilities, and socioeconomic status. In this course, we encourage all students to share and discuss different perspectives, beliefs, and experiences while treating all with dignity and respect.</p>
+<hr>
+</section>
+<section id="statement-of-academic-integrity" class="level2">
+<h2 class="anchored" data-anchor-id="statement-of-academic-integrity">Statement of Academic Integrity</h2>
+<p>The NYU School of Global Public Health values both open inquiry and academic integrity. Students in the program are expected to follow standards of excellence set forth by New York University. Such standards include respect, honesty and responsibility. The GPH does not tolerate violations to academic integrity including plagiarism, cheating, unapproved duplicate submissions, or presenting work generated by commercial firms or AI tools as your own independent effort without explicit authorization and citation.</p>
+<section id="students-with-disabilities" class="level3">
+<h3 class="anchored" data-anchor-id="students-with-disabilities">Students with Disabilities</h3>
+<p>Students with disabilities should contact the Moses Center for Students with Disabilities regarding the resources available to them and to determine what classroom accommodations should be made available. More information can be found at <a href="https://www.nyu.edu/life/safety-health-wellness/students-with-disabilities.html">Moses Center for Student Accessibility</a>. Please provide your accommodation letter as early in the semester as possible.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/gph-2182\.github\.io\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>GPH-GU 2182 · Fall 2026 · Yang Feng, NYU School of Global Public Health</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Built with <a href="https://quarto.org">Quarto</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

@@ -1,0 +1,1662 @@
+[
+  {
+    "objectID": "weeks/week-05.html",
+    "href": "weeks/week-05.html",
+    "title": "Week 5: Data Wrangling with dplyr & Pipes",
+    "section": "",
+    "text": "Note🔒 Not yet released\n\n\n\nMaterials for this week (slides, in-class exercise, and weekly exercise) unlock automatically on Sunday, Sep 27, 2026 at 8:00 AM ET.",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 5: Data Wrangling with dplyr & Pipes"
+    ]
+  },
+  {
+    "objectID": "weeks/week-05.html#before-class",
+    "href": "weeks/week-05.html#before-class",
+    "title": "Week 5: Data Wrangling with dplyr & Pipes",
+    "section": "Before class",
+    "text": "Before class\n\nRead: R02Pro Ch 8.1–8.4, 8.9",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 5: Data Wrangling with dplyr & Pipes"
+    ]
+  },
+  {
+    "objectID": "weeks/week-02.html",
+    "href": "weeks/week-02.html",
+    "title": "Week 2: Vectors & Subsetting",
+    "section": "",
+    "text": "Read: R02Pro Ch 2–3\nReview the newly released weekly exercise and prepare questions.\nComplete Weekly Exercise 1 (due Thursday Sep 10 at 11:59 PM, extended).\n🔍 Proofreading corner: spot a typo or unclear passage in Ch 2–3? Submit a PR or issue for extra credit (see syllabus).",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 2: Vectors & Subsetting"
+    ]
+  },
+  {
+    "objectID": "weeks/week-02.html#before-class",
+    "href": "weeks/week-02.html#before-class",
+    "title": "Week 2: Vectors & Subsetting",
+    "section": "",
+    "text": "Read: R02Pro Ch 2–3\nReview the newly released weekly exercise and prepare questions.\nComplete Weekly Exercise 1 (due Thursday Sep 10 at 11:59 PM, extended).\n🔍 Proofreading corner: spot a typo or unclear passage in Ch 2–3? Submit a PR or issue for extra credit (see syllabus).",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 2: Vectors & Subsetting"
+    ]
+  },
+  {
+    "objectID": "weeks/week-02.html#topics",
+    "href": "weeks/week-02.html#topics",
+    "title": "Week 2: Vectors & Subsetting",
+    "section": "Topics",
+    "text": "Topics\n\nObject assignment and naming\nNumeric, character, and logical vectors\nPatterned vectors; sorting; summary statistics\nComparisons, subsetting, logical and set operations",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 2: Vectors & Subsetting"
+    ]
+  },
+  {
+    "objectID": "weeks/week-02.html#materials",
+    "href": "weeks/week-02.html#materials",
+    "title": "Week 2: Vectors & Subsetting",
+    "section": "Materials",
+    "text": "Materials\n\n📊 Lecture Slides: Interactive Presentation (HTML)\n📝 In-Class Exercise: View Worksheet (HTML) · Download Starter Code (.qmd) · or run get_worksheet(2) in your in-class repo\n💻 Weekly Exercise 2: Accept Assignment on Classroom 50 · How to do it, start to finish",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 2: Vectors & Subsetting"
+    ]
+  },
+  {
+    "objectID": "weeks/week-02.html#due",
+    "href": "weeks/week-02.html#due",
+    "title": "Week 2: Vectors & Subsetting",
+    "section": "Due",
+    "text": "Due\n\nWeekly Exercise 1 (due Thursday Sep 10 at 11:59 PM, extended)\nIn-class exercise 2 (pushed to GitHub by end of class)",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 2: Vectors & Subsetting"
+    ]
+  },
+  {
+    "objectID": "weeks/slides/week-02-slides.html#welcome-check-in",
+    "href": "weeks/slides/week-02-slides.html#welcome-check-in",
+    "title": "Week 2: Vectors & Subsetting",
+    "section": "Welcome & Check-In",
+    "text": "Welcome & Check-In\n\n\n📋 Walk-In Check-In Protocol\n\nFind any open desk and unpack your laptop.\nScan the QR code or enter today’s 4-digit PIN on screen to check in.\nAt 2:03 PM, random pairs will be generated on the screen.\nMove to your assigned station to sit with your partner before lecture starts!\n\n\n\n\n\n\n\n\n👥 Today’s Roles\n\n\n\n🚀 Driver (Student A): Types for Cycles 1 & 2\n🧭 Navigator (Student B): Types for Cycles 3 & 4\nSwap keyboard & roles at mid-class break!"
+  },
+  {
+    "objectID": "weeks/slides/week-02-slides.html#todays-roadmap-the-backbone-of-r",
+    "href": "weeks/slides/week-02-slides.html#todays-roadmap-the-backbone-of-r",
+    "title": "Week 2: Vectors & Subsetting",
+    "section": "Today’s Roadmap: The Backbone of R",
+    "text": "Today’s Roadmap: The Backbone of R\nVectors are the fundamental building block of all data structures in R (matrices, data frames, lists).\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCycle 1Vector Types &Coercion Rules\n\n\n\n\n\n\n\nCycle 2Pattern Creation(seq, rep, %%)\n\n\n\n\n\n\n\nCycle 3Indexing, Filtering& Mutation\n\n\n\n\n\n\n\nCycle 4Sorting, Ranking &AI Corner\n\n\n\n\n\n\n\n\n\n\n\nTextbook Reading: R02Pro Chapters 2–3 (r02pro.github.io)\nHomework 1: Due tonight at 11:59 PM on GitHub!\nHomework 2: Released before class; due next Wednesday at 11:59 PM."
+  },
+  {
+    "objectID": "weeks/slides/week-02-slides.html#the-four-atomic-vector-types",
+    "href": "weeks/slides/week-02-slides.html#the-four-atomic-vector-types",
+    "title": "Week 2: Vectors & Subsetting",
+    "section": "The Four Atomic Vector Types",
+    "text": "The Four Atomic Vector Types\nIn R, every element in an atomic vector must have the same type:\n\n\n1. Numeric (Double)\nDecimal numbers (default in R):\nweights &lt;- c(68.5, 72.0, 81.3)\ntypeof(weights) # \"double\"\n2. Integer\nExplicit whole numbers with L:\ncounts &lt;- c(1L, 5L, 12L)\ntypeof(counts)  # \"integer\"\n\n3. Character (Strings)\nText enclosed in quotes:\ndrugs &lt;- c(\"aspirin\", \"statin\", \"placebo\")\ntypeof(drugs)   # \"character\"\n4. Logical (Booleans)\nTRUE or FALSE (all caps):\nadherent &lt;- c(TRUE, FALSE, TRUE)\ntypeof(adherent)# \"logical\""
+  },
+  {
+    "objectID": "weeks/slides/week-02-slides.html#the-type-hierarchy-implicit-coercion",
+    "href": "weeks/slides/week-02-slides.html#the-type-hierarchy-implicit-coercion",
+    "title": "Week 2: Vectors & Subsetting",
+    "section": "The Type Hierarchy & Implicit Coercion",
+    "text": "The Type Hierarchy & Implicit Coercion\nWhat happens when you mix different types in c(...)?\nR silently converts everything to the least restrictive type:\n\\[\\text{logical} \\longrightarrow \\text{integer} \\longrightarrow \\text{double} \\longrightarrow \\text{character}\\]\n# Logical to numeric (TRUE becomes 1, FALSE becomes 0)\nsum(c(TRUE, FALSE, TRUE, TRUE))  # Count how many TRUEs: 3\nmean(c(TRUE, FALSE, TRUE, FALSE))# Proportion of TRUEs: 0.5\n\n# Numeric + Character becomes Character\nc(10, 25, \"missing\")             # c(\"10\", \"25\", \"missing\")\n\n\n\n\n\n\nPro-Tip for Health Data\n\n\nmean(bp &gt; 140, na.rm = TRUE) directly calculates the prevalence of hypertension by coercing logicals to 1s and 0s!"
+  },
+  {
+    "objectID": "weeks/slides/week-02-slides.html#summary-statistics-on-vectors",
+    "href": "weeks/slides/week-02-slides.html#summary-statistics-on-vectors",
+    "title": "Week 2: Vectors & Subsetting",
+    "section": "Summary Statistics on Vectors",
+    "text": "Summary Statistics on Vectors\nR has built-in vector aggregators:\nchol &lt;- c(185, 220, 240, 195, 210, NA)\n\nlength(chol)              # Total elements including NA (6)\nsum(is.na(chol))          # Count missing values (1)\nmean(chol, na.rm = TRUE)  # Arithmetic mean (212)\nsd(chol, na.rm = TRUE)    # Standard deviation (20.8)\nsummary(chol)             # 5-number summary + Mean + NAs"
+  },
+  {
+    "objectID": "weeks/slides/week-02-slides.html#in-class-exercise-2a-12-min",
+    "href": "weeks/slides/week-02-slides.html#in-class-exercise-2a-12-min",
+    "title": "Week 2: Vectors & Subsetting",
+    "section": "💻 In-Class Exercise 2A (12 min)",
+    "text": "💻 In-Class Exercise 2A (12 min)\n\n\n\n\n\n\nPaired Hands-on Exercise\n\n\n\nOpen RStudio and your week-02-inclass.qmd worksheet.\nPredict the typeof() and value of:\n\nc(4, 7, FALSE)\nc(3L, 5.5, \"control\")\nc(TRUE, FALSE) + 5\n\nA clinical trial enrolled 8 patients with viral loads: 1200, 450, 0, 8900, 320, 0, 1500, 60. Calculate the proportion of patients with undetectable viral load (viral_load == 0) using mean()."
+  },
+  {
+    "objectID": "weeks/slides/week-02-slides.html#sequences-with-and-seq",
+    "href": "weeks/slides/week-02-slides.html#sequences-with-and-seq",
+    "title": "Week 2: Vectors & Subsetting",
+    "section": "Sequences with : and seq()",
+    "text": "Sequences with : and seq()\nInstead of typing numbers manually, generate sequences automatically:\n\n\nThe Colon Operator :\nConsecutive integer sequences:\n1:10\n20:15    # Counts backward!\n-3:3\n\nThe seq() Function\nFlexible step sizes & lengths:\n# By step size\nseq(from = 0, to = 100, by = 20)\n# Output: 0 20 40 60 80 100\n\n# By total length\nseq(from = 0, to = 1, length.out = 5)\n# Output: 0.00 0.25 0.50 0.75 1.00"
+  },
+  {
+    "objectID": "weeks/slides/week-02-slides.html#repetition-with-rep",
+    "href": "weeks/slides/week-02-slides.html#repetition-with-rep",
+    "title": "Week 2: Vectors & Subsetting",
+    "section": "Repetition with rep()",
+    "text": "Repetition with rep()\nThe rep() function replicates values using times or each:\n\n\ntimes (Pattern repetition)\nRepeats the whole vector:\nrep(c(\"A\", \"B\"), times = 3)\n# \"A\" \"B\" \"A\" \"B\" \"A\" \"B\"\n\n# Unequal repetitions per element:\nrep(c(\"Control\", \"Treated\"), times = c(4, 2))\n# \"Control\" \"Control\" \"Control\" \"Control\" \"Treated\" \"Treated\"\n\neach (Element repetition)\nRepeats each item before moving to next:\nrep(c(\"A\", \"B\"), each = 3)\n# \"A\" \"A\" \"A\" \"B\" \"B\" \"B\"\n\n# Combining both:\nrep(c(\"Dose1\", \"Dose2\"), each = 2, times = 2)\n# \"Dose1\" \"Dose1\" \"Dose2\" \"Dose2\" \"Dose1\" \"Dose1\" \"Dose2\" \"Dose2\""
+  },
+  {
+    "objectID": "weeks/slides/week-02-slides.html#modulo-arithmetic",
+    "href": "weeks/slides/week-02-slides.html#modulo-arithmetic",
+    "title": "Week 2: Vectors & Subsetting",
+    "section": "Modulo Arithmetic %%",
+    "text": "Modulo Arithmetic %%\nThe modulo operator %% calculates the remainder of division:\n14 %% 3   # 2  (14 = 4 * 3 + 2)\n10 %% 2   # 0  (10 is even)\n\n\n\n\n\n\nCommon Applications in Data Science\n\n\n\nEven numbers: x %% 2 == 0\nDivisible by 5: x %% 5 == 0\nAssigning participants to \\(K\\) rotating study groups: (1:N) %% K + 1"
+  },
+  {
+    "objectID": "weeks/slides/week-02-slides.html#in-class-exercise-2b-12-min",
+    "href": "weeks/slides/week-02-slides.html#in-class-exercise-2b-12-min",
+    "title": "Week 2: Vectors & Subsetting",
+    "section": "💻 In-Class Exercise 2B (12 min)",
+    "text": "💻 In-Class Exercise 2B (12 min)\n\n\n\n\n\n\nPaired Hands-on Exercise\n\n\n\nCreate a sequence of drug dosing times from hour 0 to hour 72 spaced every 8 hours using seq().\nGenerate study cohort labels for 12 participants: 4 “Control”, 4 “Low-Dose”, and 4 “High-Dose” using rep().\nGiven numbers &lt;- 1:50, extract all numbers that are multiples of 7 using %%."
+  },
+  {
+    "objectID": "weeks/slides/week-02-slides.html#the-three-subsetting-methods",
+    "href": "weeks/slides/week-02-slides.html#the-three-subsetting-methods",
+    "title": "Week 2: Vectors & Subsetting",
+    "section": "The Three Subsetting Methods",
+    "text": "The Three Subsetting Methods\nWe extract elements using square brackets x[...]:\nages &lt;- c(23, 45, 19, 31, 56, 42)\n\n\n1. Positive Indices\nExtract by position (1-indexed):\nages[1]        # 23\nages[c(1, 4)]  # 23 31\nages[2:4]      # 45 19 31\n\n2. Negative Indices\nExclude specific positions:\nages[-1]       # All except 1st\nages[-c(2, 5)] # Drop 2nd & 5th\n# ages[-2:4]   # ERROR! Use -(2:4)\n\n3. Logical Subsetting\nExtract where TRUE:\nages[ages &gt; 40]\n# 45 56 42\n\nages[ages &gt;= 30 & ages &lt;= 50]\n# 45 31 42"
+  },
+  {
+    "objectID": "weeks/slides/week-02-slides.html#logical-operators-for-filtering",
+    "href": "weeks/slides/week-02-slides.html#logical-operators-for-filtering",
+    "title": "Week 2: Vectors & Subsetting",
+    "section": "Logical Operators for Filtering",
+    "text": "Logical Operators for Filtering\nCombine conditions using element-wise logical operators:\n\n\n\n\n\n\n\n\nOperator\nMeaning\nExample\n\n\n\n\n&\nElement-wise AND (both true)\n(bmi &gt; 25) & (age &gt; 50)\n\n\n\\|\nElement-wise OR (either true)\n(status == \"Severe\") \\| (fever == TRUE)\n\n\n!\nLogical NOT (inversion)\n!(city %in% c(\"NY\", \"CA\"))\n\n\n%in%\nValue matching (set membership)\nid %in% confirmed_cases\n\n\n\nsbp &lt;- c(118, 142, 135, 160, 122)\nstage2_htn &lt;- sbp &gt;= 140\nsbp[stage2_htn]   # 142 160"
+  },
+  {
+    "objectID": "weeks/slides/week-02-slides.html#modifying-vectors-in-place-mutation",
+    "href": "weeks/slides/week-02-slides.html#modifying-vectors-in-place-mutation",
+    "title": "Week 2: Vectors & Subsetting",
+    "section": "Modifying Vectors in Place (Mutation)",
+    "text": "Modifying Vectors in Place (Mutation)\nUse subsetting on the left side of &lt;- to update specific elements:\nscores &lt;- c(88, -99, 95, -99, 72)\n\n# Replace survey code -99 with NA:\nscores[scores == -99] &lt;- NA\nscores\n# 88 NA 95 NA 72\n\n# Cap values at 90 (winsorizing):\nscores[scores &gt; 90 & !is.na(scores)] &lt;- 90\nscores\n# 88 NA 90 NA 72"
+  },
+  {
+    "objectID": "weeks/slides/week-02-slides.html#in-class-exercise-2c-15-min",
+    "href": "weeks/slides/week-02-slides.html#in-class-exercise-2c-15-min",
+    "title": "Week 2: Vectors & Subsetting",
+    "section": "💻 In-Class Exercise 2C (15 min)",
+    "text": "💻 In-Class Exercise 2C (15 min)\n\n\n\n\n\n\nPaired Hands-on Exercise\n\n\nGiven the patient glucose vector:\nglucose &lt;- c(95, 142, 180, 88, 210, 115, -1, 104)\n\nExtract the glucose readings that are in the pre-diabetes range (\\(100 \\le \\text{glucose} \\le 125\\)).\nPatient 7 was miscoded as -1. Replace all negative values with NA.\nExtract all valid readings (ignoring NA) that indicate diabetes (\\(\\text{glucose} \\ge 126\\))."
+  },
+  {
+    "objectID": "weeks/slides/week-02-slides.html#sorting-ranking-and-ordering",
+    "href": "weeks/slides/week-02-slides.html#sorting-ranking-and-ordering",
+    "title": "Week 2: Vectors & Subsetting",
+    "section": "Sorting, Ranking, and Ordering",
+    "text": "Sorting, Ranking, and Ordering\nUnderstanding the difference between sort(), rank(), and order():\nvals &lt;- c(30, 10, 50, 20)\n\n\nsort(x)\nReturns sorted values:\nsort(vals)\n# 10 20 30 50\n\nsort(vals, decreasing = TRUE)\n# 50 30 20 10\n\nrank(x)\nReturns rank position of each element:\nrank(vals)\n# 3 1 4 2\n# (30 is 3rd, 10 is 1st, etc.)\n\norder(x)\nReturns indices that would sort x:\norder(vals)\n# 2 4 1 3\nvals[order(vals)] # sorted!"
+  },
+  {
+    "objectID": "weeks/slides/week-02-slides.html#handling-ties-in-rank",
+    "href": "weeks/slides/week-02-slides.html#handling-ties-in-rank",
+    "title": "Week 2: Vectors & Subsetting",
+    "section": "Handling Ties in rank()",
+    "text": "Handling Ties in rank()\nWhen numbers repeat, how should ranks be assigned?\nscores &lt;- c(80, 95, 80, 70)\n\nrank(scores)                        # Default: average ranks (2.5 4.0 2.5 1.0)\nrank(scores, ties.method = \"first\") # By appearance: (2 4 3 1)\nrank(scores, ties.method = \"min\")   # Sports ranking: (2 4 2 1)\n\n\n\n\n\n\nTip\n\n\nties.method = \"first\" is essential for deterministic top-\\(K\\) rankings in data pipelines!"
+  },
+  {
+    "objectID": "weeks/slides/week-02-slides.html#ai-corner-beware-vector-recycling",
+    "href": "weeks/slides/week-02-slides.html#ai-corner-beware-vector-recycling",
+    "title": "Week 2: Vectors & Subsetting",
+    "section": "AI Corner: Beware Vector Recycling!",
+    "text": "AI Corner: Beware Vector Recycling!\nWhen R operates on vectors of different lengths, it silently recycles the shorter one:\n\n\nWhat R Does:\nx &lt;- c(10, 20, 30, 40)\ny &lt;- c(1, 2)\nx + y\n# Computes: 10+1, 20+2, 30+1, 40+2\n# Output: 11 22 31 42\n\n⚠️ The Danger with AI:\n\nLLMs often generate code that accidentally recycles vectors when filtering or standardizing.\nAlways check length(x) == length(y) before element-wise operations!"
+  },
+  {
+    "objectID": "weeks/slides/week-02-slides.html#summary-week-2-checklist",
+    "href": "weeks/slides/week-02-slides.html#summary-week-2-checklist",
+    "title": "Week 2: Vectors & Subsetting",
+    "section": "Summary & Week 2 Checklist",
+    "text": "Summary & Week 2 Checklist\n\nSubmit Homework 1: Due tonight at 11:59 PM on GitHub.\nWeekly Exercise 2: Released on GitHub. Due Wednesday Sep 16 at 11:59 PM.\nFinish & Push In-Class 2: Push your rendered week-02-inclass.html for participation credit.\nUpcoming in Week 3: Matrices, Lists, Data Frames + In-Class Quiz 1 (20 min, Weeks 1–2).\n\n🔗 Quick Links:\n\nCourse Website: gph-2182.github.io\nTextbook Chapters 2–3: r02pro.github.io"
+  },
+  {
+    "objectID": "weeks/week-07.html",
+    "href": "weeks/week-07.html",
+    "title": "Week 7: Strings, Factors & Dates",
+    "section": "",
+    "text": "Note🔒 Not yet released\n\n\n\nMaterials for this week (slides, in-class exercise, and weekly exercise) unlock automatically on Sunday, Oct 18, 2026 at 8:00 AM ET.",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 7: Strings, Factors & Dates"
+    ]
+  },
+  {
+    "objectID": "weeks/week-07.html#before-class",
+    "href": "weeks/week-07.html#before-class",
+    "title": "Week 7: Strings, Factors & Dates",
+    "section": "Before class",
+    "text": "Before class\n\nRead: R02Pro Ch 10, Ch 3.6, Ch 3.11",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 7: Strings, Factors & Dates"
+    ]
+  },
+  {
+    "objectID": "weeks/inclass/week-02-inclass.html",
+    "href": "weeks/inclass/week-02-inclass.html",
+    "title": "Week 2 In-Class Exercise: Vectors & Subsetting",
+    "section": "",
+    "text": "NoteInstructions\n\n\n\nWork in pairs during class.\n\n📥 Download week-02-inclass.qmd to open and edit in RStudio (or use the &lt;/&gt; Source Code button at the top right).\nRender this Quarto document to HTML and push it to your GitHub repository by the end of class for participation credit."
+  },
+  {
+    "objectID": "weeks/inclass/week-02-inclass.html#type-predictions-and-verification",
+    "href": "weeks/inclass/week-02-inclass.html#type-predictions-and-verification",
+    "title": "Week 2 In-Class Exercise: Vectors & Subsetting",
+    "section": "1.1 Type Predictions and Verification",
+    "text": "1.1 Type Predictions and Verification\nIn the code chunk below, write R code to check the typeof() of each of the following expressions:\n\nvec_a &lt;- c(4, 7, FALSE)\nvec_b &lt;- c(3L, 5.5, \"control\")\nvec_c &lt;- c(TRUE, FALSE) + 5\n\n\n# Create the vectors and check their types:"
+  },
+  {
+    "objectID": "weeks/inclass/week-02-inclass.html#public-health-prevalence-calculation",
+    "href": "weeks/inclass/week-02-inclass.html#public-health-prevalence-calculation",
+    "title": "Week 2 In-Class Exercise: Vectors & Subsetting",
+    "section": "1.2 Public Health Prevalence Calculation",
+    "text": "1.2 Public Health Prevalence Calculation\nA study recorded the HIV viral load copies/mL for 8 participants: 1200, 450, 0, 8900, 320, 0, 1500, 60.\n\nCreate a numeric vector named viral_load with these measurements.\nUse a logical comparison and the mean() function to calculate the proportion of patients with undetectable viral load (\\text{viral load} = 0).\n\n\n# Calculate undetectable proportion:"
+  },
+  {
+    "objectID": "weeks/inclass/week-02-inclass.html#dosage-schedules-with-seq",
+    "href": "weeks/inclass/week-02-inclass.html#dosage-schedules-with-seq",
+    "title": "Week 2 In-Class Exercise: Vectors & Subsetting",
+    "section": "2.1 Dosage Schedules with seq()",
+    "text": "2.1 Dosage Schedules with seq()\nAn intravenous antibiotic is administered every 8 hours across a 72-hour hospital observation period.\nCreate a sequence named dose_hours starting at hour 0 up to hour 72 with increments of 8.\n\n# Create dosage hours:"
+  },
+  {
+    "objectID": "weeks/inclass/week-02-inclass.html#cohort-generation-with-rep",
+    "href": "weeks/inclass/week-02-inclass.html#cohort-generation-with-rep",
+    "title": "Week 2 In-Class Exercise: Vectors & Subsetting",
+    "section": "2.2 Cohort Generation with rep()",
+    "text": "2.2 Cohort Generation with rep()\nA vaccine trial requires creating treatment labels for 12 participants: - 4 “Control” - 4 “Low-Dose” - 4 “High-Dose”\nGenerate this character vector using the rep() function and assign it to treatment_groups.\n\n# Generate treatment labels:"
+  },
+  {
+    "objectID": "weeks/inclass/week-02-inclass.html#extracting-multiples-with-modulo",
+    "href": "weeks/inclass/week-02-inclass.html#extracting-multiples-with-modulo",
+    "title": "Week 2 In-Class Exercise: Vectors & Subsetting",
+    "section": "2.3 Extracting Multiples with Modulo %%",
+    "text": "2.3 Extracting Multiples with Modulo %%\nGiven the sequence numbers &lt;- 1:50, extract all numbers that are divisible by 7.\n\nnumbers &lt;- 1:50\n# Extract multiples of 7:"
+  },
+  {
+    "objectID": "weeks/inclass/week-02-inclass.html#glucose-filtering-and-cleaning",
+    "href": "weeks/inclass/week-02-inclass.html#glucose-filtering-and-cleaning",
+    "title": "Week 2 In-Class Exercise: Vectors & Subsetting",
+    "section": "3.1 Glucose Filtering and Cleaning",
+    "text": "3.1 Glucose Filtering and Cleaning\nA metabolic health study collected fasting blood glucose levels (mg/dL) from 8 patients: glucose &lt;- c(95, 142, 180, 88, 210, 115, -1, 104)\n\nExtract all values in the pre-diabetes range (100 \\le \\text{glucose} \\le 125).\nThe measurement -1 is a missing value code. Replace all negative values in glucose with NA.\nExtract all valid readings (\\ge 126, excluding NA) indicating diabetes.\n\n\nglucose &lt;- c(95, 142, 180, 88, 210, 115, -1, 104)\n\n# 1. Pre-diabetes subset:\n\n# 2. In-place replacement of negative values with NA:\n\n# 3. Diabetes subset (&gt;= 126, non-NA):"
+  },
+  {
+    "objectID": "weeks/inclass/week-02-inclass.html#patient-rankings",
+    "href": "weeks/inclass/week-02-inclass.html#patient-rankings",
+    "title": "Week 2 In-Class Exercise: Vectors & Subsetting",
+    "section": "4.1 Patient Rankings",
+    "text": "4.1 Patient Rankings\nA clinic recorded wait times (minutes) for 5 emergency room patients: wait_times &lt;- c(45, 12, 85, 30, 45)\n\nSort the wait times in descending order (longest to shortest).\nCompute the ranks of each patient’s wait time using rank(..., ties.method = \"first\").\n\n\nwait_times &lt;- c(45, 12, 85, 30, 45)\n\n# 1. Descending sort:\n\n# 2. First-appearance ranking:"
+  },
+  {
+    "objectID": "weeks/inclass/week-02-inclass.html#ai-corner-spotting-vector-recycling-errors",
+    "href": "weeks/inclass/week-02-inclass.html#ai-corner-spotting-vector-recycling-errors",
+    "title": "Week 2 In-Class Exercise: Vectors & Subsetting",
+    "section": "4.2 AI Corner: Spotting Vector Recycling Errors",
+    "text": "4.2 AI Corner: Spotting Vector Recycling Errors\nAn AI assistant was asked to calculate the Body Mass Index for 4 patients with heights (in meters) c(1.70, 1.85, 1.62, 1.78) and weights (in kg) c(65, 82).\nThe AI produced this code:\n\n# AI Generated code:\nheights &lt;- c(1.70, 1.85, 1.62, 1.78)\nweights &lt;- c(65, 82)\nbmi_calc &lt;- weights / (heights^2)\n\n\n4.2.1 Questions:\n\nWhat did R do when computing bmi_calc? Why is the result clinically invalid?\nHow would you write a defensive check in R to prevent vector recycling when calculating BMI?\n\n(Write your explanation and defensive check below)"
+  },
+  {
+    "objectID": "weeks/inclass/week-02-inclass.html#submission-checklist",
+    "href": "weeks/inclass/week-02-inclass.html#submission-checklist",
+    "title": "Week 2 In-Class Exercise: Vectors & Subsetting",
+    "section": "4.3 Submission Checklist",
+    "text": "4.3 Submission Checklist\n\nBoth your name and your partner’s name are in the author field at the top.\nClick Render in RStudio and verify the HTML compiles cleanly.\nCommit and push your changes to your GitHub repository."
+  },
+  {
+    "objectID": "weeks/week-10.html",
+    "href": "weeks/week-10.html",
+    "title": "Week 10: Statistical Simulation & Sampling",
+    "section": "",
+    "text": "Note🔒 Not yet released\n\n\n\nMaterials for this week (slides, in-class exercise, and weekly exercise) unlock automatically on Sunday, Nov 8, 2026 at 8:00 AM ET.",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 10: Statistical Simulation & Sampling"
+    ]
+  },
+  {
+    "objectID": "weeks/week-10.html#before-class",
+    "href": "weeks/week-10.html#before-class",
+    "title": "Week 10: Statistical Simulation & Sampling",
+    "section": "Before class",
+    "text": "Before class\n\nRead: R02Pro Ch 11.1–11.4",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 10: Statistical Simulation & Sampling"
+    ]
+  },
+  {
+    "objectID": "weeks/week-08.html",
+    "href": "weeks/week-08.html",
+    "title": "Week 8: Control Flow & Iteration",
+    "section": "",
+    "text": "Note🔒 Not yet released\n\n\n\nMaterials for this week (slides, in-class exercise, and weekly exercise) unlock automatically on Sunday, Oct 25, 2026 at 8:00 AM ET.",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 8: Control Flow & Iteration"
+    ]
+  },
+  {
+    "objectID": "weeks/week-08.html#before-class",
+    "href": "weeks/week-08.html#before-class",
+    "title": "Week 8: Control Flow & Iteration",
+    "section": "Before class",
+    "text": "Before class\n\nRead: R02Pro Ch 12",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 8: Control Flow & Iteration"
+    ]
+  },
+  {
+    "objectID": "weeks/week-04.html",
+    "href": "weeks/week-04.html",
+    "title": "Week 4: Data Visualization with ggplot2",
+    "section": "",
+    "text": "Note🔒 Not yet released\n\n\n\nMaterials for this week (slides, in-class exercise, and weekly exercise) unlock automatically on Sunday, Sep 20, 2026 at 8:00 AM ET.",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 4: Data Visualization with ggplot2"
+    ]
+  },
+  {
+    "objectID": "weeks/week-04.html#before-class",
+    "href": "weeks/week-04.html#before-class",
+    "title": "Week 4: Data Visualization with ggplot2",
+    "section": "Before class",
+    "text": "Before class\n\nRead: R02Pro Ch 6–7",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 4: Data Visualization with ggplot2"
+    ]
+  },
+  {
+    "objectID": "weeks/week-01.html",
+    "href": "weeks/week-01.html",
+    "title": "Week 1: Welcome + The Modern R Toolkit",
+    "section": "",
+    "text": "Read: R02Pro Ch 1\nReview the newly released weekly exercise and prepare questions.\n🔍 Proofreading corner: spot a typo or unclear passage in Ch 1? Submit a PR or issue for extra credit (see syllabus).",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 1: Welcome + The Modern R Toolkit"
+    ]
+  },
+  {
+    "objectID": "weeks/week-01.html#before-class",
+    "href": "weeks/week-01.html#before-class",
+    "title": "Week 1: Welcome + The Modern R Toolkit",
+    "section": "",
+    "text": "Read: R02Pro Ch 1\nReview the newly released weekly exercise and prepare questions.\n🔍 Proofreading corner: spot a typo or unclear passage in Ch 1? Submit a PR or issue for extra credit (see syllabus).",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 1: Welcome + The Modern R Toolkit"
+    ]
+  },
+  {
+    "objectID": "weeks/week-01.html#topics",
+    "href": "weeks/week-01.html#topics",
+    "title": "Week 1: Welcome + The Modern R Toolkit",
+    "section": "Topics",
+    "text": "Topics\n\nInstalling R, RStudio, and Quarto\nRunning R code; R as a calculator; getting help\nQuarto documents: text formatting, code chunks, rendering\nGitHub onboarding: accept, clone, edit, render, push\nCourse workflow and AI policy overview",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 1: Welcome + The Modern R Toolkit"
+    ]
+  },
+  {
+    "objectID": "weeks/week-01.html#materials",
+    "href": "weeks/week-01.html#materials",
+    "title": "Week 1: Welcome + The Modern R Toolkit",
+    "section": "Materials",
+    "text": "Materials\n\n📊 Lecture Slides: Interactive Presentation (HTML)\n📝 In-Class Exercise: View Worksheet (HTML) · Download Starter Code (.qmd) · or run get_worksheet(1) in your in-class repo\n💻 Weekly Exercise 1: Accept Assignment on Classroom 50 · How to do it, start to finish\n🗂️ In-Class Repository: Accept on Classroom 50 (one time; this same repository is used for every week’s in-class exercise)\n\n\n\n\n\n\n\nImportantSetting up Classroom 50 (do this once, in order)\n\n\n\n\nAccept the GitHub organization invitation emailed to you by Classroom 50 (check your spam folder). You must do this before anything else will work.\nLink your NetID on Classroom 50, which connects your GitHub account to your name in the gradebook.\nThen open the Weekly Exercise 1 link above to accept the assignment.\n\nIf your invitation expired or never arrived, email the instructor and a new one will be sent.\n\n\n\n\n\n\n\n\nTipGit and GitHub setup, written out\n\n\n\nEverything we did in class is documented step by step in the setup guides: installing the software, connecting RStudio to GitHub, cloning a repository into a project, and committing and pushing. If you hit an error message, look it up on the decoder page.",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 1: Welcome + The Modern R Toolkit"
+    ]
+  },
+  {
+    "objectID": "weeks/week-01.html#due",
+    "href": "weeks/week-01.html#due",
+    "title": "Week 1: Welcome + The Modern R Toolkit",
+    "section": "Due",
+    "text": "Due\n\nIn-class exercise 1 Not required. Because of the GitHub setup problems in class, in-class exercise 1 does not need to be submitted and will not count against you. Do still set up your in-class repository (above) before Week 2.",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 1: Welcome + The Modern R Toolkit"
+    ]
+  },
+  {
+    "objectID": "ai-policy.html",
+    "href": "ai-policy.html",
+    "title": "AI Policy: The Three Zones",
+    "section": "",
+    "text": "This course treats AI coding assistants (ChatGPT, Claude, Gemini, and similar) as professional tools: you will learn to use them effectively and critically, and you will also develop the individual fluency to program without them."
+  },
+  {
+    "objectID": "ai-policy.html#why-this-policy",
+    "href": "ai-policy.html#why-this-policy",
+    "title": "AI Policy: The Three Zones",
+    "section": "Why this policy",
+    "text": "Why this policy\nStatistical programmers now work alongside AI tools daily. Banning them would prepare you for a world that no longer exists; letting them do your thinking would leave you unable to catch their mistakes, and they make plenty. The course therefore teaches the skill that actually matters: directing AI tools and verifying their output. Week 8 is a dedicated workshop, and every week includes a short “AI corner” showing one good and one bad AI use for that week’s topic.\nFree-tier AI tools are sufficient for all coursework; no paid subscriptions are required or expected.\nSubmitting AI-generated work you do not understand, using AI during a quiz, or omitting required disclosure is an academic-integrity violation."
+  },
+  {
+    "objectID": "guides/rstudio-projects.html",
+    "href": "guides/rstudio-projects.html",
+    "title": "RStudio projects and cloning a repository",
+    "section": "",
+    "text": "An RStudio project is a folder with an .Rproj file in it. That one file changes how RStudio behaves in three ways that save you hours:\n\nThe working directory is the project folder. Every file path in your code can be written relative to the project, so read_csv(\"data/survey.csv\") works on your laptop, on a lab machine, and on your grader’s computer. You never need setwd() again, and you should never use it.\nEach project gets its own session. Open two projects and you get two separate R sessions, with their own environments and command histories. Work on one analysis does not leak into another.\nRStudio shows you the Git tab. Version control only appears when the folder RStudio has open is a Git repository and an RStudio project.\n\nThe rule that follows from this: always open your work by opening the project, never by opening a single .R or .qmd file from your file browser. Opening a loose file gives you the editor without the working directory, without the Git tab, and with paths that break.",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "RStudio projects and cloning a repository"
+    ]
+  },
+  {
+    "objectID": "guides/rstudio-projects.html#what-a-project-is-and-why-it-matters",
+    "href": "guides/rstudio-projects.html#what-a-project-is-and-why-it-matters",
+    "title": "RStudio projects and cloning a repository",
+    "section": "",
+    "text": "An RStudio project is a folder with an .Rproj file in it. That one file changes how RStudio behaves in three ways that save you hours:\n\nThe working directory is the project folder. Every file path in your code can be written relative to the project, so read_csv(\"data/survey.csv\") works on your laptop, on a lab machine, and on your grader’s computer. You never need setwd() again, and you should never use it.\nEach project gets its own session. Open two projects and you get two separate R sessions, with their own environments and command histories. Work on one analysis does not leak into another.\nRStudio shows you the Git tab. Version control only appears when the folder RStudio has open is a Git repository and an RStudio project.\n\nThe rule that follows from this: always open your work by opening the project, never by opening a single .R or .qmd file from your file browser. Opening a loose file gives you the editor without the working directory, without the Git tab, and with paths that break.",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "RStudio projects and cloning a repository"
+    ]
+  },
+  {
+    "objectID": "guides/rstudio-projects.html#keep-your-projects-in-one-folder",
+    "href": "guides/rstudio-projects.html#keep-your-projects-in-one-folder",
+    "title": "RStudio projects and cloning a repository",
+    "section": "Keep your projects in one folder",
+    "text": "Keep your projects in one folder\nBefore you clone anything, decide where projects live and stick to it. One folder in your home directory, holding one subfolder per project:\n~/gph2182/\n  weekly-exercise-01-yourusername/\n  weekly-exercise-02-yourusername/\n  in-class-exercises-yourusername/\nThis matters more than it sounds. Over a semester you accumulate a dozen repositories, and if they are scattered across Desktop, Downloads, and a half-synced cloud folder, you will lose one. With a single parent folder, switching between them is File &gt; Recent Projects.\n\n\n\n\n\n\nWarningCloud-synced folders\n\n\n\nPutting Git repositories inside Dropbox, OneDrive, iCloud Drive, or Google Drive causes real trouble: the sync client and Git both try to manage the same files and can corrupt the repository’s internal state. Git is already your backup, and GitHub is already your cloud copy. Use a plain local folder.",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "RStudio projects and cloning a repository"
+    ]
+  },
+  {
+    "objectID": "guides/rstudio-projects.html#situation-a-the-repository-already-exists-on-github",
+    "href": "guides/rstudio-projects.html#situation-a-the-repository-already-exists-on-github",
+    "title": "RStudio projects and cloning a repository",
+    "section": "Situation A: the repository already exists on GitHub",
+    "text": "Situation A: the repository already exists on GitHub\nThis is the common case: someone has given you a URL, or you accepted an assignment and GitHub created a repository for you. You want a local copy, which is called cloning.\nCopy the repository URL first. On the repository’s GitHub page, click the green Code button and copy the HTTPS URL. It looks like https://github.com/owner/repository-name.git. The URL in your browser’s address bar works too.\nThen use either route below.\n\nRoute 1: the RStudio menu\n\nFile &gt; New Project &gt; Version Control &gt; Git\nPaste the URL into Repository URL. The project directory name fills in by itself; leave it.\nSet Create project as subdirectory of to your projects folder (~/gph2182, or wherever you chose above).\nClick Create Project.\n\nRStudio downloads the repository and opens it as a project.\n\n\nRoute 2: one line in the Console\nFaster once you are comfortable, and it needs no clicking:\ndir.create(\"~/gph2182\", showWarnings = FALSE)\nusethis::create_from_github(\"owner/repository-name\", destdir = \"~/gph2182\")\nowner/repository-name is the last two segments of the repository URL. The first line creates the parent folder if it does not exist yet, which matters because create_from_github() fails with an error if the destination folder is missing. Cloud services can also quietly remove empty folders, so leaving it in does no harm.\nThis requires the GitHub setup from guide 2 to be finished, because it authenticates as you.\n\n\n\n\n\n\nTipIn this course\n\n\n\nAccepting an assignment on Classroom 50 creates a private repository named like gph-gu-2182-fall-2026-weekly-exercise-01-yourusername inside the gph-2182 organization. So the one-liner is:\ndir.create(\"~/gph2182\", showWarnings = FALSE)\nusethis::create_from_github(\n  \"gph-2182/gph-gu-2182-fall-2026-weekly-exercise-01-yourusername\",\n  destdir = \"~/gph2182\"\n)\nwith your own username on the end.",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "RStudio projects and cloning a repository"
+    ]
+  },
+  {
+    "objectID": "guides/rstudio-projects.html#situation-b-you-are-starting-something-new",
+    "href": "guides/rstudio-projects.html#situation-b-you-are-starting-something-new",
+    "title": "RStudio projects and cloning a repository",
+    "section": "Situation B: you are starting something new",
+    "text": "Situation B: you are starting something new\nYou have an idea, or an analysis, and nothing exists yet. Build it locally, then publish it:\nusethis::create_project(\"~/gph2182/my-analysis\")   # new project, opens in RStudio\nusethis::use_git()                                 # make it a Git repository\nusethis::use_github()                              # create it on GitHub and push\nuse_git() will offer to commit the existing files and to restart RStudio: say yes to both. use_github() creates the remote repository under your account and pushes your first commit, so the project exists on github.com when it finishes.\nThe menu equivalent of the first line is File &gt; New Project &gt; New Directory &gt; New Project.",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "RStudio projects and cloning a repository"
+    ]
+  },
+  {
+    "objectID": "guides/rstudio-projects.html#situation-c-opening-a-project-you-already-have",
+    "href": "guides/rstudio-projects.html#situation-c-opening-a-project-you-already-have",
+    "title": "RStudio projects and cloning a repository",
+    "section": "Situation C: opening a project you already have",
+    "text": "Situation C: opening a project you already have\nFile &gt; Recent Projects, or double-click the .Rproj file in the folder. The project name is always shown in the top-right corner of the RStudio window, so you can tell at a glance which one you have open.",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "RStudio projects and cloning a repository"
+    ]
+  },
+  {
+    "objectID": "guides/rstudio-projects.html#did-it-work",
+    "href": "guides/rstudio-projects.html#did-it-work",
+    "title": "RStudio projects and cloning a repository",
+    "section": "Did it work?",
+    "text": "Did it work?\n\n\n  \n  \n\n  RStudio\n  \n  weekly-exercise-02\n  \n  \n    \n      \n    \n  \n  the project name, not \"Project: (None)\"\n\n  \n  exercise.qmd\n  Source\n  where you write your answers\n\n  \n  Console\n  Terminal\n  Console\n  where gph_check() and\n  gph_submit() are typed\n\n  \n  Environment\n  History\n  \n  Git\n  Git\n  no Git tab here means you opened a\n  plain folder, not a project\n\n  \n  Files\n  Plots\n  Packages\n  Help\n  Files\n\nThree checks, in order of usefulness:\n\nA Git tab appears in the top-right pane, beside Environment and History. If it is missing, that is the whole problem: see No Git tab.\nThe project name shows in the top-right corner of the window, not “Project: (None)”.\ngetwd() in the Console prints the project folder.",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "RStudio projects and cloning a repository"
+    ]
+  },
+  {
+    "objectID": "guides/rstudio-projects.html#working-inside-a-project",
+    "href": "guides/rstudio-projects.html#working-inside-a-project",
+    "title": "RStudio projects and cloning a repository",
+    "section": "Working inside a project",
+    "text": "Working inside a project\n\nWrite paths relative to the project root: \"data/raw.csv\", not \"/Users/you/Desktop/data/raw.csv\". The second one only works on your computer.\nKeep a shape that others can read: data/ for inputs, R/ for scripts, figures/ for output.\nIf you need to build paths from subfolders robustly, here::here(\"data\", \"raw.csv\") resolves them from the project root no matter where the calling file lives.\nDo not put your token, passwords, or API keys in project files. They will be committed and pushed along with everything else.",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "RStudio projects and cloning a repository"
+    ]
+  },
+  {
+    "objectID": "guides/rstudio-projects.html#next",
+    "href": "guides/rstudio-projects.html#next",
+    "title": "RStudio projects and cloning a repository",
+    "section": "Next",
+    "text": "Next\nYou have a project with a Git tab. Now commit and push your work.",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "RStudio projects and cloning a repository"
+    ]
+  },
+  {
+    "objectID": "guides/install.html",
+    "href": "guides/install.html",
+    "title": "Installing R, RStudio, and Git",
+    "section": "",
+    "text": "You need three separate pieces of software. They are easy to confuse, so it is worth being clear about what each one is:\nInstall them in that order: R first, then RStudio, then Git.",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "Installing R, RStudio, and Git"
+    ]
+  },
+  {
+    "objectID": "guides/install.html#install-r",
+    "href": "guides/install.html#install-r",
+    "title": "Installing R, RStudio, and Git",
+    "section": "1. Install R",
+    "text": "1. Install R\nDownload it from cloud.r-project.org and run the installer with all the default options.\n\nmacOS: choose the .pkg that matches your chip. Apple Silicon (M1 through M4) needs the arm64 build; older Intel Macs need the x86_64 build. If you pick the wrong one, R will still install but some packages will fail to load later.\nWindows: click “install R for the first time”, then download the .exe.",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "Installing R, RStudio, and Git"
+    ]
+  },
+  {
+    "objectID": "guides/install.html#install-rstudio",
+    "href": "guides/install.html#install-rstudio",
+    "title": "Installing R, RStudio, and Git",
+    "section": "2. Install RStudio",
+    "text": "2. Install RStudio\nDownload RStudio Desktop (the free open-source edition) from posit.co and install it with the defaults.\nOpen RStudio once. It should find R by itself and print a banner in the Console starting with R version, followed by whatever version you just installed. If RStudio opens but the Console is empty or complains that it cannot find R, R did not install correctly: reinstall it and then restart RStudio.\nQuarto, which turns your .qmd files into documents, ships inside RStudio. You do not install it separately.",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "Installing R, RStudio, and Git"
+    ]
+  },
+  {
+    "objectID": "guides/install.html#install-git",
+    "href": "guides/install.html#install-git",
+    "title": "Installing R, RStudio, and Git",
+    "section": "3. Install Git",
+    "text": "3. Install Git\n\nmacOSWindowsLinux\n\n\nOpen the Terminal tab in RStudio (bottom-left pane, next to Console) and run:\nxcode-select --install\nA system dialog appears. Click Install and wait a few minutes. This installs Apple’s command line developer tools, which include Git.\nIf it says command line tools are already installed, you already have Git and you are done with this step.\n\n\nDownload Git for Windows from git-scm.com/download/win and run the installer.\nAccept every default. The defaults matter more than they look: they put git on your system path, which is what lets RStudio find it. Do not change the editor or path options unless you know why you are changing them.\nAfter it finishes, restart RStudio. RStudio only looks for Git when it starts, so a running RStudio will not notice the new installation.\n\n\nsudo apt install git      # Debian, Ubuntu\nsudo dnf install git      # Fedora",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "Installing R, RStudio, and Git"
+    ]
+  },
+  {
+    "objectID": "guides/install.html#check-that-it-worked",
+    "href": "guides/install.html#check-that-it-worked",
+    "title": "Installing R, RStudio, and Git",
+    "section": "4. Check that it worked",
+    "text": "4. Check that it worked\nIn RStudio, click the Terminal tab (bottom-left pane, beside Console) and type:\ngit --version\nYou want a version number back, such as git version 2.39.5. Any version is fine; Git is stable and old versions work. If you get command not found, see Git is not installed or RStudio cannot find it.\nThen confirm RStudio itself knows where Git lives: Tools &gt; Global Options &gt; Git/SVN. The “Git executable” box should hold a real path (/usr/bin/git on macOS, something like C:/Program Files/Git/bin/git.exe on Windows) and Enable version control interface for RStudio projects should be checked.",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "Installing R, RStudio, and Git"
+    ]
+  },
+  {
+    "objectID": "guides/install.html#install-the-r-packages-you-will-need",
+    "href": "guides/install.html#install-the-r-packages-you-will-need",
+    "title": "Installing R, RStudio, and Git",
+    "section": "5. Install the R packages you will need",
+    "text": "5. Install the R packages you will need\nPaste this into the Console (the pane where R runs, not the Terminal) and press Enter:\ninstall.packages(c(\"tidyverse\", \"usethis\", \"gitcreds\"))\nThis takes several minutes the first time. Some output scrolls by in red; that is normal progress reporting, not an error. What matters is whether the final lines say the packages were unpacked and the prompt &gt; comes back.\nIf you are asked “Do you want to install from sources the package which needs compilation?”, answer no unless you have a reason to compile.\n\n\n\n\n\n\nTipIn this course\n\n\n\nAdd the course textbook package as well:\ninstall.packages(\"r02pro\")\nThat gives you the gm and sahp datasets used throughout the exercises.",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "Installing R, RStudio, and Git"
+    ]
+  },
+  {
+    "objectID": "guides/install.html#next",
+    "href": "guides/install.html#next",
+    "title": "Installing R, RStudio, and Git",
+    "section": "Next",
+    "text": "Next\nSoftware installed. Now connect RStudio to GitHub so you can actually save work there.",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "Installing R, RStudio, and Git"
+    ]
+  },
+  {
+    "objectID": "guides/index.html",
+    "href": "guides/index.html",
+    "title": "Setup Guides",
+    "section": "",
+    "text": "These are the reference pages for the plumbing of the course: getting the software installed, connecting RStudio to GitHub, organizing your work as projects, and saving that work with commits and pushes.\nWe will walk through all of it together in class. These pages exist so that you never have to reconstruct it from memory or from your notes. Bookmark this page.",
+    "crumbs": [
+      "Guides",
+      "Setup Guides"
+    ]
+  },
+  {
+    "objectID": "guides/index.html#start-here",
+    "href": "guides/index.html#start-here",
+    "title": "Setup Guides",
+    "section": "Start here",
+    "text": "Start here\nIf you are setting up for the first time, work through the guides in this order. The first three are done once. The fourth you will use every week.\n\n\n\n\nGuide\nWhen\n\n\n\n\n1\nInstalling R, RStudio, and Git\nOnce, before Week 1\n\n\n2\nConnecting RStudio to GitHub\nOnce (and again when your token expires)\n\n\n3\nRStudio projects and cloning a repository\nOnce per repository\n\n\n4\nCommitting, pushing, and pulling\nEvery time you work\n\n\n\nThere is a fifth page that is not part of the sequence: Error messages, decoded is a lookup table of every Git and GitHub error you are likely to hit, with what each one means and how to fix it. Go there whenever something breaks.",
+    "crumbs": [
+      "Guides",
+      "Setup Guides"
+    ]
+  },
+  {
+    "objectID": "guides/index.html#the-one-time-checklist",
+    "href": "guides/index.html#the-one-time-checklist",
+    "title": "Setup Guides",
+    "section": "The one-time checklist",
+    "text": "The one-time checklist\nYou are fully set up when all five of these are true:\n\nR and RStudio open, and git --version prints a version number in the RStudio Terminal tab.\nYou have a GitHub account, and you can sign in to it.\nusethis::git_sitrep() shows your name, your email, and a stored GitHub token.\nYou can open a repository in RStudio and see a Git tab in the top-right pane.\nYou can commit a change and push it, and see it appear on github.com.\n\nIf any line fails, the guide that covers it is linked in the table above.",
+    "crumbs": [
+      "Guides",
+      "Setup Guides"
+    ]
+  },
+  {
+    "objectID": "guides/index.html#if-you-get-stuck",
+    "href": "guides/index.html#if-you-get-stuck",
+    "title": "Setup Guides",
+    "section": "If you get stuck",
+    "text": "If you get stuck\nRead the exact error message, then look it up on the error messages page. Nearly every Git problem people hit is one of about a dozen errors, and all of them are listed there with fixes.\nIf that does not resolve it, paste the exact error (or a screenshot) into an AI assistant and ask what it means. If you are still stuck after that, bring the error text to office hours or email it. Please do not spend an evening fighting the setup alone: it is not what this course is testing.\n\n\n\n\n\n\nNoteNot in this course? Welcome anyway\n\n\n\nThese guides are written to stand on their own. Anything specific to GPH-GU 2182 is fenced off in a box labelled In this course; everything outside those boxes applies to any R user setting up Git and GitHub. You are welcome to link to these pages or adapt them for your own students.",
+    "crumbs": [
+      "Guides",
+      "Setup Guides"
+    ]
+  },
+  {
+    "objectID": "schedule.html",
+    "href": "schedule.html",
+    "title": "Schedule",
+    "section": "",
+    "text": "All sessions meet Wednesdays 2:00–4:40 PM in Bobst LL138. Readings should be completed before class. Weekly exercises are released before class on Wednesday and due at 11:59 PM the following Wednesday.\n\n\n\n\n\n\n\n\n\nDate\nTopic\nReadings\nAssignments due\n\n\n\n\nSep 2\nWeek 1: Welcome + The Modern R Toolkit\nR02Pro Ch 1\nIn-class exercise 1\n\n\nSep 9\nWeek 2: Vectors & Subsetting\nR02Pro Ch 2–3\nWeekly exercise 1 (extended to Thu Sep 10) · In-class exercise 2\n\n\nSep 16\nWeek 3: Matrices, Lists, Data Frames & Data Import\nR02Pro Ch 4–5\nWeekly exercise 2 · In-class exercise 3 · Quiz 1\n\n\nSep 23\nWeek 4: Data Visualization with ggplot2\nR02Pro Ch 6–7\nWeekly exercise 3 · In-class exercise 4\n\n\nSep 30\nWeek 5: Data Wrangling with dplyr & Pipes\nR02Pro Ch 8.1–8.4, 8.9\nWeekly exercise 4 · In-class exercise 5 · Quiz 2\n\n\nOct 7\nWeek 6: Advanced Wrangling, Joins & Tidy Data\nR02Pro Ch 8.5–8.8, Ch 9\nWeekly exercise 5 · In-class exercise 6\n\n\nOct 14\nNo class — Legislative Monday\n\n\n\n\nOct 21\nWeek 7: Strings, Factors & Dates\nR02Pro Ch 10, Ch 3.6, Ch 3.11\nWeekly exercise 6 · In-class exercise 7 · Quiz 3\n\n\nOct 28\nWeek 8: Control Flow & Iteration\nR02Pro Ch 12\nWeekly exercise 7 · In-class exercise 8\n\n\nNov 4\nWeek 9: Writing Custom Functions & purrr\nR02Pro Ch 13\nWeekly exercise 8 · In-class exercise 9 · Quiz 4\n\n\nNov 11\nWeek 10: Statistical Simulation & Sampling\nR02Pro Ch 11.1–11.4\nWeekly exercise 9 · In-class exercise 10 · Final Project Released\n\n\nNov 18\nWeek 11: Statistical Modeling & Regression\nR02Pro Ch 11.5–11.6\nWeekly exercise 10 · In-class exercise 11 · Quiz 5\n\n\nNov 25\nWeek 12: Advanced Quarto, Tables & Case Studies\nR02Pro Ch 14\nWeekly exercise 11 · In-class exercise 12\n\n\nDec 2\nWeek 13: Scientific Communication & Project Workshop\nSupplementary\nWeekly exercise 12 · In-class exercise 13\n\n\nDec 9\nWeek 14: Project Presentations & The Future of R\nSupplementary\nIn-class exercise 14\n\n\nDec 16\nFinal Project Due (11:59 PM)\n\nFinal Report + 5-min Video + AI Appendix"
+  },
+  {
+    "objectID": "weekly.html",
+    "href": "weekly.html",
+    "title": "Doing a weekly exercise",
+    "section": "",
+    "text": "ONCE PER COMPUTER\n  \n  gph_setup()\n\n  ONCE PER EXERCISE\n  \n  Accept on Classroom 50\n  \n  \n  gph_start(N)\n\n  \n\n  THEN REPEAT UNTIL EVERYTHING PASSES\n  \n\n  \n  Edit\n  exercise.qmd\n\n  \n\n  \n  gph_check()\n  passes locally?\n\n  \n\n  \n  gph_submit()\n  pushes, then reports\n\n  \n  something still fails, so go round again\n\n  \n  \n  Done\n  all green\nThat is the whole workflow. Everything below is detail."
+  },
+  {
+    "objectID": "weekly.html#once-per-computer-gph_setup",
+    "href": "weekly.html#once-per-computer-gph_setup",
+    "title": "Doing a weekly exercise",
+    "section": "Once per computer: gph_setup()",
+    "text": "Once per computer: gph_setup()\ngph_setup()\nIt installs anything missing, asks for your name and email, and walks you through creating and storing a GitHub token. Run it again any time to confirm things are still connected; it is safe to repeat.\nIf you would rather understand each piece, the long version is in Connecting RStudio to GitHub."
+  },
+  {
+    "objectID": "weekly.html#once-per-exercise-accept-then-gph_startn",
+    "href": "weekly.html#once-per-exercise-accept-then-gph_startn",
+    "title": "Doing a weekly exercise",
+    "section": "Once per exercise: accept, then gph_start(N)",
+    "text": "Once per exercise: accept, then gph_start(N)\n\nAccept the assignment. The link is on that week’s page, for example Weekly Exercise 2. This creates a private GitHub repository that belongs to you. Do it once per exercise.\nOpen it in RStudio. In the Console:\ngph_start(2)\nUse the exercise number you are working on. That is the whole step: no URL to copy, no dialog to fill in, no folder to choose. It works out which repository is yours, downloads it into ~/gph2182, and opens it as a project.\n\nIf you have not accepted yet, gph_start() says so and prints the link you need.\n\n\n\n\n\n\nNoteWhere does it put things?\n\n\n\nWherever you already keep your course work. gph_start() looks at where your other course projects live and puts the new one beside them, so if your folder is called ~/NYU/stats or ~/grad/fall2026, that is where it goes. If you have none yet, it asks once and remembers the answer.\nIt also never makes a second copy: if you already have that exercise, it opens the copy you have and tells you where it is.\nTo keep them somewhere else, pass the folder once and it is remembered:\ngph_start(3, where = \"path/to/your/folder\")\nAnd the safety net: if you already have an exercise open, you do not need gph_start() at all. gph_check() and gph_submit() work from inside any copy of the repository, wherever it lives."
+  },
+  {
+    "objectID": "weekly.html#once-for-the-whole-semester-your-in-class-repository",
+    "href": "weekly.html#once-for-the-whole-semester-your-in-class-repository",
+    "title": "Doing a weekly exercise",
+    "section": "Once for the whole semester: your in-class repository",
+    "text": "Once for the whole semester: your in-class repository\nIn-class exercises are different from the weekly exercises. They all live in one repository that you set up once and reuse every week.\n\nAccept the in-class assignment on Classroom 50. Once, for the semester.\nIn the Console:\nsource(\"https://gph-2182.github.io/gph2182.R\")   # unless already loaded\ngph_inclass()\n\nEach week, from inside that project, fetch the worksheet with the week’s number:\nsource(\"get_worksheet.R\"); get_worksheet(3)\nThen add both partners’ names, do the work, and commit and push before the end of class.\n\n\n\n\n\n\nWarningDo not create this repository yourself\n\n\n\nIt has to be the one Classroom 50 makes, because that is the copy owned by the class and visible to the instructor. A repository you create under your own GitHub account is invisible to us, and if it is public your classmates can read your answers. If you have already made one by hand, run gph_inclass() to get the proper one and copy your worksheet files across."
+  },
+  {
+    "objectID": "weekly.html#then-repeat-edit-check-submit",
+    "href": "weekly.html#then-repeat-edit-check-submit",
+    "title": "Doing a weekly exercise",
+    "section": "Then repeat: edit, check, submit",
+    "text": "Then repeat: edit, check, submit\n\nEdit\nOpen exercise.qmd. Put your name in the author: field. Answer each question by replacing NULL with your code.\nKeep the object names exactly as given (q1, q2, and so on). The checks look for those names, so renaming them loses points even when your code is right.\n\n\nCheck\ngph_check()\nThis runs the same checks GitHub will run, on your machine, in about two seconds. You get a PASS or FAIL line per question. Fix the FAIL lines and run it again. Nothing is submitted and nobody sees the result.\n\n\n\n\n\n\ngph_check() runs in a separate, clean R session on purpose. That means it cannot be fooled by an answer that only exists in your Environment pane rather than in the file, which is the most common reason work passes locally and fails on GitHub.\n\n\n\n\n\nSubmit\ngph_submit()\nOne command does all of it: stages your files, commits them, pushes to GitHub, then waits for GitHub’s own check and tells you the result in the Console. You do not have to visit the Actions tab; the link it prints is clickable if you want to look.\nIt pauses for up to a couple of minutes at the end, and that is normal. Your work is already submitted by then; the wait is only for GitHub to report back. You can stop waiting at any time without affecting your submission."
+  },
+  {
+    "objectID": "weekly.html#what-the-results-mean",
+    "href": "weekly.html#what-the-results-mean",
+    "title": "Doing a weekly exercise",
+    "section": "What the results mean",
+    "text": "What the results mean\n\n\n\n\n\n\n\n\nWhat you see\nWhat it means\nWhat to do\n\n\n\n\nEverything passes from gph_check()\nYour file is right on your machine\ngph_submit()\n\n\nPushed to GitHub\nYour work is submitted and safe\nWait for the check result\n\n\neverything passes. You are done.\nGitHub agrees. Finished\nNothing\n\n\nsomething still fails\nYour push arrived but a question is wrong\ngph_check(), fix, gph_submit()\n\n\nStill running\nGitHub is busy\nWait a minute, then check the link it printed\n\n\n\nSubmitting many times is normal and expected. Only your last push before the deadline is graded, so a failing check on an early attempt costs you nothing. Push early and often: work on GitHub cannot be lost."
+  },
+  {
+    "objectID": "weekly.html#when-something-goes-wrong",
+    "href": "weekly.html#when-something-goes-wrong",
+    "title": "Doing a weekly exercise",
+    "section": "When something goes wrong",
+    "text": "When something goes wrong\ngph_doctor()\nIt prints a ✓ or ✗ for every single thing that has to be true, in order: packages, your Git name and email, your token, whether this folder is really a repository, whether anything is uncommitted, whether anything is unpushed, and what GitHub said about your last submission. The first ✗ is your problem, and each line tells you which command fixes it.\nIf you are still stuck, look the exact error message up on the error messages page, then send me or Sabrina the output of gph_doctor(). That output contains no secrets and usually makes the answer obvious in one reply."
+  },
+  {
+    "objectID": "weekly.html#doing-it-by-hand",
+    "href": "weekly.html#doing-it-by-hand",
+    "title": "Doing a weekly exercise",
+    "section": "Doing it by hand",
+    "text": "Doing it by hand\nThe commands above are a convenience, not a hiding place. Git and GitHub are part of what this course teaches, and you should be able to do this without the helpers by the end of the semester.\n\n\n\n\n\n\nTipThe same five steps, done manually\n\n\n\n\n\n\nClone: copy your repository URL from GitHub, then in RStudio File &gt; New Project &gt; Version Control &gt; Git, paste the URL, choose your ~/gph2182 folder, and click Create Project.\nEdit: open exercise.qmd and answer the questions.\nStage: in the Git tab, tick the box next to each changed file.\nCommit: click Commit, read the diff, write a message, click Commit.\nPush: click the green Push arrow. Then open your repository on github.com and click the Actions tab to see the result.\n\nEach of these is explained in full in RStudio projects and cloning a repository and Committing, pushing, and pulling."
+  },
+  {
+    "objectID": "weekly.html#every-command-in-one-place",
+    "href": "weekly.html#every-command-in-one-place",
+    "title": "Doing a weekly exercise",
+    "section": "Every command, in one place",
+    "text": "Every command, in one place\n\n\n\n\n\n\n\nCommand\nWhen\n\n\n\n\ngph_setup()\nOnce per computer. Connects to GitHub and loads these commands in every session\n\n\ngph_inclass()\nOnce for the semester. Opens your in-class repository\n\n\ngph_start(N)\nOnce per exercise. Downloads and opens weekly exercise N\n\n\ngph_check()\nEvery time. Runs the autograder’s checks on your machine\n\n\ngph_submit()\nEvery time. Stages, commits, pushes, reports the result\n\n\ngph_doctor()\nWhen stuck. Checks everything and says what is wrong\n\n\ngph_help()\nPrints the list above\n\n\n\nThat is the whole set. To keep projects in a folder of your own choosing, pass it to gph_start() once and it is remembered:\ngph_start(3, where = \"path/to/your/folder\")"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Statistical Programming in R",
+    "section": "",
+    "text": "Wednesdays 2:00–4:40 PM · 70 Washington Sq S (Bobst), Room LL138 · Sep 2 – Dec 9, 2026 (no class Oct 14)\nWelcome! This course teaches R programming for the full data-analysis workflow: wrangling, visualization, simulation, and reproducible reporting with Quarto, using public-health data throughout. You will also learn two skills that now define professional statistical programming: managing code with Git and GitHub, and using AI coding assistants responsibly (prompting, verifying, and debugging AI-generated code).\nNo prior programming or statistics experience is required."
+  },
+  {
+    "objectID": "index.html#how-the-course-works",
+    "href": "index.html#how-the-course-works",
+    "title": "Statistical Programming in R",
+    "section": "How the course works",
+    "text": "How the course works\n\nHands-on classes. Every session alternates short live-coding demos with paired exercises, so you write code in every class.\nInstant feedback. Weekly exercises are submitted on GitHub and checked automatically: push your work, see which questions pass, revise, and resubmit until the deadline.\nAI, embraced and verified. AI tools are allowed on homework and the project (with disclosure), taught explicitly in Week 8, and set aside during short in-class quizzes where your own fluency is certified.\nOne real project. The course builds to an individual analysis of a public-health dataset: a reproducible Quarto report, a GitHub repo, and a 5-minute video walkthrough."
+  },
+  {
+    "objectID": "index.html#quick-links",
+    "href": "index.html#quick-links",
+    "title": "Statistical Programming in R",
+    "section": "Quick links",
+    "text": "Quick links\n\n\n\nInstructor\nYang Feng (yf31@nyu.edu)\n\n\nTextbook\nR02Pro: R Programming, Zero to Pro (free)\n\n\nSchedule\nWeek-by-week schedule\n\n\nSyllabus\nFull syllabus\n\n\nAbsences\nExcused Absence Request form (60 min before class)\n\n\nAI policy\nThe three zones\n\n\nWeekly workflow\nDoing a weekly exercise\n\n\nSetup help\nR, RStudio, Git, and GitHub guides"
+  },
+  {
+    "objectID": "index.html#getting-started-before-week-1",
+    "href": "index.html#getting-started-before-week-1",
+    "title": "Statistical Programming in R",
+    "section": "Getting started (before Week 1)",
+    "text": "Getting started (before Week 1)\n\nInstall R, then RStudio Desktop (both free).\nCreate a free GitHub account with your NYU email.\nThat’s it. We will set up everything else together in the first class.\n\nStep-by-step instructions, including installing Git and connecting it to RStudio, are in the setup guides. Those pages stay up all semester, so use them as the reference whenever something breaks."
+  },
+  {
+    "objectID": "project.html",
+    "href": "project.html",
+    "title": "Final Project",
+    "section": "",
+    "text": "Note\n\n\n\nFull instructions, dataset options, and the grading rubric will be released in Week 10 (November 4). This page summarizes the shape of the project so you can plan ahead.\nEach student produces a comprehensive statistical analysis of a public-health dataset, modeled on a reproducible data science pipeline."
+  },
+  {
+    "objectID": "project.html#deliverables-due-1159-pm-wednesday-december-16",
+    "href": "project.html#deliverables-due-1159-pm-wednesday-december-16",
+    "title": "Final Project",
+    "section": "Deliverables (due 11:59 PM, Wednesday December 16)",
+    "text": "Deliverables (due 11:59 PM, Wednesday December 16)\n\nA GitHub repository containing all code and a reproducible Quarto report with sections on introduction, data preparation, exploratory data analysis (publication tables, ggplot2 figures, statistical results, interpretations), and summary. The report must render cleanly from your repository as submitted.\nA 5-minute recorded video walkthrough (via Loom, Zoom, or similar screen recorder) summarizing your research question, key findings, and a tour of your visualizations.\nAn AI-use appendix: disclosing what you asked AI assistants, what code was generated, and how you verified or debugged the output."
+  },
+  {
+    "objectID": "project.html#milestones",
+    "href": "project.html#milestones",
+    "title": "Final Project",
+    "section": "Milestones",
+    "text": "Milestones\n\n\n\n\n\n\n\nDate\nMilestone\n\n\n\n\nNov 4 (Week 10)\nFinal Project released with sample public health datasets & starter template\n\n\nNov–Dec\nDrop-in project support available during instructor & CA weekly office hours\n\n\nDec 9 (Week 14)\nIn-class project workshop & consultation clinic in Bobst LL138\n\n\nDec 16, 11:59 PM\nFinal project submission due on GitHub. No late submissions accepted."
+  },
+  {
+    "objectID": "checkin.html",
+    "href": "checkin.html",
+    "title": "Class Check-In",
+    "section": "",
+    "text": "Note📍 In-Person Attendance Check-In\n\n\n\nPlease verify that you are physically in Bobst Library LL138 and enter today’s 4-digit PIN shown on the projector screen.\n\n\n\n  Today's Attendance Form\n  You must be signed in with your official @nyu.edu account.\n  \n  \n    \n      📝 Open NYU Check-In Form\n    \n  \n  \n  \n    💡 Tip: If the Google Form does not load, please inform the Course Assistant (CA) before 2:05 PM to check you in on the physical roster."
+  },
+  {
+    "objectID": "guides/troubleshooting.html",
+    "href": "guides/troubleshooting.html",
+    "title": "Error messages, decoded",
+    "section": "",
+    "text": "Git’s error messages are written for people who already understand Git. This page translates the ones you are most likely to meet, roughly in the order people meet them.\nFind your error by its text. Use Ctrl/Cmd+F on this page and search for a distinctive phrase from the message you got.",
+    "crumbs": [
+      "Guides",
+      "When things break",
+      "Error messages, decoded"
+    ]
+  },
+  {
+    "objectID": "guides/troubleshooting.html#quick-index",
+    "href": "guides/troubleshooting.html#quick-index",
+    "title": "Error messages, decoded",
+    "section": "Quick index",
+    "text": "Quick index\n\n\n\nThe message you saw\nJump to\n\n\n\n\ncould not find function \"gph_...\"\nThe course commands are not loaded\n\n\ngit: command not found\nGit is not installed\n\n\nNo Git tab in RStudio\nNo Git tab\n\n\nPlease tell me who you are\nGit does not know your name\n\n\nAuthentication failed, Invalid username or password\nPassword rejected\n\n\nSupport for password authentication was removed\nPassword rejected\n\n\nremote: Repository not found\nRepository not found\n\n\nUpdates were rejected\nPush rejected\n\n\nYour local changes would be overwritten by merge\nPull blocked by local edits\n\n\n&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD inside a file\nMerge conflict\n\n\nfatal: not a git repository\nNot a repository\n\n\nPermission denied (publickey)\nSSH key problem\n\n\ndoes not exist from create_from_github()\nDestination folder missing\n\n\nthis exceeds GitHub's file size limit\nFile too large\n\n\nYou are in detached HEAD state\nDetached HEAD\n\n\nEverything up-to-date but GitHub looks empty\nPushing the wrong branch",
+    "crumbs": [
+      "Guides",
+      "When things break",
+      "Error messages, decoded"
+    ]
+  },
+  {
+    "objectID": "guides/troubleshooting.html#not-loaded",
+    "href": "guides/troubleshooting.html#not-loaded",
+    "title": "Error messages, decoded",
+    "section": "The course commands are not loaded",
+    "text": "The course commands are not loaded\nYou see:\n&gt; gph_inclass()\nError in gph_inclass() : could not find function \"gph_inclass\"\nWhat it means: the course helper commands are not loaded in this R session. They are not part of R, so every new session starts without them. Restarting R, opening a different project, or reopening RStudio all give you a fresh session.\nFix: run this, then try your command again.\nsource(\"https://gph-2182.github.io/gph2182.R\")\nYou will know it worked when gph_start, gph_check and the others appear under Functions in the Environment pane.\nPermanent fix: run gph_setup() and say yes when it offers to load the commands automatically. It saves a copy in your home folder and loads it at every startup, so you never type the source() line again.",
+    "crumbs": [
+      "Guides",
+      "When things break",
+      "Error messages, decoded"
+    ]
+  },
+  {
+    "objectID": "guides/troubleshooting.html#git-not-found",
+    "href": "guides/troubleshooting.html#git-not-found",
+    "title": "Error messages, decoded",
+    "section": "Git is not installed, or RStudio cannot find it",
+    "text": "Git is not installed, or RStudio cannot find it\nYou see: git: command not found, or bash: git: No such file or directory, or RStudio’s Tools &gt; Global Options &gt; Git/SVN box is empty.\nWhat it means: Git is a separate program from R and RStudio, and either it was never installed or RStudio has not noticed it.\nFix:\n\nmacOS: run xcode-select --install in the RStudio Terminal tab.\nWindows: install Git for Windows from git-scm.com/download/win, accepting all defaults.\nThen restart RStudio. It only looks for Git at startup, so a running RStudio will not see a fresh installation.\n\nIf Git is installed but the Git/SVN box is still empty, type the path in yourself: /usr/bin/git on macOS, C:/Program Files/Git/bin/git.exe on Windows. Then restart RStudio.\nFull instructions: Installing R, RStudio, and Git.",
+    "crumbs": [
+      "Guides",
+      "When things break",
+      "Error messages, decoded"
+    ]
+  },
+  {
+    "objectID": "guides/troubleshooting.html#no-git-tab",
+    "href": "guides/troubleshooting.html#no-git-tab",
+    "title": "Error messages, decoded",
+    "section": "There is no Git tab in RStudio",
+    "text": "There is no Git tab in RStudio\nYou see: the top-right pane shows Environment, History, and Connections, but no Git.\nWhat it means: almost always that you opened a plain folder or a loose file rather than an RStudio project that is also a Git repository.\nFix, in order of likelihood:\n\nCheck the top-right corner of the window. If it says “Project: (None)”, you do not have a project open. Open the .Rproj file in the folder, or use File &gt; Recent Projects.\nIf you downloaded the repository as a ZIP from GitHub, that copy is not a repository at all: the Git history is not included in a ZIP. Delete it and clone properly, per guide 3.\nIf the project is open and it really was cloned, check Tools &gt; Global Options &gt; Git/SVN and confirm Enable version control interface is ticked and the Git path is filled in. Restart RStudio afterward.",
+    "crumbs": [
+      "Guides",
+      "When things break",
+      "Error messages, decoded"
+    ]
+  },
+  {
+    "objectID": "guides/troubleshooting.html#who-are-you",
+    "href": "guides/troubleshooting.html#who-are-you",
+    "title": "Error messages, decoded",
+    "section": "Git does not know your name",
+    "text": "Git does not know your name\nYou see:\n*** Please tell me who you are.\nRun\n  git config --global user.email \"you@example.com\"\n  git config --global user.name \"Your Name\"\nWhat it means: Git stamps every commit with an author and refuses to commit without one.\nFix: in the RStudio Console:\nusethis::use_git_config(\n  user.name  = \"Your Name\",\n  user.email = \"you@example.edu\"\n)\nUse the email on your GitHub account, so your commits are credited to your profile. Then commit again.",
+    "crumbs": [
+      "Guides",
+      "When things break",
+      "Error messages, decoded"
+    ]
+  },
+  {
+    "objectID": "guides/troubleshooting.html#auth-failed",
+    "href": "guides/troubleshooting.html#auth-failed",
+    "title": "Error messages, decoded",
+    "section": "Your password is rejected",
+    "text": "Your password is rejected\nYou see: Authentication failed, Invalid username or password, fatal: Authentication failed for 'https://github.com/...', or remote: Support for password authentication was removed on August 13, 2021.\nWhat it means: GitHub does not accept account passwords for Git operations. It needs a personal access token. If RStudio is prompting you for a password at all, no token is stored.\nFix:\nusethis::create_github_token()   # opens GitHub; set Expiration to a date you choose\ngitcreds::gitcreds_set()         # paste the token here\nusethis::git_sitrep()            # confirm it is stored\nIf this used to work and just stopped, your old token expired. The fix is the same: generate a new one and store it with gitcreds_set(), choosing replace when it offers the menu.\nFull walkthrough: Connecting RStudio to GitHub.",
+    "crumbs": [
+      "Guides",
+      "When things break",
+      "Error messages, decoded"
+    ]
+  },
+  {
+    "objectID": "guides/troubleshooting.html#repo-not-found",
+    "href": "guides/troubleshooting.html#repo-not-found",
+    "title": "Error messages, decoded",
+    "section": "Repository not found",
+    "text": "Repository not found\nYou see: remote: Repository not found, or fatal: repository 'https://github.com/...' not found.\nWhat it means: GitHub is saying “either that repository does not exist, or you are not allowed to see it”. It gives the same message for both, on purpose, so that private repository names cannot be probed.\nCheck, in order:\n\nTypo in the URL. Owner and repository name are both case-sensitive in practice. Copy the URL from your browser rather than retyping it.\nYou are not signed in as the right account. Run usethis::git_sitrep() and look at the GitHub user it reports. A stored token for a personal account cannot see a private organization repository.\nYou do not have access yet. If it is private and belongs to someone else, you need to be added as a collaborator or organization member.\n\n\n\n\n\n\n\nTipIn this course\n\n\n\nThis usually means you have not accepted the GitHub organization invitation that was emailed to you, or it expired after seven days. Ask for a fresh invitation, accept it, then try again.",
+    "crumbs": [
+      "Guides",
+      "When things break",
+      "Error messages, decoded"
+    ]
+  },
+  {
+    "objectID": "guides/troubleshooting.html#rejected",
+    "href": "guides/troubleshooting.html#rejected",
+    "title": "Error messages, decoded",
+    "section": "Updates were rejected",
+    "text": "Updates were rejected\nYou see:\n! [rejected]  main -&gt; main (fetch first)\nerror: failed to push some refs\nhint: Updates were rejected because the remote contains work that you do\n      not have locally.\nWhat it means: GitHub has commits that your computer does not. Git refuses to push, because doing so would erase them. This is Git protecting you.\nFix: click Pull, then Push. That downloads the missing commits and merges them with yours.\nThis happens most often when you edited a file directly on github.com in the browser, or worked from a second computer. If the pull produces a conflict, see merge conflict below.",
+    "crumbs": [
+      "Guides",
+      "When things break",
+      "Error messages, decoded"
+    ]
+  },
+  {
+    "objectID": "guides/troubleshooting.html#pull-blocked",
+    "href": "guides/troubleshooting.html#pull-blocked",
+    "title": "Error messages, decoded",
+    "section": "Pull blocked by local changes",
+    "text": "Pull blocked by local changes\nYou see: error: Your local changes to the following files would be overwritten by merge followed by a file name.\nWhat it means: you have uncommitted edits to a file that the incoming commits also change. Git will not silently discard your edits.\nFix: commit your edits first, then pull.\ngit add .\ngit commit -m \"Work in progress\"\ngit pull\nCommitting is the right move even if the work is unfinished. A commit is a private checkpoint, not a publication, and you can always tidy the history later.",
+    "crumbs": [
+      "Guides",
+      "When things break",
+      "Error messages, decoded"
+    ]
+  },
+  {
+    "objectID": "guides/troubleshooting.html#conflict",
+    "href": "guides/troubleshooting.html#conflict",
+    "title": "Error messages, decoded",
+    "section": "Merge conflict",
+    "text": "Merge conflict\nYou see: markers like these inside one of your files, and Git reports CONFLICT (content): Merge conflict in exercise.qmd.\n&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD\nmean_age &lt;- mean(df$age, na.rm = TRUE)\n=======\nmean_age &lt;- mean(df$age)\n&gt;&gt;&gt;&gt;&gt;&gt;&gt; origin/main\nWhat it means: two commits changed the same lines and Git will not guess which one wins. The text between &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD and ======= is yours; the text between ======= and &gt;&gt;&gt;&gt;&gt;&gt;&gt; is the incoming version.\nFix: open the file, decide what the lines should say (possibly a blend of both), delete all three marker lines, save, then stage and commit. That commit is the resolution.\nNothing is broken while a conflict is open, and nothing is lost. Take your time.",
+    "crumbs": [
+      "Guides",
+      "When things break",
+      "Error messages, decoded"
+    ]
+  },
+  {
+    "objectID": "guides/troubleshooting.html#not-a-repo",
+    "href": "guides/troubleshooting.html#not-a-repo",
+    "title": "Error messages, decoded",
+    "section": "Not a git repository",
+    "text": "Not a git repository\nYou see: fatal: not a git repository (or any of the parent directories): .git.\nWhat it means: you are running a Git command in a folder that Git does not manage.\nFix: you are probably in the wrong directory. Check with getwd() in the Console, and open the right project. If this folder genuinely should be a repository, make it one with usethis::use_git().",
+    "crumbs": [
+      "Guides",
+      "When things break",
+      "Error messages, decoded"
+    ]
+  },
+  {
+    "objectID": "guides/troubleshooting.html#publickey",
+    "href": "guides/troubleshooting.html#publickey",
+    "title": "Error messages, decoded",
+    "section": "Permission denied (publickey)",
+    "text": "Permission denied (publickey)\nYou see: git@github.com: Permission denied (publickey). fatal: Could not read from remote repository.\nWhat it means: the repository’s remote URL uses SSH (git@github.com:...), but GitHub does not have an SSH key that matches yours.\nFix, the simple way: switch that repository to HTTPS, which uses the token you already have.\ngit remote set-url origin https://github.com/owner/repository-name.git\nFix, the other way: set up an SSH key, as described in the Happy Git with R SSH chapter.",
+    "crumbs": [
+      "Guides",
+      "When things break",
+      "Error messages, decoded"
+    ]
+  },
+  {
+    "objectID": "guides/troubleshooting.html#destdir",
+    "href": "guides/troubleshooting.html#destdir",
+    "title": "Error messages, decoded",
+    "section": "create_from_github() says the folder does not exist",
+    "text": "create_from_github() says the folder does not exist\nYou see: an error from usethis::create_from_github() complaining that the destdir path does not exist or is not a directory.\nWhat it means: create_from_github() will not create the parent folder for you; it requires it to be there already.\nFix: create it first, in the same block:\ndir.create(\"~/gph2182\", showWarnings = FALSE)\nusethis::create_from_github(\"owner/repository-name\", destdir = \"~/gph2182\")\nshowWarnings = FALSE makes the first line harmless when the folder already exists.",
+    "crumbs": [
+      "Guides",
+      "When things break",
+      "Error messages, decoded"
+    ]
+  },
+  {
+    "objectID": "guides/troubleshooting.html#too-large",
+    "href": "guides/troubleshooting.html#too-large",
+    "title": "Error messages, decoded",
+    "section": "File too large",
+    "text": "File too large\nYou see: remote: error: File data/big.csv is 214.00 MB; this exceeds GitHub's file size limit of 100.00 MB.\nWhat it means: GitHub refuses individual files over 100 MB, and warns above 50 MB. The whole push fails, not just that file.\nFix: stop tracking the file, and ignore it going forward.\ngit rm --cached data/big.csv\nusethis::use_git_ignore(\"data/big.csv\")\nThen commit and push again. Note that if the large file is already in an earlier commit, removing it now is not enough: the history still contains it, and cleaning that up is a bigger job. It is far easier to keep large data out of Git from the start, and to store it elsewhere with a script that downloads it.",
+    "crumbs": [
+      "Guides",
+      "When things break",
+      "Error messages, decoded"
+    ]
+  },
+  {
+    "objectID": "guides/troubleshooting.html#detached-head",
+    "href": "guides/troubleshooting.html#detached-head",
+    "title": "Error messages, decoded",
+    "section": "You are in detached HEAD state",
+    "text": "You are in detached HEAD state\nYou see: You are in 'detached HEAD' state, usually after clicking around in the History view.\nWhat it means: you are looking at an old commit rather than at the tip of a branch. It is a viewing mode, not damage. Commits made here can be hard to find later.\nFix: go back to your branch.\ngit checkout main\nIf you made commits while detached and want to keep them, git switch -c rescue-branch before checking out main, and ask for help merging them.",
+    "crumbs": [
+      "Guides",
+      "When things break",
+      "Error messages, decoded"
+    ]
+  },
+  {
+    "objectID": "guides/troubleshooting.html#wrong-branch",
+    "href": "guides/troubleshooting.html#wrong-branch",
+    "title": "Error messages, decoded",
+    "section": "Push succeeds but GitHub looks unchanged",
+    "text": "Push succeeds but GitHub looks unchanged\nYou see: Everything up-to-date, or a successful push, but the repository page on github.com does not show your work.\nCheck three things:\n\nWhich branch you are on. The Git tab shows it at the top right of the pane. If you are on a branch other than main, your commits went there; GitHub’s repository page shows main by default. Use the branch dropdown on GitHub to look, then merge or open a pull request.\nWhich repository you are looking at. Confusing a fork, a template, and your own copy is easy. Run git remote -v and compare it against the URL in your browser.\nWhether you actually committed. Everything up-to-date means there were no new commits to send. Saved but uncommitted files are still only on your disk. Check the Git tab: any files still listed are not committed.",
+    "crumbs": [
+      "Guides",
+      "When things break",
+      "Error messages, decoded"
+    ]
+  },
+  {
+    "objectID": "guides/troubleshooting.html#still-stuck",
+    "href": "guides/troubleshooting.html#still-stuck",
+    "title": "Error messages, decoded",
+    "section": "Still stuck?",
+    "text": "Still stuck?\nBefore asking anyone, collect these three things. With them, almost any question gets answered in one reply; without them, the answer is always “what does the error say?”.\n\nThe exact error text, copied as text or a screenshot. Not a paraphrase: the specific words are what identify the problem.\nThe output of usethis::git_sitrep(), which shows your Git identity, your token, and the repository’s remote in one block. It contains no secrets, so it is safe to share.\nWhat you did immediately before, in one sentence.\n\nPasting all three into an AI assistant resolves most setup problems in a couple of turns. If it does not, bring the same three things to office hours or an email.",
+    "crumbs": [
+      "Guides",
+      "When things break",
+      "Error messages, decoded"
+    ]
+  },
+  {
+    "objectID": "guides/github-setup.html",
+    "href": "guides/github-setup.html",
+    "title": "Connecting RStudio to GitHub",
+    "section": "",
+    "text": "This is the step that fails most often, and always for one of two reasons: Git does not know who you are, or GitHub will not accept your password. Both are fixed below, permanently, in about ten minutes.\nWork through the five steps in order. Everything goes in the RStudio Console (the pane where R runs), not the Terminal.",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "Connecting RStudio to GitHub"
+    ]
+  },
+  {
+    "objectID": "guides/github-setup.html#create-a-github-account",
+    "href": "guides/github-setup.html#create-a-github-account",
+    "title": "Connecting RStudio to GitHub",
+    "section": "1. Create a GitHub account",
+    "text": "1. Create a GitHub account\nSign up at github.com/signup. Two pieces of advice you will be glad of later:\n\nChoose a username you would put on a CV. It becomes part of every URL you share, it is public, and changing it later breaks your links. Something close to your real name works well.\nUse an email address you will keep. If you sign up with a school address, add a personal one as a secondary email under Settings &gt; Emails before you graduate, so you do not lose the account when the school address is closed.\n\n\n\n\n\n\n\nTipIn this course\n\n\n\nSign up with your NYU address so the roster can match your account to your NetID. You will also be invited to the course GitHub organization by email: accept that invitation before anything else, because the assignment links do not work until you are a member. Invitations expire after seven days.",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "Connecting RStudio to GitHub"
+    ]
+  },
+  {
+    "objectID": "guides/github-setup.html#tell-git-who-you-are",
+    "href": "guides/github-setup.html#tell-git-who-you-are",
+    "title": "Connecting RStudio to GitHub",
+    "section": "2. Tell Git who you are",
+    "text": "2. Tell Git who you are\nGit stamps every commit with a name and an email. It refuses to commit until you supply them.\ninstall.packages(c(\"usethis\", \"gitcreds\"))   # if you have not already\n\nusethis::use_git_config(\n  user.name  = \"Your Name\",\n  user.email = \"you@example.edu\"\n)\nUse the email address attached to your GitHub account. If the two do not match, your commits will still work but GitHub will not credit them to your profile.\nThe name is a display name, not a login, so write it the way you would sign an email. A username with no spaces works too.",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "Connecting RStudio to GitHub"
+    ]
+  },
+  {
+    "objectID": "guides/github-setup.html#create-a-personal-access-token",
+    "href": "guides/github-setup.html#create-a-personal-access-token",
+    "title": "Connecting RStudio to GitHub",
+    "section": "3. Create a personal access token",
+    "text": "3. Create a personal access token\nGitHub stopped accepting account passwords for Git operations in 2021. When RStudio asks you to push and you type your GitHub password, it will be rejected every time. You need a personal access token (PAT) instead: a long random string that acts as a password for Git alone, and that you can revoke without touching your account.\nusethis::create_github_token()\nThis opens GitHub in your browser with the right permissions already ticked. On that page:\n\nReplace the placeholder Note (DESCRIBE THE TOKEN'S USE CASE) with something you will recognize later, such as RStudio on my laptop.\nSet the Expiration. The default is 30 days, which is almost never what you want: your pushes will silently start failing a month from now. Open the dropdown, choose Custom, and pick a date at the end of your project or term.\nLeave the checked scopes alone. usethis has already selected repo, user, gist, and workflow, which is what RStudio needs.\nScroll down and click Generate token.\n\n\n\n\n\n\n\nImportantCopy the token now\n\n\n\nThe token is shown exactly once. Copy it before you leave the page. If you lose it, nothing is broken, you just generate a new one and start this step again.\nTreat it like a password: never paste it into a script, a .qmd file, or a chat message, and never commit it. If it ever leaks, delete it under Settings &gt; Developer settings &gt; Personal access tokens and make a new one.\n\n\n\n\n\n\n\n\nTipIn this course\n\n\n\nSet the expiration to December 31, 2026, which covers the whole semester with room to spare. A 30-day default token expires in the middle of October, which is exactly when you do not want to be debugging authentication.",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "Connecting RStudio to GitHub"
+    ]
+  },
+  {
+    "objectID": "guides/github-setup.html#store-the-token",
+    "href": "guides/github-setup.html#store-the-token",
+    "title": "Connecting RStudio to GitHub",
+    "section": "4. Store the token",
+    "text": "4. Store the token\nBack in the RStudio Console:\ngitcreds::gitcreds_set()\nPaste the token when prompted and press Enter. It goes into your operating system’s credential store (Keychain on macOS, Credential Manager on Windows), so you do this once per computer, not once per project.\nIf a token is already stored, gitcreds_set() shows you a short menu; choose the option to replace it.",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "Connecting RStudio to GitHub"
+    ]
+  },
+  {
+    "objectID": "guides/github-setup.html#check-the-whole-setup",
+    "href": "guides/github-setup.html#check-the-whole-setup",
+    "title": "Connecting RStudio to GitHub",
+    "section": "5. Check the whole setup",
+    "text": "5. Check the whole setup\nusethis::git_sitrep()\nThis prints a situation report. These are the lines that matter:\nGit config (global)\n* Name: 'Your Name'\n* Email: 'you@example.edu'\n...\nGitHub\n* Default GitHub host: 'https://github.com'\n* Personal access token for 'https://github.com': '&lt;discovered&gt;'\n* GitHub user: 'yourusername'\n* Token scopes: 'gist, repo, user, workflow'\nName and email filled in, a token discovered, and a GitHub username shown means you are connected. If the token line says &lt;unset&gt;, step 4 did not take effect: run gitcreds::gitcreds_set() again.\nDo not worry about the other lines. Vaccinated: FALSE and an unset global gitignore are suggestions, not problems, and nothing on this page depends on them.",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "Connecting RStudio to GitHub"
+    ]
+  },
+  {
+    "objectID": "guides/github-setup.html#when-your-token-expires",
+    "href": "guides/github-setup.html#when-your-token-expires",
+    "title": "Connecting RStudio to GitHub",
+    "section": "When your token expires",
+    "text": "When your token expires\nTokens are supposed to expire. When yours does, pushes start failing with an authentication error even though nothing about your setup changed. GitHub emails you a warning a week beforehand.\nThe fix is steps 3 and 4 again:\nusethis::create_github_token()   # generate a fresh one\ngitcreds::gitcreds_set()         # choose \"replace\" and paste it\nYou do not need to touch your repositories, and no work is lost.",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "Connecting RStudio to GitHub"
+    ]
+  },
+  {
+    "objectID": "guides/github-setup.html#a-note-on-ssh-keys",
+    "href": "guides/github-setup.html#a-note-on-ssh-keys",
+    "title": "Connecting RStudio to GitHub",
+    "section": "A note on SSH keys",
+    "text": "A note on SSH keys\nThere is a second way to authenticate, using an SSH key pair instead of a token. It is a little more setup once and a little less maintenance afterward, and it is a perfectly good choice if you already have keys.\nTokens are recommended here because they work identically on every operating system, they are what usethis automates, and expiry makes them safer on a shared or borrowed machine. If you want SSH, usethis::use_git_protocol(\"ssh\") and the Happy Git with R chapter cover it.",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "Connecting RStudio to GitHub"
+    ]
+  },
+  {
+    "objectID": "guides/github-setup.html#next",
+    "href": "guides/github-setup.html#next",
+    "title": "Connecting RStudio to GitHub",
+    "section": "Next",
+    "text": "Next\nYou are connected. Now set up an RStudio project so you have somewhere to put the work.",
+    "crumbs": [
+      "Guides",
+      "Setup, once",
+      "Connecting RStudio to GitHub"
+    ]
+  },
+  {
+    "objectID": "guides/commit-push.html",
+    "href": "guides/commit-push.html",
+    "title": "Committing, pushing, and pulling",
+    "section": "",
+    "text": "Saving a file and saving your work are different things. Git puts three checkpoints between the file on your disk and the copy on GitHub, and almost every confusion about Git comes from collapsing them.\n\n\n\n\n\n\n\n\nStep\nWhat it does\nWhere the work now is\n\n\n\n\nSave (Ctrl/Cmd+S)\nWrites your edits to the file\nOn your disk only\n\n\nStage (tick the box)\nMarks a file as part of the next snapshot\nChosen, not yet recorded\n\n\nCommit\nRecords a permanent snapshot with a message\nIn your local history\n\n\nPush\nUploads your commits to GitHub\nOn GitHub, visible to others\n\n\n\nThe consequence worth memorizing: a commit is not on GitHub until you push. Every term, someone commits diligently all week, never pushes, and believes the work was submitted. Only what is pushed exists to anyone but you.\nPull is the reverse of push: it brings down commits made elsewhere (by a collaborator, by your other laptop, or by an edit you made on github.com in the browser).",
+    "crumbs": [
+      "Guides",
+      "Every week",
+      "Committing, pushing, and pulling"
+    ]
+  },
+  {
+    "objectID": "guides/commit-push.html#the-mental-model",
+    "href": "guides/commit-push.html#the-mental-model",
+    "title": "Committing, pushing, and pulling",
+    "section": "",
+    "text": "Saving a file and saving your work are different things. Git puts three checkpoints between the file on your disk and the copy on GitHub, and almost every confusion about Git comes from collapsing them.\n\n\n\n\n\n\n\n\nStep\nWhat it does\nWhere the work now is\n\n\n\n\nSave (Ctrl/Cmd+S)\nWrites your edits to the file\nOn your disk only\n\n\nStage (tick the box)\nMarks a file as part of the next snapshot\nChosen, not yet recorded\n\n\nCommit\nRecords a permanent snapshot with a message\nIn your local history\n\n\nPush\nUploads your commits to GitHub\nOn GitHub, visible to others\n\n\n\nThe consequence worth memorizing: a commit is not on GitHub until you push. Every term, someone commits diligently all week, never pushes, and believes the work was submitted. Only what is pushed exists to anyone but you.\nPull is the reverse of push: it brings down commits made elsewhere (by a collaborator, by your other laptop, or by an edit you made on github.com in the browser).",
+    "crumbs": [
+      "Guides",
+      "Every week",
+      "Committing, pushing, and pulling"
+    ]
+  },
+  {
+    "objectID": "guides/commit-push.html#the-routine",
+    "href": "guides/commit-push.html#the-routine",
+    "title": "Committing, pushing, and pulling",
+    "section": "The routine",
+    "text": "The routine\nOnce your project is open in RStudio, you will use the Git tab in the top-right pane. Files appear there as soon as they change.\n\n1. Pull before you start\nClick the blue Pull arrow. If you are the only person working, this usually reports “Already up to date”, which takes a second and saves you the rejected push described below.\n\n\n2. Do your work, and save\nNothing Git-related here. Edit, save, run, render.\n\n\n3. Stage what belongs in this snapshot\nIn the Git tab, tick the Staged checkbox next to each file you want to include. The two-letter status codes mean:\n\n\n\n\n\n\n\nCode\nMeaning\n\n\n\n\nM\nModified: the file existed and you changed it\n\n\nA\nAdded: a new file, now staged\n\n\n?\nUntracked: a new file Git has never seen (git status calls it ??)\n\n\nD\nDeleted\n\n\nR\nRenamed\n\n\n\nStage your source files. Do not stage things that are generated, huge, or private: see what not to commit.\n\n\n4. Commit\nClick Commit. A window opens showing your staged changes line by line, with additions in green and deletions in red. Read that diff: it is the cheapest bug check you will ever get.\nWrite a message in the box and click Commit.\nA good message says what changed and why, in the present tense, in one line:\n\nGood: Add Q3 boxplot and fix filter on year\nGood: Correct sample size in the summary table\nLess useful: update, stuff, asdf, final FINAL v2\n\nYou are writing to your future self, who will scroll this history in three months looking for the commit where something broke.\n\n\n5. Push\nClose the commit window and click the green Push arrow. When it finishes, your work is on GitHub.\nIf Push asks for a username and password, your token is not set up: go back to guide 2. If it reports that updates were rejected, click Pull first, then Push again.\n\n\n6. Confirm\nOpen the repository on github.com and look at it. Your files should be there, with your commit message and a timestamp beside them. This takes five seconds and is the only real proof that the work is submitted.\n\n\n\n\n\n\nTipIn this course\n\n\n\nAfter you push, click the Actions tab on your repository page. Within about two minutes the autograder reports which questions passed. You can revise and push as often as you like before the deadline: only the final state counts, so a red X on an early attempt costs you nothing.",
+    "crumbs": [
+      "Guides",
+      "Every week",
+      "Committing, pushing, and pulling"
+    ]
+  },
+  {
+    "objectID": "guides/commit-push.html#what-not-to-commit",
+    "href": "guides/commit-push.html#what-not-to-commit",
+    "title": "Committing, pushing, and pulling",
+    "section": "What not to commit",
+    "text": "What not to commit\nGit is for source, not for output or secrets.\n\n\n\n\n\n\n\nDo commit\nDo not commit\n\n\n\n\n.R and .qmd files\nTokens, passwords, API keys\n\n\nSmall input data\nData you are not allowed to redistribute\n\n\n.gitignore, README.md, .Rproj\nFiles over 100 MB (GitHub refuses them)\n\n\nAnything needed to reproduce the work\n.Rproj.user/, .Rhistory, .RData\n\n\n\nA .gitignore file lists patterns Git should ignore, so those files stop appearing in the Git tab entirely. RStudio creates a sensible one for you when it makes a project. To add to it:\nusethis::use_git_ignore(c(\"*.csv\", \"secrets.R\"))\n\n\n\n\n\n\nImportant\n\n\n\nCommitting a secret and then deleting it does not remove it: it stays in the history and is still readable. If you push a token or password, revoke it immediately on GitHub and issue a new one. That is the fix; editing the file is not.",
+    "crumbs": [
+      "Guides",
+      "Every week",
+      "Committing, pushing, and pulling"
+    ]
+  },
+  {
+    "objectID": "guides/commit-push.html#the-same-thing-in-the-terminal",
+    "href": "guides/commit-push.html#the-same-thing-in-the-terminal",
+    "title": "Committing, pushing, and pulling",
+    "section": "The same thing in the Terminal",
+    "text": "The same thing in the Terminal\nThe Git tab is a friendly front end for a handful of commands. If you prefer typing, or you are on a machine without RStudio, these are the equivalents. Run them in the RStudio Terminal tab or any shell, from inside the project folder.\ngit status                        # what has changed, and what is staged\ngit add exercise.qmd              # stage one file\ngit add .                         # stage everything changed\ngit commit -m \"Add Q3 boxplot\"    # record a snapshot\ngit push                          # upload to GitHub\ngit pull                          # download from GitHub\ngit log --oneline                 # your history, one commit per line\ngit status is the single most useful command in Git. When you are lost, run it: it tells you where you are and usually suggests the command you want next.",
+    "crumbs": [
+      "Guides",
+      "Every week",
+      "Committing, pushing, and pulling"
+    ]
+  },
+  {
+    "objectID": "guides/commit-push.html#undoing-things",
+    "href": "guides/commit-push.html#undoing-things",
+    "title": "Committing, pushing, and pulling",
+    "section": "Undoing things",
+    "text": "Undoing things\nNothing here loses committed work. Git makes it genuinely hard to destroy something you have committed, which is most of the point of using it.\n\n\n\n\n\n\n\n\nYou want to\nIn RStudio\nIn the Terminal\n\n\n\n\nUnstage a file\nUntick its Staged box\ngit restore --staged FILE\n\n\nThrow away uncommitted edits to a file\nGit tab &gt; select &gt; More &gt; Revert\ngit restore FILE\n\n\nFix the message on the last commit\nCommit window &gt; tick Amend previous commit\ngit commit --amend\n\n\nSee what changed in a file\nGit tab &gt; select &gt; Diff\ngit diff FILE\n\n\nLook at an old version\nGit tab &gt; History (clock icon)\ngit log -p FILE\n\n\n\n\n\n\n\n\n\nWarning\n\n\n\nReverting uncommitted changes is the one genuinely destructive action in that table. Those edits were never recorded, so Git cannot bring them back. Commit first when you are unsure: a messy commit is always better than lost work.\n\n\nOnly amend a commit you have not pushed yet. Amending rewrites history, and rewriting history that others have already pulled creates a mess for them.",
+    "crumbs": [
+      "Guides",
+      "Every week",
+      "Committing, pushing, and pulling"
+    ]
+  },
+  {
+    "objectID": "guides/commit-push.html#when-two-people-edit-the-same-lines",
+    "href": "guides/commit-push.html#when-two-people-edit-the-same-lines",
+    "title": "Committing, pushing, and pulling",
+    "section": "When two people edit the same lines",
+    "text": "When two people edit the same lines\nIf you and a collaborator change the same lines of the same file, a pull produces a merge conflict. Git marks the disagreement inside the file:\n&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD\nmean_age &lt;- mean(df$age, na.rm = TRUE)\n=======\nmean_age &lt;- mean(df$age)\n&gt;&gt;&gt;&gt;&gt;&gt;&gt; origin/main\nTo resolve it: open the file, delete the three marker lines, keep the code you want (which may be a blend of both), save, then stage and commit as usual. The commit that follows is the resolution.\nConflicts are normal collaboration, not a failure. They are also much rarer when everyone pulls before starting and pushes when they finish.",
+    "crumbs": [
+      "Guides",
+      "Every week",
+      "Committing, pushing, and pulling"
+    ]
+  },
+  {
+    "objectID": "guides/commit-push.html#something-went-wrong",
+    "href": "guides/commit-push.html#something-went-wrong",
+    "title": "Committing, pushing, and pulling",
+    "section": "Something went wrong",
+    "text": "Something went wrong\nEvery common Git and GitHub error, with what it means and how to fix it, is on the error messages page.",
+    "crumbs": [
+      "Guides",
+      "Every week",
+      "Committing, pushing, and pulling"
+    ]
+  },
+  {
+    "objectID": "syllabus.html",
+    "href": "syllabus.html",
+    "title": "Syllabus",
+    "section": "",
+    "text": "Field\nDetails\n\n\n\n\nCourse\nGPH-GU 2182: Statistical Programming in R (3 credits)\n\n\nSchedule\nWednesdays 2:00 PM – 4:40 PM\n\n\nLocation\n70 Washington Sq S (Bobst Library), Room LL138\n\n\nSemester\nFall 2026\n\n\nInstructor\nYang Feng, PhD (yf31@nyu.edu) · Office: 708 Broadway, Room 415\n\n\nInstructor Office Hours\nFridays 3:00 PM (Zoom link available on Brightspace) or by appointment\n\n\nCourse Assistant\nSabrina Wu (jw6557@nyu.edu)\n\n\nTA Office Hours\nWednesdays 10:00 AM (Zoom link available on Brightspace)\n\n\nCourse Website\nhttps://gph-2182.github.io/\n\n\nClassroom 50\nhttps://classroom50.org/"
+  },
+  {
+    "objectID": "syllabus.html#course-information",
+    "href": "syllabus.html#course-information",
+    "title": "Syllabus",
+    "section": "",
+    "text": "Field\nDetails\n\n\n\n\nCourse\nGPH-GU 2182: Statistical Programming in R (3 credits)\n\n\nSchedule\nWednesdays 2:00 PM – 4:40 PM\n\n\nLocation\n70 Washington Sq S (Bobst Library), Room LL138\n\n\nSemester\nFall 2026\n\n\nInstructor\nYang Feng, PhD (yf31@nyu.edu) · Office: 708 Broadway, Room 415\n\n\nInstructor Office Hours\nFridays 3:00 PM (Zoom link available on Brightspace) or by appointment\n\n\nCourse Assistant\nSabrina Wu (jw6557@nyu.edu)\n\n\nTA Office Hours\nWednesdays 10:00 AM (Zoom link available on Brightspace)\n\n\nCourse Website\nhttps://gph-2182.github.io/\n\n\nClassroom 50\nhttps://classroom50.org/"
+  },
+  {
+    "objectID": "syllabus.html#course-description",
+    "href": "syllabus.html#course-description",
+    "title": "Syllabus",
+    "section": "Course Description",
+    "text": "Course Description\nR is one of the most popular programming languages in statistics and data science. This course will introduce various R programming topics, including R objects, data visualization, data import & export, data manipulation, creating functions and iterations for statistical simulations, and writing high-quality reports with R Markdown. The course will focus on public health datasets as illustrations to best meet the practical needs of GPH students but is also open to those of other backgrounds. By the end of the course, students will be able to comfortably program in R for effective data preprocessing, analysis and presentation. This course does not require prior experience in programming or statistics and serves as a foundation for other courses in biostatistics, epidemiology, and data science."
+  },
+  {
+    "objectID": "syllabus.html#course-overview",
+    "href": "syllabus.html#course-overview",
+    "title": "Syllabus",
+    "section": "Course Overview",
+    "text": "Course Overview\nThis course equips graduate students with foundational and modern computing skills for reproducible public health data science. Using a dual-track pedagogical approach, students learn fundamental computational primitives alongside modern, expressive tidyverse workflows. The curriculum covers Quarto reproducible publishing, vectors, matrices, lists, data frames, publication-quality graphics with ggplot2, robust data wrangling with dplyr and tidyr, string and factor manipulation, functional programming with purrr, and Monte Carlo simulation. Students will also master responsible, ethical AI-assisted programming to accelerate learning, debugging, and code documentation while building genuine human fluency."
+  },
+  {
+    "objectID": "syllabus.html#course-format",
+    "href": "syllabus.html#course-format",
+    "title": "Syllabus",
+    "section": "Course Format",
+    "text": "Course Format\nThis is a 3-credit in-person course, including 14 in-person class sessions (14 × 160 minutes = 2,240 minutes) and 10 minutes of individual final project consultation, totaling 2,250 minutes of instructional time."
+  },
+  {
+    "objectID": "syllabus.html#learning-objectives-competencies",
+    "href": "syllabus.html#learning-objectives-competencies",
+    "title": "Syllabus",
+    "section": "Learning Objectives & Competencies",
+    "text": "Learning Objectives & Competencies\n\n\n\n\n\n\n\n\nLearning Objective\nCompetency\nCourse Component\n\n\n\n\n1. Develop R and Quarto code for reproducible data analysis and publication.\nUse statistical software proficiently for data management, manipulation, storage, resource sharing, and analysis. (BC-3)\nLessons 1, 10, 12, 13; In-class 1, 10, 12, 13; Weekly Exercises 1, 9, 11, 12; Final Project\n\n\n2. Create and manipulate foundational R objects (vectors, matrices, lists, and data frames).\nUse statistical software proficiently for data management, manipulation, storage, resource sharing, and analysis. (BC-3)\nLessons 2, 3, 7; In-class 2, 3, 7; Weekly Exercises 2, 3, 7; Quizzes 1, 3; Final Project\n\n\n3. Apply R for publication-quality data visualization with ggplot2.\nUse statistical software proficiently for data management, manipulation, storage, resource sharing, and analysis. (BC-3)Communicate study results clearly and accurately in written reports and with effective data visualization methods. (BC-4)\nLessons 4, 12; In-class 4, 12; Weekly Exercises 4, 11; Quiz 2; Final Project\n\n\n4. Apply R for real-world data import, type cleaning, validation, and export.\nUse statistical software proficiently for data management, manipulation, storage, resource sharing, and analysis. (BC-3)\nLessons 3, 6; In-class 3, 6; Weekly Exercises 3, 6; Quizzes 1, 3; Final Project\n\n\n5. Apply R for advanced data wrangling, relational joins, and tidy reshaping.\nTranslate hypotheses and associated outcome measures into appropriate study designs. (BC-1)Use statistical software proficiently for data management, manipulation, storage, resource sharing, and analysis. (BC-3)\nLessons 5, 6, 7; In-class 5, 6, 7; Weekly Exercises 5, 6, 7; Quizzes 2, 3; Final Project\n\n\n6. Implement custom functions, iteration, and Monte Carlo statistical simulations.\nUse statistical software proficiently for data management, manipulation, storage, resource sharing, and analysis. (BC-3)\nLessons 8, 9, 10; In-class 8, 9, 10; Weekly Exercises 8, 9, 10; Quizzes 4, 5; Final Project\n\n\n7. Synthesize findings into a reproducible statistical report with Quarto and responsible AI auditing.\nUse statistical software proficiently for data management, manipulation, storage, resource sharing, and analysis. (BC-3)Communicate study results clearly and accurately in written reports and with effective data visualization methods. (BC-4)\nLessons 1, 12, 13, 14; In-class 1, 12, 13; Weekly Exercises 1, 11, 12; Final Project"
+  },
+  {
+    "objectID": "syllabus.html#pre-requisites",
+    "href": "syllabus.html#pre-requisites",
+    "title": "Syllabus",
+    "section": "Pre-Requisites",
+    "text": "Pre-Requisites\nNo Pre-requisites."
+  },
+  {
+    "objectID": "syllabus.html#course-requirements-and-expectations",
+    "href": "syllabus.html#course-requirements-and-expectations",
+    "title": "Syllabus",
+    "section": "Course Requirements and Expectations",
+    "text": "Course Requirements and Expectations\n\nAttendance (5%): Checked every session. Up to 2 excused absences per semester carry no penalty. To be excused, submit the Excused Absence Request form at least 60 minutes before the class start time; you will receive an automatic email with the outcome. Your first excused absence in a course needs no documentation; every further request must include documentation uploaded with the form. Requests inside the 60-minute window or after class are not excused unless it was a genuine emergency and documentation is uploaded with the form; the instructor reviews those case by case.\nIn-Class Paired Exercises (10%): Active paired programming in every session. Graded for completeness and effort (not strict correctness). Lowest 2 scores dropped.\nWeekly Exercises (35%): 12 autograded assignments submitted via GitHub. Immediate automated feedback upon push. Lowest 2 scores dropped. Late: 20% within 24h, 40% within 48h, zero after 48h.\nIn-Class Quizzes (20%): Five 20-minute paper-based, closed-book quizzes (Weeks 3, 5, 7, 9, 11) during the last 30 minutes of class. The lowest quiz score is dropped (best 4 of 5 count, 5% each). Quizzes cannot be made up. A quiz missed with an excused absence (absence form submitted at least 60 minutes before class) uses the drop; if a second quiz is missed with an excused absence, the quiz component is pro-rated over the quizzes you took. An unexcused missed quiz scores zero.\nFinal Individual Project (30%): Comprehensive reproducible public health analysis with Quarto report, 5-minute video walkthrough, and AI-use appendix. Released Week 10; due Dec 16 at 11:59 PM."
+  },
+  {
+    "objectID": "syllabus.html#grading-components",
+    "href": "syllabus.html#grading-components",
+    "title": "Syllabus",
+    "section": "Grading Components",
+    "text": "Grading Components\n\n\n\n\n\n\n\n\nComponent\nWeight\nPolicy\n\n\n\n\nAttendance\n5%\nChecked every session; up to 2 excused absences (form due 60 min before class)\n\n\nIn-Class Exercises (14)\n10%\nPaired programming; lowest 2 dropped\n\n\nWeekly Autograded Exercises (12)\n35%\nDistributed via GitHub; lowest 2 dropped\n\n\nIn-Class Quizzes (5)\n20%\nPaper-based (Weeks 3, 5, 7, 9, 11); lowest 1 dropped; no make-ups, excused misses pro-rated\n\n\nFinal Individual Project\n30%\nQuarto report + Video Walkthrough + AI Appendix\n\n\nTotal\n100%\n\n\n\n\n\nGrading Scale (Graduate Courses)\n\nA: 94–100 · A−: 90–93\nB+: 87–89 · B: 83–86 · B−: 80–82\nC+: 77–79 · C: 73–76 · C−: 70–72\nF: Below 70\n\n\n\nExtra Credit: Textbook Proofreading (up to +2%)\nOur textbook, R Programming: Zero to Pro, is open source, and you can help improve it while you study. You may earn extra credit added directly to your final course grade:\n\n+0.5% for each pull request to r02pro/r02pro_source that gets merged (typos, grammar, code fixes; use the edit button on any book page).\n+0.25% for each issue the instructor labels accepted (confusing explanations, wrong output, suggestions you cannot fix yourself).\nCapped at +2% total.\n\nRules: contributions count from Sep 2 through Dec 16, 2026 (11:59 PM ET); submit under the GitHub account you use for this course; search existing pull requests and issues first, since the first report wins and duplicates earn no credit; each pull request should cover one section; you must personally verify every problem you report (see the course AI policy). Read the contributing guide before your first submission. As a bonus, every contributor is permanently named in the book’s acknowledgments."
+  },
+  {
+    "objectID": "syllabus.html#statement-on-the-use-of-ai-technology",
+    "href": "syllabus.html#statement-on-the-use-of-ai-technology",
+    "title": "Syllabus",
+    "section": "Statement on the Use of AI Technology",
+    "text": "Statement on the Use of AI Technology\nThis course uses a Three-Zone AI Policy: - 🟢 Green Zone (Permitted with Citation): Weekly exercises, in-class practice, and final project development. You may consult LLMs (ChatGPT, Claude, GitHub Copilot) for code explanations, syntax queries, and debugging hints. All AI assistance must be acknowledged in an AI-Use Appendix. - 🟡 Yellow Zone (Guided / Supervised): In-class AI auditing activities where we evaluate AI-generated code quality and hallucinated arguments. - 🔴 Red Zone (Strictly Prohibited): In-class paper quizzes, uncredited code submission, or presenting AI-generated work as your own independent reasoning.\nSee the dedicated AI Policy Page for full guidelines and citation templates."
+  },
+  {
+    "objectID": "syllabus.html#reading-reference-materials",
+    "href": "syllabus.html#reading-reference-materials",
+    "title": "Syllabus",
+    "section": "Reading & Reference Materials",
+    "text": "Reading & Reference Materials\n\nPrimary Textbook: Feng, Y. (2026). R Programming: Zero to Pro (R02Pro). Available online: https://r02pro.github.io/\nSupplementary Reference: Wickham, H., Çetinkaya-Rundel, M., & Grolemund, G. (2023). R for Data Science (2nd ed.). O’Reilly. Available online: https://r4ds.hadley.nz/"
+  },
+  {
+    "objectID": "syllabus.html#gph-community-statement",
+    "href": "syllabus.html#gph-community-statement",
+    "title": "Syllabus",
+    "section": "GPH Community Statement",
+    "text": "GPH Community Statement\nThe NYU School of Global Public Health (GPH) is committed to maintaining and celebrating a diverse, just, and inclusive environment for all of our students, faculty, and staff around the world. GPH promotes a welcoming learning environment that embraces cultural humility, and respects and values differences. These differences can include race, ethnicity, religion, gender identity, sexual orientation, physical, mental and emotional abilities, and socioeconomic status. In this course, we encourage all students to share and discuss different perspectives, beliefs, and experiences while treating all with dignity and respect."
+  },
+  {
+    "objectID": "syllabus.html#statement-of-academic-integrity",
+    "href": "syllabus.html#statement-of-academic-integrity",
+    "title": "Syllabus",
+    "section": "Statement of Academic Integrity",
+    "text": "Statement of Academic Integrity\nThe NYU School of Global Public Health values both open inquiry and academic integrity. Students in the program are expected to follow standards of excellence set forth by New York University. Such standards include respect, honesty and responsibility. The GPH does not tolerate violations to academic integrity including plagiarism, cheating, unapproved duplicate submissions, or presenting work generated by commercial firms or AI tools as your own independent effort without explicit authorization and citation.\n\nStudents with Disabilities\nStudents with disabilities should contact the Moses Center for Students with Disabilities regarding the resources available to them and to determine what classroom accommodations should be made available. More information can be found at Moses Center for Student Accessibility. Please provide your accommodation letter as early in the semester as possible."
+  },
+  {
+    "objectID": "weeks/week-09.html",
+    "href": "weeks/week-09.html",
+    "title": "Week 9: Writing Custom Functions & purrr",
+    "section": "",
+    "text": "Note🔒 Not yet released\n\n\n\nMaterials for this week (slides, in-class exercise, and weekly exercise) unlock automatically on Sunday, Nov 1, 2026 at 8:00 AM ET.",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 9: Writing Custom Functions & purrr"
+    ]
+  },
+  {
+    "objectID": "weeks/week-09.html#before-class",
+    "href": "weeks/week-09.html#before-class",
+    "title": "Week 9: Writing Custom Functions & purrr",
+    "section": "Before class",
+    "text": "Before class\n\nRead: R02Pro Ch 13",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 9: Writing Custom Functions & purrr"
+    ]
+  },
+  {
+    "objectID": "weeks/week-14.html",
+    "href": "weeks/week-14.html",
+    "title": "Week 14: Project Presentations & The Future of R",
+    "section": "",
+    "text": "Note🔒 Not yet released\n\n\n\nMaterials for this week (slides, in-class exercise, and weekly exercise) unlock automatically on Sunday, Dec 6, 2026 at 8:00 AM ET.",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 14: Project Presentations & The Future of R"
+    ]
+  },
+  {
+    "objectID": "weeks/week-14.html#before-class",
+    "href": "weeks/week-14.html#before-class",
+    "title": "Week 14: Project Presentations & The Future of R",
+    "section": "Before class",
+    "text": "Before class\n\nRead: Supplementary",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 14: Project Presentations & The Future of R"
+    ]
+  },
+  {
+    "objectID": "weeks/week-06.html",
+    "href": "weeks/week-06.html",
+    "title": "Week 6: Advanced Wrangling, Joins & Tidy Data",
+    "section": "",
+    "text": "Note🔒 Not yet released\n\n\n\nMaterials for this week (slides, in-class exercise, and weekly exercise) unlock automatically on Sunday, Oct 4, 2026 at 8:00 AM ET.",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 6: Advanced Wrangling, Joins & Tidy Data"
+    ]
+  },
+  {
+    "objectID": "weeks/week-06.html#before-class",
+    "href": "weeks/week-06.html#before-class",
+    "title": "Week 6: Advanced Wrangling, Joins & Tidy Data",
+    "section": "Before class",
+    "text": "Before class\n\nRead: R02Pro Ch 8.5–8.8, Ch 9",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 6: Advanced Wrangling, Joins & Tidy Data"
+    ]
+  },
+  {
+    "objectID": "weeks/week-11.html",
+    "href": "weeks/week-11.html",
+    "title": "Week 11: Statistical Modeling & Regression",
+    "section": "",
+    "text": "Note🔒 Not yet released\n\n\n\nMaterials for this week (slides, in-class exercise, and weekly exercise) unlock automatically on Sunday, Nov 15, 2026 at 8:00 AM ET.",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 11: Statistical Modeling & Regression"
+    ]
+  },
+  {
+    "objectID": "weeks/week-11.html#before-class",
+    "href": "weeks/week-11.html#before-class",
+    "title": "Week 11: Statistical Modeling & Regression",
+    "section": "Before class",
+    "text": "Before class\n\nRead: R02Pro Ch 11.5–11.6",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 11: Statistical Modeling & Regression"
+    ]
+  },
+  {
+    "objectID": "weeks/inclass/week-01-inclass.html",
+    "href": "weeks/inclass/week-01-inclass.html",
+    "title": "Week 1 In-Class Exercise: Welcome & Modern Toolkit",
+    "section": "",
+    "text": "NoteInstructions\n\n\n\nWork in pairs during class.\n\n📥 Download week-01-inclass.qmd to open and edit in RStudio (or use the &lt;/&gt; Source Code button at the top right).\nRender this Quarto document to HTML and push it to your GitHub repository by the end of class for participation credit."
+  },
+  {
+    "objectID": "weeks/inclass/week-01-inclass.html#basic-arithmetic-calculations",
+    "href": "weeks/inclass/week-01-inclass.html#basic-arithmetic-calculations",
+    "title": "Week 1 In-Class Exercise: Welcome & Modern Toolkit",
+    "section": "1.1 Basic Arithmetic & Calculations",
+    "text": "1.1 Basic Arithmetic & Calculations\nIn the code chunk below, compute the Body Mass Index (BMI) for three study participants:\n\nParticipant A: Weight 70\\text{ kg}, Height 1.75\\text{ m}\nParticipant B: Weight 85\\text{ kg}, Height 1.80\\text{ m}\nParticipant C: Weight 58\\text{ kg}, Height 1.62\\text{ m}\n\n\\text{BMI} = \\frac{\\text{weight in kg}}{(\\text{height in meters})^2}\n\n# Write your calculations below:"
+  },
+  {
+    "objectID": "weeks/inclass/week-01-inclass.html#exploring-built-in-functions",
+    "href": "weeks/inclass/week-01-inclass.html#exploring-built-in-functions",
+    "title": "Week 1 In-Class Exercise: Welcome & Modern Toolkit",
+    "section": "1.2 Exploring Built-in Functions",
+    "text": "1.2 Exploring Built-in Functions\nCompute the mean of the three BMIs you calculated above. Round the result to 2 decimal places using round().\n\n# Write your summary code below:"
+  },
+  {
+    "objectID": "weeks/inclass/week-01-inclass.html#r-packages-and-documentation",
+    "href": "weeks/inclass/week-01-inclass.html#r-packages-and-documentation",
+    "title": "Week 1 In-Class Exercise: Welcome & Modern Toolkit",
+    "section": "1.3 R Packages and Documentation",
+    "text": "1.3 R Packages and Documentation\n\nLoad the r02pro package (install it in the Console with install.packages(\"r02pro\") if you haven’t already).\nDisplay the first 6 rows of the ahp dataset using the head() function.\nOpen the help file for the median() function using ?median.\n\n\n# Load library and inspect data:"
+  },
+  {
+    "objectID": "weeks/inclass/week-01-inclass.html#text-formatting-markdown",
+    "href": "weeks/inclass/week-01-inclass.html#text-formatting-markdown",
+    "title": "Week 1 In-Class Exercise: Welcome & Modern Toolkit",
+    "section": "2.1 Text Formatting & Markdown",
+    "text": "2.1 Text Formatting & Markdown\nIn the space below:\n\nWrite a short 2-sentence paragraph describing the purpose of reproducible research in public health.\nInclude at least one bold phrase and one italicized word.\nAdd a bulleted list of two advantages of Quarto over traditional copy-pasting into Word.\n\n(Type your text response here)"
+  },
+  {
+    "objectID": "weeks/inclass/week-01-inclass.html#code-chunk-customization",
+    "href": "weeks/inclass/week-01-inclass.html#code-chunk-customization",
+    "title": "Week 1 In-Class Exercise: Welcome & Modern Toolkit",
+    "section": "2.2 Code Chunk Customization",
+    "text": "2.2 Code Chunk Customization\nCreate an R code chunk below with chunk option #| echo: true that creates a vector of systolic blood pressure readings: 120, 134, 118, 142, 128 and calculates their standard deviation using sd().\n\n# Write your code here:"
+  },
+  {
+    "objectID": "weeks/inclass/week-01-inclass.html#submission-checklist",
+    "href": "weeks/inclass/week-01-inclass.html#submission-checklist",
+    "title": "Week 1 In-Class Exercise: Welcome & Modern Toolkit",
+    "section": "4.1 Submission Checklist",
+    "text": "4.1 Submission Checklist\n\nBoth your name and your partner’s name are in the author field at the top.\nClick Render in RStudio and verify the HTML looks clean.\nCommit and push your changes to GitHub."
+  },
+  {
+    "objectID": "weeks/week-13.html",
+    "href": "weeks/week-13.html",
+    "title": "Week 13: Scientific Communication & Project Workshop",
+    "section": "",
+    "text": "Note🔒 Not yet released\n\n\n\nMaterials for this week (slides, in-class exercise, and weekly exercise) unlock automatically on Sunday, Nov 29, 2026 at 8:00 AM ET.",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 13: Scientific Communication & Project Workshop"
+    ]
+  },
+  {
+    "objectID": "weeks/week-13.html#before-class",
+    "href": "weeks/week-13.html#before-class",
+    "title": "Week 13: Scientific Communication & Project Workshop",
+    "section": "Before class",
+    "text": "Before class\n\nRead: Supplementary",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 13: Scientific Communication & Project Workshop"
+    ]
+  },
+  {
+    "objectID": "weeks/slides/week-01-slides.html#welcome-check-in",
+    "href": "weeks/slides/week-01-slides.html#welcome-check-in",
+    "title": "Week 1: Welcome & The Modern R Toolkit",
+    "section": "Welcome & Check-In",
+    "text": "Welcome & Check-In\n\n\n📋 Walk-In Check-In Protocol\n\nFind any open desk and unpack your laptop.\nScan the QR code or enter today’s 4-digit PIN on screen to check in.\nAt 2:03 PM, random pairs will be generated on the screen.\nMove to your assigned station to sit with your partner before lecture starts!\n\n\n\n\n\n\n\n\n👥 Today’s Roles\n\n\n\n🚀 Driver (Student A): Types for Cycles 1 & 2\n🧭 Navigator (Student B): Types for Cycles 3 & 4\nSwap keyboard & roles at mid-class break!"
+  },
+  {
+    "objectID": "weeks/slides/week-01-slides.html#why-statistical-programming-in-r",
+    "href": "weeks/slides/week-01-slides.html#why-statistical-programming-in-r",
+    "title": "Week 1: Welcome & The Modern R Toolkit",
+    "section": "Why Statistical Programming in R?",
+    "text": "Why Statistical Programming in R?\n\n\nWhy R?\n\nPublic Health Standard: CDC, WHO, FDA, academic journals, and health agencies run on R.\nTidyverse Ecosystem: Unmatched tools for data wrangling (dplyr), visualization (ggplot2), and modeling.\nOpen & Reproducible: Free, community-driven, transparent science.\n\n\nWhy This Course?\n\nNo prior programming required.\nFull data pipeline: Import \\(\\rightarrow\\) Clean \\(\\rightarrow\\) Visualize \\(\\rightarrow\\) Simulate \\(\\rightarrow\\) Report.\nModern professional toolkit: Quarto + Git/GitHub + Responsible AI assistance."
+  },
+  {
+    "objectID": "weeks/slides/week-01-slides.html#the-modern-data-science-stack",
+    "href": "weeks/slides/week-01-slides.html#the-modern-data-science-stack",
+    "title": "Week 1: Welcome & The Modern R Toolkit",
+    "section": "The Modern Data Science Stack",
+    "text": "The Modern Data Science Stack\nIn this course, you will master five core technologies:\n\nR: The statistical computing engine.\nRStudio / Positron: The integrated development environment (IDE).\nQuarto (.qmd): Reproducible scientific publishing (replaces Word/PDF/slides).\nGit & GitHub: Version control, collaboration, and automated grading.\nAI Assistants: Prompting, verifying, and debugging code with LLMs."
+  },
+  {
+    "objectID": "weeks/slides/week-01-slides.html#choosing-your-ide-rstudio-vs.-positron",
+    "href": "weeks/slides/week-01-slides.html#choosing-your-ide-rstudio-vs.-positron",
+    "title": "Week 1: Welcome & The Modern R Toolkit",
+    "section": "Choosing Your IDE: RStudio vs. Positron",
+    "text": "Choosing Your IDE: RStudio vs. Positron\n\n\n🟦 RStudio Desktop (Class Standard)\n\nPrimary demo environment used on screen during class.\nMatches 1-to-1 with screenshots in R Programming: Zero to Pro (Ch 1).\nClassic 4-pane layout (Source, Console, Environment, Plots).\nPre-installed on NYU Bobst library workstations.\n\n\n🟣 Positron (Supported Alternative)\n\nPosit’s next-generation IDE built on VS Code.\nSuperb native GitHub Copilot & AI sidecar integration (we will demo this in Week 8!).\nNative R + Python multi-language switching.\n100% compatible: All course Quarto files and Git repos run identically in both!"
+  },
+  {
+    "objectID": "weeks/slides/week-01-slides.html#how-our-160-minute-sessions-work",
+    "href": "weeks/slides/week-01-slides.html#how-our-160-minute-sessions-work",
+    "title": "Week 1: Welcome & The Modern R Toolkit",
+    "section": "How Our 160-Minute Sessions Work",
+    "text": "How Our 160-Minute Sessions Work\nWe do not do passive lectures. Each class is split into interactive cycles:\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n💻 Mini-Demo(15–20 min)Instructor Live Code\n\n\n\n\n\n\n\n👥 Paired Exercise(10–15 min)Hands-on Problem\n\n\n\n\n\n\n\n💡 Debrief(2 min)Solution & Takeaways\n\n\n\n\n\n\n\n\n\n\n\nCAs & Instructor circulate during exercise blocks to assist.\nYou push your in-class exercises to GitHub for participation credit.\nBi-weekly 20-minute no-AI quizzes certify your personal hand-fluency."
+  },
+  {
+    "objectID": "weeks/slides/week-01-slides.html#r-as-an-interactive-calculator",
+    "href": "weeks/slides/week-01-slides.html#r-as-an-interactive-calculator",
+    "title": "Week 1: Welcome & The Modern R Toolkit",
+    "section": "R as an Interactive Calculator",
+    "text": "R as an Interactive Calculator\nYou type commands into the Console; R evaluates them and prints results.\n# Arithmetic\n12 + 35\n(100 - 32) * 5 / 9   # Fahrenheit to Celsius\n\n# Math functions\nsqrt(64)\nexp(1)\nlog(10)              # Natural logarithm (base e)\nlog10(100)           # Common logarithm (base 10)\n\n\n\n\n\n\nTip\n\n\nEverything after # is a comment and is ignored by R. Use comments to document your thinking!"
+  },
+  {
+    "objectID": "weeks/slides/week-01-slides.html#objects-and-variable-assignment",
+    "href": "weeks/slides/week-01-slides.html#objects-and-variable-assignment",
+    "title": "Week 1: Welcome & The Modern R Toolkit",
+    "section": "Objects and Variable Assignment",
+    "text": "Objects and Variable Assignment\nWe store values in named objects using the assignment operator &lt;- (Alt + - or Option + -):\n# Assigning a value\nparticipant_age &lt;- 28\nheight_m &lt;- 1.75\nweight_kg &lt;- 68.5\n\n# Using objects in expressions\nbmi &lt;- weight_kg / (height_m^2)\nbmi\n\nNames must start with a letter and can contain letters, numbers, _, and ..\nR is case-sensitive (bmi \\(\\neq\\) BMI)."
+  },
+  {
+    "objectID": "weeks/slides/week-01-slides.html#functions-and-getting-help",
+    "href": "weeks/slides/week-01-slides.html#functions-and-getting-help",
+    "title": "Week 1: Welcome & The Modern R Toolkit",
+    "section": "Functions and Getting Help",
+    "text": "Functions and Getting Help\nFunctions take arguments (inputs) and return an output:\n# Rounding\nround(bmi, digits = 1)\n\n# Summary statistics\nvals &lt;- c(10, 20, 30, NA)\nmean(vals, na.rm = TRUE)\nGetting help in R:\n\n?round or help(round) — opens the official documentation.\nexample(round) — runs examples from the help page."
+  },
+  {
+    "objectID": "weeks/slides/week-01-slides.html#packages-the-course-textbook-r02pro",
+    "href": "weeks/slides/week-01-slides.html#packages-the-course-textbook-r02pro",
+    "title": "Week 1: Welcome & The Modern R Toolkit",
+    "section": "Packages & The Course Textbook: R02Pro",
+    "text": "Packages & The Course Textbook: R02Pro\nR packages extend R with datasets and specialized functions.\n# Install once per computer (done in Console, not script):\ninstall.packages(\"r02pro\")\n\n# Load in every session where you need it:\nlibrary(r02pro)\n\nTextbook: R Programming: Zero to Pro (Free online: r02pro.github.io)."
+  },
+  {
+    "objectID": "weeks/slides/week-01-slides.html#help-improve-the-textbook-extra-credit",
+    "href": "weeks/slides/week-01-slides.html#help-improve-the-textbook-extra-credit",
+    "title": "Week 1: Welcome & The Modern R Toolkit",
+    "section": "📖 Help Improve the Textbook (Extra Credit)",
+    "text": "📖 Help Improve the Textbook (Extra Credit)\nThe textbook is open source; you will read it every week, so you are its best proofreaders.\n\nSpot a typo or code error? Click the edit button on any book page, fork, fix, and submit a pull request: +0.5% per merged PR.\nFound something confusing you cannot fix? Open an issue: +0.25% if accepted.\nCapped at +2% on your final grade. First report wins, so search existing PRs/issues before submitting.\nEvery contributor is named in the book’s acknowledgments, permanently.\n\n\n\n\n\n\n\nGet started today\n\n\n⭐ Star and 👀 watch github.com/r02pro/r02pro_source, then read the contributing guide. Full rules in the syllabus."
+  },
+  {
+    "objectID": "weeks/slides/week-01-slides.html#in-class-exercise-1a-12-min",
+    "href": "weeks/slides/week-01-slides.html#in-class-exercise-1a-12-min",
+    "title": "Week 1: Welcome & The Modern R Toolkit",
+    "section": "💻 In-Class Exercise 1A (12 min)",
+    "text": "💻 In-Class Exercise 1A (12 min)\n\n\n\n\n\n\nPaired Hands-on Exercise\n\n\n\nOpen RStudio.\nIn the console, calculate the Body Mass Index (BMI) for a person who is \\(1.82\\text{ m}\\) tall and weighs \\(79\\text{ kg}\\). Round the answer to 2 decimal places.\nVerify that r02pro is installed: run library(r02pro) and look at the ahp dataset (head(ahp)).\nLook up the documentation for log() using ?log. What is the default base?"
+  },
+  {
+    "objectID": "weeks/slides/week-01-slides.html#why-quarto",
+    "href": "weeks/slides/week-01-slides.html#why-quarto",
+    "title": "Week 1: Welcome & The Modern R Toolkit",
+    "section": "Why Quarto?",
+    "text": "Why Quarto?\n\n\n❌ The Traditional Way\n\nRun code in R \\(\\rightarrow\\) Copy table to Excel \\(\\rightarrow\\) Paste into Word \\(\\rightarrow\\) Export PDF.\nData changes? Repeat everything manually and risk copy-paste errors!\n\n\n✅ The Quarto Way\nOne reproducible .qmd document combining:\n\nNarrative text (Markdown)\nExecutable code (R chunks)\nDynamic tables & plots compiled directly on demand."
+  },
+  {
+    "objectID": "weeks/slides/week-01-slides.html#anatomy-of-a-quarto-document-.qmd",
+    "href": "weeks/slides/week-01-slides.html#anatomy-of-a-quarto-document-.qmd",
+    "title": "Week 1: Welcome & The Modern R Toolkit",
+    "section": "Anatomy of a Quarto Document (.qmd)",
+    "text": "Anatomy of a Quarto Document (.qmd)\nA .qmd document combines three elements:\n\n\n1. YAML Metadata (Header):\n---\ntitle: \"My Analysis\"\nauthor: \"Your Name\"\nformat: html\n---\n2. Markdown Narrative (Text):\n## Introduction\nHere is text with **bold** & *italics*.\n\n3. Code Chunks (Live Computation):\n# An R code chunk\nmean_age &lt;- mean(c(25, 30, 45))\nmean_age\n\\(\\longrightarrow\\) Click Render (Ctrl/Cmd + Shift + K) to compile directly into a polished HTML report!"
+  },
+  {
+    "objectID": "weeks/slides/week-01-slides.html#markdown-text-formatting-cheat-sheet",
+    "href": "weeks/slides/week-01-slides.html#markdown-text-formatting-cheat-sheet",
+    "title": "Week 1: Welcome & The Modern R Toolkit",
+    "section": "Markdown Text Formatting Cheat Sheet",
+    "text": "Markdown Text Formatting Cheat Sheet\n\n\n\nSyntax\nRendered Output\n\n\n\n\n# Heading 1\nLargest Section Header\n\n\n## Heading 2\nSub-section Header\n\n\n**bold text**\nbold text\n\n\n*italic text*\nitalic text\n\n\n- item 1\nBulleted list\n\n\n1. item 1\nNumbered list\n\n\n$E = mc^2$\nInline math: \\(E = mc^2\\)"
+  },
+  {
+    "objectID": "weeks/slides/week-01-slides.html#code-chunk-options",
+    "href": "weeks/slides/week-01-slides.html#code-chunk-options",
+    "title": "Week 1: Welcome & The Modern R Toolkit",
+    "section": "Code Chunk Options",
+    "text": "Code Chunk Options\nControl how code executes and displays using #|:\n#| echo: true       # Show code in final report (default)\n#| eval: true       # Run code (default)\n#| warning: false   # Suppress package warnings\n#| message: false   # Suppress package startup messages\n#| fig-width: 7     # Control plot width\nClick the Render button (or Ctrl/Cmd + Shift + K) in RStudio to generate your HTML report!"
+  },
+  {
+    "objectID": "weeks/slides/week-01-slides.html#in-class-exercise-1b-15-min",
+    "href": "weeks/slides/week-01-slides.html#in-class-exercise-1b-15-min",
+    "title": "Week 1: Welcome & The Modern R Toolkit",
+    "section": "💻 In-Class Exercise 1B (15 min)",
+    "text": "💻 In-Class Exercise 1B (15 min)\n\n\n\n\n\n\nPaired Hands-on Exercise\n\n\n\nIn RStudio: File \\(\\rightarrow\\) New File \\(\\rightarrow\\) Quarto Document…\nTitle: Week 1 In-Class, Format: HTML.\nAdd a level-2 header ## Health Calculation.\nInsert an R chunk calculating the mean and standard deviation of five systolic blood pressure readings: 120, 134, 118, 142, 128.\nClick Render and inspect the output in your browser!"
+  },
+  {
+    "objectID": "weeks/slides/week-01-slides.html#why-version-control",
+    "href": "weeks/slides/week-01-slides.html#why-version-control",
+    "title": "Week 1: Welcome & The Modern R Toolkit",
+    "section": "Why Version Control?",
+    "text": "Why Version Control?\n\n\n❌ The File Chaos (Without Git)\n\nreport_v1.docx\nreport_v2.docx\nreport_v2_edit.docx\nreport_final_REALLY_FINAL.docx\n😱 Which file has the correct numbers?\n\n\n✅ The Git Way\n\nRecorded history: Every change is a snapshot with a commit message.\nSafe experiments: Try new ideas on branches without breaking main code.\nSeamless team collaboration: No emailed zip files or overwritten work."
+  },
+  {
+    "objectID": "weeks/slides/week-01-slides.html#the-core-git-workflow-in-rstudio",
+    "href": "weeks/slides/week-01-slides.html#the-core-git-workflow-in-rstudio",
+    "title": "Week 1: Welcome & The Modern R Toolkit",
+    "section": "The Core Git Workflow in RStudio",
+    "text": "The Core Git Workflow in RStudio\n\n\n\n\n\n\n\n\n\n1. git add(Stage)\n\n\n\n2. git commit(Snapshot)\n\n\n\n3. git push(Upload)\n\n\n\n\n\n📝 Working CopyEdit files & .qmd\n\n\n\n\n\n\n\n📦 Staged ChangesCheck boxes in RStudio\n\n\n\n\n\n\n\n💾 Local RepoSaved history\n\n\n\n\n\n\n\n☁️ GitHub RemoteAutograder checks code"
+  },
+  {
+    "objectID": "weeks/slides/week-01-slides.html#how-homework-works-instant-feedback",
+    "href": "weeks/slides/week-01-slides.html#how-homework-works-instant-feedback",
+    "title": "Week 1: Welcome & The Modern R Toolkit",
+    "section": "How Homework Works (Instant Feedback)",
+    "text": "How Homework Works (Instant Feedback)\n\nAccept: Click the accept link for weekly-exercise-01 on the Week 1 page (after joining the org and linking your NetID).\nClone: In RStudio \\(\\rightarrow\\) New Project \\(\\rightarrow\\) Version Control \\(\\rightarrow\\) Git \\(\\rightarrow\\) Paste URL.\nSolve: Open exercise.qmd, assign answers to q1, q2, etc.\nRender: Confirm the HTML compiles cleanly.\nPush: Commit and push to GitHub.\nInstant Report: Go to the Actions tab on GitHub: within 2 minutes, see which questions pass.\nIterate: Revise and re-push freely until Wednesday 11:59 PM!"
+  },
+  {
+    "objectID": "weeks/slides/week-01-slides.html#the-three-ai-zones",
+    "href": "weeks/slides/week-01-slides.html#the-three-ai-zones",
+    "title": "Week 1: Welcome & The Modern R Toolkit",
+    "section": "The Three AI Zones",
+    "text": "The Three AI Zones\n\n\n🟢 Zone 1: HW & Project\n\nAI Encouraged\nUse verify-then-use.\nDisclose prompts & changes in AI appendix.\n\n\n🔴 Zone 2: Quizzes\n\nStrictly No AI\n5 bi-weekly 15-min hand-fluency checks.\nPaper or locked browser.\n\n\n🟡 Zone 3: In-Class\n\nAI Allowed\nDiscuss with pair first.\nAsk CA / Instructor if stuck."
+  },
+  {
+    "objectID": "weeks/slides/week-01-slides.html#ai-corner-the-verify-then-use-rule",
+    "href": "weeks/slides/week-01-slides.html#ai-corner-the-verify-then-use-rule",
+    "title": "Week 1: Welcome & The Modern R Toolkit",
+    "section": "AI Corner: The “Verify-Then-Use” Rule",
+    "text": "AI Corner: The “Verify-Then-Use” Rule\n\n\n❌ The Bad AI User\n\nPrompts: “Do my homework question 3.”\nCopies and pastes code blindly.\nSubmits hallucinated functions or incorrect math without understanding.\n\n\n✅ The Statistical Programmer\n\nPrompts: “How do I compute the trimmed mean in R while handling NAs?”\nInspects the output against R documentation.\nTests edge cases.\nOwns and understands every line."
+  },
+  {
+    "objectID": "weeks/slides/week-01-slides.html#summary-what-to-do-before-week-2",
+    "href": "weeks/slides/week-01-slides.html#summary-what-to-do-before-week-2",
+    "title": "Week 1: Welcome & The Modern R Toolkit",
+    "section": "Summary & What To Do Before Week 2",
+    "text": "Summary & What To Do Before Week 2\n\nComplete & Push: In-class exercise 1 .qmd to your GitHub repo.\nWeekly Exercise 1: Released before class on GitHub. Due Thursday Sep 10 at 11:59 PM (extended).\nRead for Next Week: R02Pro Chapters 2–3 (Vectors & Subsetting).\nOffice Hours: Posted on the course website.\n\n🔗 Useful Links:\n\nCourse Website: gph-2182.github.io\nTextbook: r02pro.github.io"
+  },
+  {
+    "objectID": "weeks/week-12.html",
+    "href": "weeks/week-12.html",
+    "title": "Week 12: Advanced Quarto, Tables & Case Studies",
+    "section": "",
+    "text": "Note🔒 Not yet released\n\n\n\nMaterials for this week (slides, in-class exercise, and weekly exercise) unlock automatically on Sunday, Nov 22, 2026 at 8:00 AM ET.",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 12: Advanced Quarto, Tables & Case Studies"
+    ]
+  },
+  {
+    "objectID": "weeks/week-12.html#before-class",
+    "href": "weeks/week-12.html#before-class",
+    "title": "Week 12: Advanced Quarto, Tables & Case Studies",
+    "section": "Before class",
+    "text": "Before class\n\nRead: R02Pro Ch 14",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 12: Advanced Quarto, Tables & Case Studies"
+    ]
+  },
+  {
+    "objectID": "weeks/week-03.html",
+    "href": "weeks/week-03.html",
+    "title": "Week 3: Matrices, Lists, Data Frames & Data Import",
+    "section": "",
+    "text": "Note🔒 Not yet released\n\n\n\nMaterials for this week (slides, in-class exercise, and weekly exercise) unlock automatically on Sunday, Sep 13, 2026 at 8:00 AM ET.",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 3: Matrices, Lists, Data Frames & Data Import"
+    ]
+  },
+  {
+    "objectID": "weeks/week-03.html#before-class",
+    "href": "weeks/week-03.html#before-class",
+    "title": "Week 3: Matrices, Lists, Data Frames & Data Import",
+    "section": "Before class",
+    "text": "Before class\n\nRead: R02Pro Ch 4–5",
+    "crumbs": [
+      "Weekly Pages",
+      "Week 3: Matrices, Lists, Data Frames & Data Import"
+    ]
+  }
+]

@@ -1,0 +1,126 @@
+---
+title: "Week 1 In-Class Exercise: Welcome & Modern Toolkit"
+subtitle: "GPH-GU 2182 · Statistical Programming in R"
+author: "YOUR NAME & PARTNER NAME"
+date: "September 2, 2026"
+format:
+  html:
+    toc: true
+    number-sections: true
+    code-tools:
+      source: true
+      toggle: false
+      caption: "Source Code"
+---
+
+::: {.callout-note}
+### Instructions
+Work in pairs during class. 
+
+* 📥 **[Download `week-01-inclass.qmd`](https://gph-2182.github.io/weeks/inclass/week-01-inclass.qmd)** to open and edit in RStudio (or use the **`</> Source Code`** button at the top right).
+* Render this Quarto document to HTML and push it to your GitHub repository by the end of class for participation credit.
+:::
+
+# Cycle 1: R as a Calculator and Environment Setup
+
+## Basic Arithmetic & Calculations
+
+In the code chunk below, compute the Body Mass Index (BMI) for three study participants:
+
+- Participant A: Weight $70\text{ kg}$, Height $1.75\text{ m}$
+- Participant B: Weight $85\text{ kg}$, Height $1.80\text{ m}$
+- Participant C: Weight $58\text{ kg}$, Height $1.62\text{ m}$
+
+$$\text{BMI} = \frac{\text{weight in kg}}{(\text{height in meters})^2}$$
+
+```{r bmi-calculations}
+# Write your calculations below:
+
+```
+
+## Exploring Built-in Functions
+
+Compute the mean of the three BMIs you calculated above. Round the result to 2 decimal places using `round()`.
+
+```{r bmi-summary}
+# Write your summary code below:
+
+```
+
+## R Packages and Documentation
+
+1. Load the `r02pro` package (install it in the Console with `install.packages("r02pro")` if you haven't already).
+2. Display the first 6 rows of the `ahp` dataset using the `head()` function.
+3. Open the help file for the `median()` function using `?median`.
+
+```{r r02pro-check}
+# Load library and inspect data:
+
+```
+
+---
+
+# Cycle 2: Reproducible Reporting with Quarto
+
+## Text Formatting & Markdown
+
+In the space below:
+
+- Write a short 2-sentence paragraph describing the purpose of reproducible research in public health.
+- Include at least one **bold** phrase and one *italicized* word.
+- Add a bulleted list of two advantages of Quarto over traditional copy-pasting into Word.
+
+*(Type your text response here)*
+
+## Code Chunk Customization
+
+Create an R code chunk below with chunk option `#| echo: true` that creates a vector of systolic blood pressure readings: `120, 134, 118, 142, 128` and calculates their standard deviation using `sd()`.
+
+```{r}
+#| echo: true
+# Write your code here:
+
+```
+
+---
+
+# Cycle 3: Git & GitHub Workflow
+
+Confirm the following steps with your partner:
+
+- [ ] You have initialized Git in your local R project.
+- [ ] You have configured your Git identity in RStudio (`git config --global user.name` and `user.email`).
+- [ ] You rendered this `.qmd` document to `.html` without any errors.
+
+---
+
+# Cycle 4: AI Corner — Verification Exercise
+
+An AI assistant was asked to write R code to compute the area of a circle with radius $r = 7.5\text{ cm}$.
+
+The AI generated this code:
+
+```{r ai-generated-code}
+# AI-generated code:
+radius <- 7.5
+area <- 3.14 * (radius * 2)
+```
+
+### Questions:
+
+1. Is the AI-generated code correct? What error did it make?
+2. Correct the code below using R's built-in constant `pi` and proper formula ($\text{Area} = \pi r^2$):
+
+```{r corrected-code}
+# Corrected code:
+
+```
+
+---
+
+## Submission Checklist
+
+- [ ] Both your name and your partner's name are in the `author` field at the top.
+- [ ] Click **Render** in RStudio and verify the HTML looks clean.
+- [ ] Commit and push your changes to GitHub.
+
