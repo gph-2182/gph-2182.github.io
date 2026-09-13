@@ -1,0 +1,92 @@
+/* Course website tweaks */
+.navbar-brand {
+  font-weight: 600;
+}
+
+h1, h2 {
+  letter-spacing: -0.01em;
+}
+
+table {
+  font-size: 0.95em;
+}
+
+/* ========================================================= */
+/* RevealJS Responsive Presentation Typography & Spacing     */
+/* ========================================================= */
+
+.reveal {
+  font-size: 28px;
+}
+
+.reveal h2 {
+  font-size: 1.5em !important;
+  margin-top: 0.1em !important;
+  margin-bottom: 0.4em !important;
+  line-height: 1.2 !important;
+}
+
+.reveal h3 {
+  font-size: 1.15em !important;
+  margin-top: 0.2em !important;
+  margin-bottom: 0.3em !important;
+  line-height: 1.2 !important;
+}
+
+.reveal p, .reveal li {
+  font-size: 0.92em !important;
+  line-height: 1.45 !important;
+}
+
+.reveal ul, .reveal ol {
+  margin-top: 0.2em !important;
+  margin-bottom: 0.4em !important;
+}
+
+.reveal li {
+  margin-bottom: 0.3em !important;
+}
+
+.reveal pre {
+  margin-top: 0.3em !important;
+  margin-bottom: 0.4em !important;
+  font-size: 0.78em !important;
+  box-shadow: none !important;
+}
+
+.reveal pre code {
+  padding: 8px 12px !important;
+  line-height: 1.35 !important;
+  max-height: 480px !important;
+}
+
+.reveal .callout {
+  margin-top: 0.4em !important;
+  margin-bottom: 0.4em !important;
+  padding: 0.5em 0.8em !important;
+  font-size: 0.85em !important;
+}
+
+.reveal .callout p {
+  margin: 0.2em 0 !important;
+  font-size: 1em !important;
+}
+
+/* Column Flex Containers */
+.reveal .columns {
+  display: flex !important;
+  gap: 35px !important;
+  align-items: flex-start !important;
+  margin-top: 0.2em !important;
+}
+
+.reveal .column {
+  overflow-wrap: break-word !important;
+  word-break: break-word !important;
+  box-sizing: border-box !important;
+}
+
+.reveal code {
+  overflow-wrap: break-word !important;
+  word-break: break-word !important;
+}
