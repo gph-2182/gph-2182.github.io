@@ -104,7 +104,7 @@ Created by Hadley Wickham based on Leland Wilkinson\'s *The Grammar of Graphics*
 
 ## The 3 Core Components of Every Plot
 
-$$	ext{Plot} = 	ext{Data} + 	ext{Aesthetic Mappings} + 	ext{Geometric Layers}$$
+$$\text{Plot} = \text{Data} + \text{Aesthetic Mappings} + \text{Geometric Layers}$$
 
 ```r
 ggplot(data = <DATA>, mapping = aes(<MAPPINGS>)) +
