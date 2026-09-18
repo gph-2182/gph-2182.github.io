@@ -1,0 +1,124 @@
+---
+title: "Week 3 In-Class Exercises: Matrices, Lists & Data Frames"
+subtitle: "GPH-GU 2182 · Fall 2026 · Paired Programming"
+author: "YOUR NAME & PARTNER NAME"
+date: "September 16, 2026"
+format:
+  html:
+    toc: true
+    number-sections: true
+    code-tools:
+      source: true
+      toggle: false
+      caption: "Source Code"
+---
+
+::: {.callout-note}
+### Instructions
+Work in pairs. One person types (driver), the other reviews and advises (navigator). Swap roles halfway through!
+
+* 📥 **[Download `week-03-inclass.qmd`](https://gph-2182.github.io/weeks/inclass/week-03-inclass.qmd)** to open and edit in RStudio (or use the **`</> Source Code`** button at the top right).
+* Render this Quarto document to HTML and push it to your GitHub repository by the end of class for participation credit.
+:::
+
+# Exercise 1: Hospital ICU Capacity Matrix (Cycle 1)
+
+A municipal health department monitors daily ICU admissions across three regional hospital sites.
+
+```{r}
+#| label: ex1-matrix
+# 1. Create a 3x3 matrix named icu_admissions from the vector below, filled row-by-row
+raw_counts <- c(12, 18, 5, 24, 30, 11, 8, 15, 4)
+
+
+# 2. Assign rownames: "Mon", "Tue", "Wed" and colnames: "Site_1", "Site_2", "Site_3"
+
+
+# 3. Calculate total admissions for each hospital site across all three days
+
+
+# 4. Extract admissions for Tuesday across all sites as a named vector
+
+
+# 5. Extract all entries in the matrix where daily admissions were >= 20
+
+```
+
+# Exercise 2: Clinical Trial Patient Record List (Cycle 2)
+
+```{r}
+#| label: ex2-list
+# 1. Construct a clinical trial patient record list named patient_profile
+#    with: subject_id ("SUBJ-1049"), treatment_arm ("High_Dose"), age (58),
+#    viral_loads (c(45000, 12000, 850, 40)), side_effects (c("Headache", "Fatigue")),
+#    and site_info (list with city="New York", hospital="Bellevue")
+
+
+# 2. Extract the viral_loads vector using [[ ]] and compute the percentage reduction:
+#    ((baseline - final) / baseline) * 100
+
+
+# 3. Access the nested hospital name using $
+
+
+# 4. Add a new element named status set to "Completed"
+
+```
+
+# Exercise 3: Patient Cohort Data Frame & Subsetting (Cycle 3)
+
+```{r}
+#| label: ex3-dataframe
+# Here is a sample cohort of cardiology patients
+cohort_df <- data.frame(
+  patient_id = c("P01", "P02", "P03", "P04", "P05", "P06"),
+  age = c(45, 62, 38, 71, 55, 68),
+  sbp = c(120, 145, 118, 160, 135, 150),
+  dbp = c(80, 92, 76, 98, 88, 95),
+  bmi = c(24.2, 31.0, 27.5, 29.8, 22.1, 33.4),
+  smoker = c(FALSE, TRUE, FALSE, TRUE, FALSE, TRUE),
+  stringsAsFactors = FALSE
+)
+
+# 1. Add a new column pulse_pressure = sbp - dbp
+
+
+# 2. Add a boolean column hypertensive = (sbp >= 140 | dbp >= 90)
+
+
+# 3. Filter all patients who are hypertensive AND smokers
+
+
+# 4. Compute the average BMI of hypertensive patients vs non-hypertensive patients
+
+```
+
+# Exercise 4: Reading CSV Data & Type Verification (Cycle 4 + AI Corner)
+
+```{r}
+#| label: ex4-import
+library(readr)
+
+# 1. Create a mini sample CSV with messy missing values
+sample_csv <- "id,age,cholesterol,treated
+P1,45,210,Yes
+P2,62,Unknown,No
+P3,58,195,Yes
+P4,71,240,Refused
+P5,39,-99,Yes"
+writeLines(sample_csv, "test_cohort.csv")
+
+# 2. Read the CSV treating Unknown, Refused, and -99 as NA
+
+
+# 3. Verify that cholesterol is recognized as numeric (<dbl>)
+
+
+# 4. Compute the mean cholesterol among valid cases
+
+```
+
+# 📝 Quiz 1 (4:20–4:40 PM)
+
+*Please put all laptops away for the 15-minute paper-based Quiz 1.*
+
