@@ -7,3 +7,6 @@
 .DS_Store
 
 /.quarto/
+
+# Rendered site; CI builds and publishes it to gh-pages
+/docs/
