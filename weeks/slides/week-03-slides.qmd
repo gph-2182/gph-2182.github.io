@@ -159,6 +159,7 @@ m2[m2 < 3] <- 0
 ### Task
 
 In your `week-03-inclass.qmd` worksheet:
+
 1. Construct a 3x3 matrix `icu_admissions` containing the numbers `c(12, 18, 5, 24, 30, 11, 8, 15, 4)` filled **row-by-row**.
 2. Assign rownames: `c("Mon", "Tue", "Wed")` and colnames: `c("Site_1", "Site_2", "Site_3")`.
 3. Compute the **total admissions per site** using `colSums(icu_admissions)`.
@@ -190,6 +191,7 @@ Site_1: 44, Site_2: 63, Site_3: 20
 Vectors and matrices are **homogeneous** (all elements must be the exact same type).
 
 In public health and clinical research, real records contain **heterogeneous data**:
+
 * Patient ID (character)
 * Demographics (character, numeric)
 * Blood pressure readings across multiple visits (numeric vector of length 5)
@@ -274,6 +276,7 @@ typeof(sub_list) # "list"
 ### Task
 
 In `week-03-inclass.qmd`:
+
 1. Build a list `study_subject` containing:
    * `name`: `"Jordan Lee"`
    * `arm`: `"Treatment_A"`
@@ -373,6 +376,7 @@ overweight_non_diab <- cohort[cohort$bmi > 25 & !cohort$diabetes, ]
 ### Task
 
 In `week-03-inclass.qmd`:
+
 1. Use the provided `patients` data frame.
 2. Add a new column `pulse_pressure` computed as `sbp - dbp`.
 3. Filter all patients who meet **both** criteria:

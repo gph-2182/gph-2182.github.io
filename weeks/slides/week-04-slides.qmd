@@ -197,6 +197,7 @@ p + geom_point(color = "navy", size = 3, alpha = 0.7)
 ### Task
 
 In your `week-04-inclass.qmd` worksheet:
+
 1. Use the built-in `airquality` dataset.
 2. Create a scatterplot of Solar Radiation (`Solar.R`, $x$) vs Ozone (`Ozone`, $y$).
 3. Map Wind Speed (`Wind`) to the **color** aesthetic.
@@ -315,6 +316,7 @@ ggplot(summary_df, aes(x = region, y = admissions)) +
 ### Task
 
 In `week-04-inclass.qmd`:
+
 1. Build a **violin plot** comparing `Ozone` across Months (`x = factor(Month)`, `y = Ozone`).
 2. Fill violins by `factor(Month)` with `alpha = 0.5`.
 3. Overlay a narrow boxplot (`width = 0.2`, `fill = "white"`) inside each violin.
@@ -372,6 +374,7 @@ ggplot(airquality, aes(x = Temp, y = Ozone)) +
 ### Task
 
 In `week-04-inclass.qmd`:
+
 1. Plot `Temp` ($x$) vs `Ozone` ($y$) from `airquality`.
 2. Add points with `alpha = 0.6`.
 3. Add a linear regression line (`geom_smooth(method = "lm", color = "darkred")`).
@@ -424,6 +427,7 @@ p_pub
 p_pub +
   scale_color_viridis_c(option = "viridis")
 ```
+
 * Perceptually uniform and legible in grayscale.
 :::
 
@@ -473,6 +477,7 @@ ggplot(df, aes(x = year, y = rate)) +
   geom_col() +
   coord_cartesian(ylim = c(48, 52))
 ```
+
 * A truncated $y$-axis makes a 2% change look like a surge!
 :::
 
@@ -485,6 +490,7 @@ ggplot(df, aes(x = year, y = rate)) +
 ggplot(df, aes(x = year, y = rate)) +
   geom_col()
 ```
+
 * **Bars must start at 0** (`geom_col`, `geom_bar`).
 * **Overplotting:** `geom_jitter()`, `alpha < 0.5`, or 2D density.
 * **Color:** colorblind-friendly scales (`viridis`).
