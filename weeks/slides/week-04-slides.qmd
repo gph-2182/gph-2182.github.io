@@ -18,6 +18,13 @@ format:
     min-scale: 0.2
     max-scale: 2.0
     auto-stretch: false
+    code-line-numbers: false
+execute:
+  echo: true
+  warning: false
+  message: false
+fig-width: 6.5
+fig-height: 4.5
 ---
 
 ## Welcome to Week 4!
@@ -42,7 +49,6 @@ format:
 :::
 :::
 
----
 
 # Cycle 1: The Grammar of Graphics {background-color="#2c3e50"}
 
@@ -119,18 +125,34 @@ ggplot(data = <DATA>, mapping = aes(<MAPPINGS>)) +
 
 ## Building a Scatterplot: Step-by-Step
 
-```r
+::: {.panel-tabset}
+
+### Step 1: Canvas
+
+```{r}
+#| output-location: column
 library(ggplot2)
 
-# Step 1: Canvas (blank)
+# Data + aesthetics, but no geometry yet
 p <- ggplot(data = airquality, aes(x = Temp, y = Ozone))
+p
+```
 
-# Step 2: Add Points
+### Step 2: Add Points
+
+```{r}
+#| output-location: column
 p + geom_point()
+```
 
-# Step 3: Map a 3rd Variable to Color
+### Step 3: Map Color
+
+```{r}
+#| output-location: column
 p + geom_point(aes(color = factor(Month)), size = 2.5, alpha = 0.8)
 ```
+
+:::
 
 ---
 
@@ -141,9 +163,11 @@ p + geom_point(aes(color = factor(Month)), size = 2.5, alpha = 0.8)
 ### Mapping Inside `aes()`
 Connects a visual channel to a **variable** in your data:
 
-```r
+```{r}
+#| fig-width: 5.5
+#| fig-height: 2.6
 # Color varies by Month
-geom_point(aes(color = factor(Month)))
+p + geom_point(aes(color = factor(Month)))
 ```
 :::
 
@@ -151,15 +175,17 @@ geom_point(aes(color = factor(Month)))
 ### Setting Outside `aes()`
 Sets a **fixed constant** for all observations:
 
-```r
+```{r}
+#| fig-width: 5.5
+#| fig-height: 2.6
 # All points are navy and size 3
-geom_point(color = "navy", size = 3, alpha = 0.7)
+p + geom_point(color = "navy", size = 3, alpha = 0.7)
 ```
 :::
 :::
 
 ::: {.callout-tip}
-*Never put fixed values inside `aes()` (e.g. `aes(color = "blue")`), as R will treat `"blue"` as a single-level categorical factor!*
+*Never put a fixed value inside `aes()`: `aes(color = "blue")` makes R treat `"blue"` as a one-level factor.*
 :::
 
 ---
@@ -185,7 +211,6 @@ In your `week-04-inclass.qmd` worksheet:
 :::
 :::
 
----
 
 # Cycle 2: Visualizing Distributions {background-color="#2c3e50"}
 
@@ -193,7 +218,8 @@ In your `week-04-inclass.qmd` worksheet:
 
 Visualizing a single continuous variable:
 
-```r
+```{r}
+#| output-location: column
 ggplot(airquality, aes(x = Temp)) +
   geom_histogram(binwidth = 5, fill = "#3498db", color = "white") +
   labs(x = "Temperature (°F)", y = "Count")
@@ -207,7 +233,8 @@ ggplot(airquality, aes(x = Temp)) +
 
 Smooth probability density estimates:
 
-```r
+```{r}
+#| output-location: column
 ggplot(airquality, aes(x = Temp, fill = factor(Month))) +
   geom_density(alpha = 0.4) +
   labs(x = "Temperature (°F)", y = "Density", fill = "Month")
@@ -221,7 +248,8 @@ ggplot(airquality, aes(x = Temp, fill = factor(Month))) +
 
 Comparing distributions across categorical groups:
 
-```r
+```{r}
+#| output-location: column
 ggplot(airquality, aes(x = factor(Month), y = Ozone, fill = factor(Month))) +
   geom_boxplot(outlier.shape = 1, alpha = 0.7) +
   labs(x = "Month", y = "Ozone (ppb)")
@@ -235,7 +263,8 @@ ggplot(airquality, aes(x = factor(Month), y = Ozone, fill = factor(Month))) +
 
 Layering raw observations over boxplots reveals sample sizes and local clusters:
 
-```r
+```{r}
+#| output-location: column
 ggplot(airquality, aes(x = factor(Month), y = Ozone, fill = factor(Month))) +
   geom_boxplot(outlier.shape = NA, alpha = 0.7) +
   geom_jitter(width = 0.2, alpha = 0.5, color = "black")
@@ -252,7 +281,9 @@ ggplot(airquality, aes(x = factor(Month), y = Ozone, fill = factor(Month))) +
 ### `geom_bar()` (Counts Rows)
 When R calculates frequency for you:
 
-```r
+```{r}
+#| fig-width: 5.5
+#| fig-height: 2.7
 # Data has raw individual rows
 ggplot(airquality, aes(x = factor(Month))) +
   geom_bar(fill = "steelblue")
@@ -263,11 +294,12 @@ ggplot(airquality, aes(x = factor(Month))) +
 ### `geom_col()` (Pre-Summarized)
 When data already has a numeric height column:
 
-```r
+```{r}
+#| fig-width: 5.5
+#| fig-height: 2.7
 summary_df <- data.frame(
   region = c("North", "South", "West"),
-  admissions = c(120, 340, 210)
-)
+  admissions = c(120, 340, 210))
 ggplot(summary_df, aes(x = region, y = admissions)) +
   geom_col(fill = "darkgreen")
 ```
@@ -295,7 +327,6 @@ Layer order matters! Put `geom_violin()` first, then `geom_boxplot()` on top so 
 :::
 :::
 
----
 
 # Cycle 3: Small Multiples & Trendlines {background-color="#2c3e50"}
 
@@ -303,7 +334,9 @@ Layer order matters! Put `geom_violin()` first, then `geom_boxplot()` on top so 
 
 Split complex multi-group data into clean sub-panels:
 
-```r
+```{r}
+#| fig-width: 12
+#| fig-height: 3.2
 ggplot(airquality, aes(x = Temp, y = Ozone)) +
   geom_point(color = "navy", alpha = 0.7) +
   geom_smooth(method = "lm", se = FALSE, color = "red") +
@@ -316,14 +349,14 @@ ggplot(airquality, aes(x = Temp, y = Ozone)) +
 
 ## Controlling Facet Scales
 
-By default, all subplots share the exact same axis limits (`scales = "fixed"`).
+By default, all subplots share the exact same axis limits (`scales = "fixed"`). Use `scales = "free_y"` for independent y-axes, or `scales = "free"` for fully independent axes:
 
-```r
-# Independent y-axis limits for each panel:
-facet_wrap(~ Month, scales = "free_y")
-
-# Completely independent axes:
-facet_wrap(~ Month, scales = "free")
+```{r}
+#| fig-width: 12
+#| fig-height: 2.6
+ggplot(airquality, aes(x = Temp, y = Ozone)) +
+  geom_point(color = "navy", alpha = 0.7) +
+  facet_wrap(~ Month, nrow = 1, scales = "free_y")
 ```
 
 ::: {.callout-note}
@@ -352,7 +385,6 @@ Observe how the slope of the temperature-ozone relationship changes between earl
 :::
 :::
 
----
 
 # Cycle 4: Polishing Publication Graphics {background-color="#2c3e50"}
 
@@ -360,18 +392,23 @@ Observe how the slope of the temperature-ozone relationship changes between earl
 
 Never leave raw column names on a presentation or report figure:
 
-```r
+```{r}
+#| output-location: slide
+#| fig-width: 9
+#| fig-height: 4.8
+#| fig-align: center
 p_pub <- ggplot(airquality, aes(x = Temp, y = Ozone, color = Wind)) +
   geom_point(size = 3, alpha = 0.8) +
   geom_smooth(method = "lm", color = "black", linetype = "dashed", se = FALSE) +
   labs(
     title = "Air Pollution Dynamics at LaGuardia Airport",
-    subtitle = "Daily measurements of Ozone, Temperature, and Wind (May - Sep 1973)",
+    subtitle = "Daily Ozone, Temperature, and Wind (May - Sep 1973)",
     x = "Maximum Daily Temperature (°F)",
     y = "Mean Ozone (ppb)",
     color = "Wind Speed\n(mph)",
     caption = "Source: NYS Department of Environmental Conservation"
   )
+p_pub
 ```
 
 ---
@@ -381,8 +418,10 @@ p_pub <- ggplot(airquality, aes(x = Temp, y = Ozone, color = Wind)) +
 ::: {.columns}
 ::: {.column width="50%"}
 ### Viridis Palettes
-```r
-p_pub + 
+```{r}
+#| fig-width: 5.5
+#| fig-height: 3.2
+p_pub +
   scale_color_viridis_c(option = "viridis")
 ```
 * Perceptually uniform and legible in grayscale.
@@ -390,10 +429,12 @@ p_pub +
 
 ::: {.column width="50%"}
 ### Clean Themes
-```r
-p_pub + 
+```{r}
+#| fig-width: 5.5
+#| fig-height: 3.2
+p_pub +
   scale_color_viridis_c(option = "viridis") +
-  theme_minimal(base_size = 13) +
+  theme_minimal(base_size = 12) +
   theme(legend.position = "bottom")
 ```
 :::
@@ -415,7 +456,6 @@ ggsave(
 )
 ```
 
----
 
 # AI Corner: Misleading Visuals & Baselines {background-color="#8e44ad"}
 
@@ -423,25 +463,34 @@ ggsave(
 
 ::: {.columns}
 ::: {.column width="50%"}
-### ❌ What AI Generated
-```r
-# AI Prompt: "Bar chart of mortality rate"
+### ❌ AI Prompt: "Bar chart of mortality rate"
+```{r}
+#| fig-width: 5.5
+#| fig-height: 2.3
+df <- data.frame(year = 2019:2023,
+  rate = c(49.8, 50.1, 50.4, 50.2, 50.9))
 ggplot(df, aes(x = year, y = rate)) +
   geom_col() +
   coord_cartesian(ylim = c(48, 52))
 ```
-* Truncating the $y$-axis baseline makes a 1% change look like a 500% surge!
+* A truncated $y$-axis makes a 2% change look like a surge!
 :::
 
 ::: {.column width="50%"}
 ### ✅ The Verified Rule
-* **Length/Area geoms (`geom_col`, `geom_bar`) MUST start at 0.**
-* **For Overplotting:** Use `geom_jitter()`, `alpha < 0.5`, or 2D density contours.
-* **Color Accessibility:** Always use colorblind-friendly scales (`viridis`).
+```{r}
+#| fig-width: 5.5
+#| fig-height: 2.3
+# Same data, honest baseline at 0
+ggplot(df, aes(x = year, y = rate)) +
+  geom_col()
+```
+* **Bars must start at 0** (`geom_col`, `geom_bar`).
+* **Overplotting:** `geom_jitter()`, `alpha < 0.5`, or 2D density.
+* **Color:** colorblind-friendly scales (`viridis`).
 :::
 :::
 
----
 
 # Wrap-Up & Next Steps
 

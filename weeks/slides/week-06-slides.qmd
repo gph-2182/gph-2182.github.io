@@ -42,7 +42,6 @@ format:
 :::
 :::
 
----
 
 # Cycle 1: Grouped Summaries {background-color="#2c3e50"}
 
@@ -179,7 +178,6 @@ gm |> filter(year == 2008) |> count(continent, sort = TRUE)
 :::
 :::
 
----
 
 # Cycle 2: Joining Tables {background-color="#2c3e50"}
 
@@ -278,7 +276,6 @@ Your worksheet defines `visits` (patient visits) and `lab_results` (test outcome
 :::
 :::
 
----
 
 # Cycle 3: Tidy Data & Pivoting {background-color="#2c3e50"}
 
@@ -382,7 +379,6 @@ Your worksheet defines `bp_wide` (blood pressure over 3 visits).
 :::
 :::
 
----
 
 # Cycle 4: Integration + AI Corner {background-color="#2c3e50"}
 
@@ -426,7 +422,6 @@ It ran without errors, but the patient count **doubled**: patients with multiple
 *An AI can write a syntactically perfect join that is statistically wrong. The audit is your job.*
 :::
 
----
 
 # Wrap-Up & Next Steps
 

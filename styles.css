@@ -58,6 +58,8 @@ table {
   padding: 8px 12px !important;
   line-height: 1.35 !important;
   max-height: 480px !important;
+  /* Wrap long code lines instead of clipping them at the column edge */
+  white-space: pre-wrap !important;
 }
 
 .reveal .callout {

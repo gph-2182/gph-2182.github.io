@@ -42,7 +42,6 @@ format:
 :::
 :::
 
----
 
 # Cycle 1: Working with Strings {background-color="#2c3e50"}
 
@@ -146,7 +145,6 @@ Your worksheet defines a messy `prescriptions` tibble.
 :::
 :::
 
----
 
 # Cycle 2: Regular Expression Building Blocks {background-color="#2c3e50"}
 
@@ -232,7 +230,6 @@ Using the `site_codes` vector in your worksheet:
 :::
 :::
 
----
 
 # Cycle 3: Factors with forcats {background-color="#2c3e50"}
 
@@ -313,7 +310,6 @@ gm |>
 :::
 :::
 
----
 
 # Cycle 4: Dates with lubridate {background-color="#2c3e50"}
 
@@ -408,7 +404,6 @@ str_extract(rx, "\\d+ ?mg")
 Laptops closed, please. Your in-class worksheet should already be pushed to GitHub before the quiz begins.
 :::
 
----
 
 # Wrap-Up & Next Steps
 
