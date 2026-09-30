@@ -359,8 +359,8 @@ gm |>
 A complete wrangling pipeline, start to finish:
 
 ```r
-smoking_2008 <- gm |>
-  filter(year == 2008, !is.na(smoking_male), !is.na(smoking_female)) |>
+smoking_2004 <- gm |>
+  filter(year == 2004, !is.na(smoking_male), !is.na(smoking_female)) |>
   select(country, continent, population,
          starts_with("smoking")) |>
   rename(male = smoking_male, female = smoking_female) |>
@@ -368,7 +368,7 @@ smoking_2008 <- gm |>
          pop_millions = population / 1e6) |>
   arrange(desc(gap))
 
-head(smoking_2008)
+head(smoking_2004)
 ```
 
 *Every verb answers one question. The pipeline tells the whole story.*

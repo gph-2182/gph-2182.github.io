@@ -30,11 +30,11 @@ library(dplyr)
 
 # Exercise 1: High Male Smoking Rates (Cycle 1)
 
-Use the `gm` global health dataset to find the countries with the heaviest male smoking burden in 2008.
+Use the `gm` global health dataset to find the countries with the heaviest male smoking burden in 2004 (the most recent year with smoking data).
 
 ```{r}
 #| label: ex1-filter-arrange
-# 1. Starting from gm, filter to rows for the year 2008
+# 1. Starting from gm, filter to rows for the year 2004
 # 2. Keep only rows where smoking_male is not missing (!is.na())
 # 3. Keep only rows where smoking_male > 50
 # 4. Arrange from highest to lowest smoking_male
