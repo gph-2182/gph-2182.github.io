@@ -314,19 +314,22 @@ gm |>
 `mutate()` adds columns to the **end** of the data frame; existing columns are preserved.
 
 ```r
+# Units (see ?gm): GDP_per_capita is in $1,000, population is in 1,000 people,
+# so their product is in millions of dollars.
 gm |>
   filter(year == 2008) |>
   select(country, population, GDP_per_capita) |>
-  mutate(gdp_total = GDP_per_capita * population)
+  mutate(gdp_millions = GDP_per_capita * population)
 ```
 
 * Right side is any vectorized expression (Week 2 arithmetic!).
+* **Check the units before you multiply or divide.** `?gm` documents them.
 * New columns can be built from columns you *just* created:
 
 ```r
 gm |>
-  mutate(gdp_total    = GDP_per_capita * population,
-         gdp_billions = gdp_total / 1e9)
+  mutate(gdp_millions = GDP_per_capita * population,
+         gdp_billions = gdp_millions / 1e3)
 ```
 
 ---
@@ -344,8 +347,9 @@ gm |>
 
 ```r
 # Unit conversions are classic mutate() one-liners
+# population is recorded in thousands of people (?gm)
 gm |>
-  mutate(pop_millions = population / 1e6)
+  mutate(pop_millions = population / 1e3)
 ```
 
 ::: {.callout-warning}
@@ -365,7 +369,7 @@ smoking_2004 <- gm |>
          starts_with("smoking")) |>
   rename(male = smoking_male, female = smoking_female) |>
   mutate(gap = male - female,
-         pop_millions = population / 1e6) |>
+         pop_millions = population / 1e3) |>   # population is in thousands
   arrange(desc(gap))
 
 head(smoking_2004)
