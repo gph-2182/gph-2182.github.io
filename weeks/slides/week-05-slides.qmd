@@ -54,7 +54,7 @@ format:
 
 1. **Find any open desk** and unpack your laptop.
 2. **Scan the QR code** or enter today's 4-digit PIN on screen to check in.
-3. **At 2:03 PM**, random pairs will be generated on the screen.
+3. **A few minutes after class starts**, random pairs will be generated on the screen.
 4. **Move to your assigned station** to sit with your partner *before* lecture starts!
 :::
 
@@ -476,6 +476,8 @@ gm %>%
 1. It used verbs (`group_by`, `summarize`) we can't verify yet, when a simple `filter()` + `mean()` answers the question.
 2. It never filtered `year == 2008`, so it silently averages **all years**.
 3. `mean(sugar)` returns `NA` because missing values were never handled.
+
+## AI Corner: The Verified Version {background-color="#8e44ad"}
 
 ```r
 # A verifiable Week-5 answer:

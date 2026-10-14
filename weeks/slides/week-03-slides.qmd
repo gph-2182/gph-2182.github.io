@@ -38,7 +38,7 @@ format:
 
 * **Homework 2:** Due tonight at 11:59 PM.
 * **Homework 3:** Released today (Matrices, Lists, Data Frames & Import).
-* 📝 **Quiz 1 (Weeks 1–2):** Administered during the last 30 minutes of class (4:10–4:40 PM). Closed-book, paper handout.
+* 📝 **Quiz 1 (Weeks 1–2):** Administered during the last 30 minutes of class. Closed-book, paper handout.
 :::
 :::
 
@@ -54,7 +54,7 @@ format:
 
 1. **Find any open desk** and unpack your laptop.
 2. **Scan the QR code** or enter today's 4-digit PIN on screen to check in.
-3. **At 2:03 PM**, random pairs will be generated on the screen.
+3. **A few minutes after class starts**, random pairs will be generated on the screen.
 4. **Move to your assigned station** to sit with your partner *before* lecture starts!
 :::
 
@@ -489,15 +489,15 @@ mean(bp_df$systolic, na.rm = TRUE)
 :::
 
 
-# In-Class Quiz 1 (4:20–4:40 PM) {background-color="#c0392b"}
+# In-Class Quiz 1 {background-color="#c0392b"}
 
 ## 📝 Quiz 1 Instructions
 
 1. **Laptops, tablets, and phones away.**
 2. This is an **individual, closed-book, paper-based quiz** covering **Weeks 1–2**.
-3. You have **20 minutes** (4:15–4:35 PM).
-4. Hand your paper to the teaching team at 4:35 PM.
-5. We will show the answer key on screen at 4:36 PM!
+3. You have **20 minutes**.
+4. Hand your paper to the teaching team when time is called.
+5. We will show the answer key on screen right after collection!
 
 ::: {.callout-note}
 *Remember: Your lowest quiz score of the semester is automatically dropped!*

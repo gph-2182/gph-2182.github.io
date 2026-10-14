@@ -61,7 +61,7 @@ fig-height: 4.5
 
 1. **Find any open desk** and unpack your laptop.
 2. **Scan the QR code** or enter today's 4-digit PIN on screen to check in.
-3. **At 2:03 PM**, random pairs will be generated on the screen.
+3. **A few minutes after class starts**, random pairs will be generated on the screen.
 4. **Move to your assigned station** to sit with your partner *before* lecture starts!
 :::
 
@@ -164,8 +164,7 @@ p + geom_point(aes(color = factor(Month)), size = 2.5, alpha = 0.8)
 Connects a visual channel to a **variable** in your data:
 
 ```{r}
-#| fig-width: 5.5
-#| fig-height: 2.6
+#| output: false
 # Color varies by Month
 p + geom_point(aes(color = factor(Month)))
 ```
@@ -176,8 +175,7 @@ p + geom_point(aes(color = factor(Month)))
 Sets a **fixed constant** for all observations:
 
 ```{r}
-#| fig-width: 5.5
-#| fig-height: 2.6
+#| output: false
 # All points are navy and size 3
 p + geom_point(color = "navy", size = 3, alpha = 0.7)
 ```
@@ -186,6 +184,32 @@ p + geom_point(color = "navy", size = 3, alpha = 0.7)
 
 ::: {.callout-tip}
 *Never put a fixed value inside `aes()`: `aes(color = "blue")` makes R treat `"blue"` as a one-level factor.*
+:::
+
+## Mapping vs. Setting: The Result
+
+::: {.columns}
+::: {.column width="50%"}
+### Mapped: color by `Month`
+
+```{r}
+#| echo: false
+#| fig-width: 5.5
+#| fig-height: 4.4
+p + geom_point(aes(color = factor(Month)))
+```
+:::
+
+::: {.column width="50%"}
+### Set: one navy color
+
+```{r}
+#| echo: false
+#| fig-width: 5.5
+#| fig-height: 4.4
+p + geom_point(color = "navy", size = 3, alpha = 0.7)
+```
+:::
 :::
 
 ---
@@ -283,8 +307,7 @@ ggplot(airquality, aes(x = factor(Month), y = Ozone, fill = factor(Month))) +
 When R calculates frequency for you:
 
 ```{r}
-#| fig-width: 5.5
-#| fig-height: 2.7
+#| output: false
 # Data has raw individual rows
 ggplot(airquality, aes(x = factor(Month))) +
   geom_bar(fill = "steelblue")
@@ -296,11 +319,38 @@ ggplot(airquality, aes(x = factor(Month))) +
 When data already has a numeric height column:
 
 ```{r}
-#| fig-width: 5.5
-#| fig-height: 2.7
+#| output: false
 summary_df <- data.frame(
   region = c("North", "South", "West"),
   admissions = c(120, 340, 210))
+ggplot(summary_df, aes(x = region, y = admissions)) +
+  geom_col(fill = "darkgreen")
+```
+:::
+:::
+
+## `geom_bar` vs. `geom_col`: The Result
+
+::: {.columns}
+::: {.column width="50%"}
+### `geom_bar()`: R counts the rows
+
+```{r}
+#| echo: false
+#| fig-width: 5.5
+#| fig-height: 4.4
+ggplot(airquality, aes(x = factor(Month))) +
+  geom_bar(fill = "steelblue")
+```
+:::
+
+::: {.column width="50%"}
+### `geom_col()`: you supply the heights
+
+```{r}
+#| echo: false
+#| fig-width: 5.5
+#| fig-height: 4.4
 ggplot(summary_df, aes(x = region, y = admissions)) +
   geom_col(fill = "darkgreen")
 ```
@@ -354,8 +404,19 @@ ggplot(airquality, aes(x = Temp, y = Ozone)) +
 By default, all subplots share the exact same axis limits (`scales = "fixed"`). Use `scales = "free_y"` for independent y-axes, or `scales = "free"` for fully independent axes:
 
 ```{r}
+#| output: false
+ggplot(airquality, aes(x = Temp, y = Ozone)) +
+  geom_point(color = "navy", alpha = 0.7) +
+  facet_wrap(~ Month, nrow = 1, scales = "free_y")
+```
+
+## Free y-Scales: The Result
+
+```{r}
+#| echo: false
 #| fig-width: 12
-#| fig-height: 2.6
+#| fig-height: 4
+#| fig-align: center
 ggplot(airquality, aes(x = Temp, y = Ozone)) +
   geom_point(color = "navy", alpha = 0.7) +
   facet_wrap(~ Month, nrow = 1, scales = "free_y")
@@ -469,10 +530,36 @@ ggsave(
 ::: {.column width="50%"}
 ### ❌ AI Prompt: "Bar chart of mortality rate"
 ```{r}
-#| fig-width: 5.5
-#| fig-height: 2.3
+#| output: false
 df <- data.frame(year = 2019:2023,
   rate = c(49.8, 50.1, 50.4, 50.2, 50.9))
+ggplot(df, aes(x = year, y = rate)) +
+  geom_col() +
+  coord_cartesian(ylim = c(48, 52))
+```
+:::
+
+::: {.column width="50%"}
+### ✅ The Verified Rule
+```{r}
+#| output: false
+# Same data, honest baseline at 0
+ggplot(df, aes(x = year, y = rate)) +
+  geom_col()
+```
+:::
+:::
+
+## Truncated vs. Honest Baseline
+
+::: {.columns}
+::: {.column width="50%"}
+### ❌ Axis starts at 48
+
+```{r}
+#| echo: false
+#| fig-width: 5.5
+#| fig-height: 3.6
 ggplot(df, aes(x = year, y = rate)) +
   geom_col() +
   coord_cartesian(ylim = c(48, 52))
@@ -482,11 +569,12 @@ ggplot(df, aes(x = year, y = rate)) +
 :::
 
 ::: {.column width="50%"}
-### ✅ The Verified Rule
+### ✅ Axis starts at 0
+
 ```{r}
+#| echo: false
 #| fig-width: 5.5
-#| fig-height: 2.3
-# Same data, honest baseline at 0
+#| fig-height: 3.6
 ggplot(df, aes(x = year, y = rate)) +
   geom_col()
 ```
