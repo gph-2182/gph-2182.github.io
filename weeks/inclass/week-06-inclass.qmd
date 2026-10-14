@@ -1,0 +1,113 @@
+---
+title: "Week 6 In-Class Exercises: Advanced Wrangling, Joins & Tidy Data"
+subtitle: "GPH-GU 2182 · Fall 2026 · Paired Programming"
+author: "YOUR NAME & PARTNER NAME"
+date: "October 7, 2026"
+format:
+  html:
+    toc: true
+    number-sections: true
+    code-tools:
+      source: true
+      toggle: false
+      caption: "Source Code"
+---
+
+::: {.callout-note}
+### Instructions
+Work in pairs. One person types (driver), the other reviews and advises (navigator). Swap roles halfway through!
+
+* 📥 **[Download `week-06-inclass.qmd`](https://gph-2182.github.io/weeks/inclass/week-06-inclass.qmd)** to open and edit in RStudio (or use the **`</> Source Code`** button at the top right).
+* Render this Quarto document to HTML and push it to your GitHub repository by the end of class for participation credit.
+:::
+
+```{r}
+#| label: setup
+#| message: false
+library(r02pro)
+library(dplyr)
+library(tidyr)
+library(tibble)
+```
+
+# Exercise 1: Continental Report Card (Cycle 1)
+
+Summarize the global burden of child mortality by continent using `gm`.
+
+```{r}
+#| label: ex1-group-summarize
+# 1. From gm, keep 2008 rows with non-missing child_mortality
+# 2. Group by continent
+# 3. Summarize: mean_cm = mean(child_mortality), max_cm = max(child_mortality),
+#    n_countries = n()
+# 4. Arrange the result from highest to lowest mean_cm
+
+```
+
+# Exercise 2: Lab Results Lookup with Joins (Cycle 2)
+
+A clinic network stores visits and lab results in separate tables.
+
+```{r}
+#| label: ex2-data
+visits <- tibble(
+  visit_id = c("V01", "V02", "V03", "V04", "V05", "V06"),
+  clinic   = c("Downtown", "Downtown", "Uptown", "Uptown", "Midtown", "Midtown"),
+  age      = c(52, 34, 68, 45, 59, 71)
+)
+
+lab_results <- tibble(
+  visit_id = c("V01", "V03", "V04", "V06"),
+  glucose  = c(112, 145, 98, 160)
+)
+```
+
+```{r}
+#| label: ex2-joins
+# 1. left_join() visits and lab_results by "visit_id". How many rows result? Why?
+# 2. Use anti_join() to list the visits with NO lab result on file
+# 3. Use inner_join(), then group_by(clinic) |> summarize(mean_glucose = mean(glucose))
+
+```
+
+# Exercise 3: Reshaping a Blood Pressure Study (Cycle 3)
+
+A hypertension study measured systolic blood pressure at three follow-up visits (wide format).
+
+```{r}
+#| label: ex3-data
+bp_wide <- tibble(
+  patient   = c("P1", "P2", "P3", "P4"),
+  bp_visit1 = c(142, 129, 155, 137),
+  bp_visit2 = c(138, 125, 149, 133),
+  bp_visit3 = c(131, 122, 144, 128)
+)
+```
+
+```{r}
+#| label: ex3-pivot
+# 1. Pivot bp_wide into long form bp_long with columns patient, visit, bp
+#    (use cols = starts_with("bp_"), names_prefix = "bp_" to strip the prefix)
+# 2. Group bp_long by visit and summarize mean_bp = mean(bp)
+# 3. Pivot bp_long back to wide format and confirm it matches bp_wide
+
+```
+
+# Exercise 4: Integration Challenge + AI Corner (Cycle 4)
+
+Which continents improved life expectancy the most between 1998 and 2008?
+
+```{r}
+#| label: ex4-integration
+# Build ONE pipeline from gm that:
+# 1. Keeps rows for years 1998 and 2008 (year %in% c(1998, 2008))
+# 2. Drops rows missing life_expectancy (drop_na())
+# 3. Groups by continent and year, then summarizes mean_le = mean(life_expectancy)
+#    (use .groups = "drop")
+# 4. Pivots wider: names_from = year, values_from = mean_le, names_prefix = "y"
+# 5. Adds gain = y2008 - y1998 and arranges by gain, largest first
+#
+# AI Corner: ask your AI assistant the same question, then audit its answer.
+# Does it filter the years? Handle NAs? Can you verify every verb it used?
+
+```
