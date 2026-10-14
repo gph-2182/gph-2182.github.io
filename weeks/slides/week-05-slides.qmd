@@ -36,7 +36,6 @@ format:
 ::: {.column width="50%"}
 ### Today's Milestones
 
-* **Homework 4:** Due tonight at 11:59 PM.
 * **Homework 5:** Released today (`dplyr` wrangling).
 * **📝 Quiz 2:** Last 30 minutes of class (covers Weeks 3–4).
 :::
@@ -510,13 +509,13 @@ Laptops closed, please. Your in-class worksheet should already be pushed to GitH
 ::: {.column width="50%"}
 ### 📌 To Do This Week
 
-* **Homework 5** (dplyr wrangling): due **Wednesday, Oct 7 at 11:59 PM**.
+* **Homework 5** (dplyr wrangling): due date on the course website.
 * **Read:** R02Pro Ch 8.5–8.8 & Ch 9 (grouped summaries, joins, tidy data).
-* Push today's in-class worksheet to GitHub **tonight**.
+* Push today's in-class worksheet to GitHub.
 :::
 
 ::: {.column width="50%"}
-### 🔭 Next Week (Oct 7)
+### 🔭 Next Week
 
 * `group_by()` + `summarize()`: one row per group.
 * Combining tables with joins (`left_join()`).

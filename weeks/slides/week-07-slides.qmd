@@ -36,7 +36,6 @@ format:
 ::: {.column width="50%"}
 ### Today's Milestones
 
-* **Homework 6:** Due tonight at 11:59 PM.
 * **Homework 7:** Released today (strings, factors, dates).
 * **📝 Quiz 3:** Last 30 minutes of class (covers Weeks 5–6).
 :::
@@ -413,13 +412,13 @@ Laptops closed, please. Your in-class worksheet should already be pushed to GitH
 ::: {.column width="50%"}
 ### 📌 To Do This Week
 
-* **Homework 7** (strings, factors, dates): due **Wednesday, Oct 28 at 11:59 PM**.
+* **Homework 7** (strings, factors, dates): due date on the course website.
 * **Read:** R02Pro Ch 12 (control flow & iteration).
-* Push today's worksheet to GitHub **tonight**.
+* Push today's worksheet to GitHub.
 :::
 
 ::: {.column width="50%"}
-### 🔭 Next Week (Oct 28)
+### 🔭 Next Week
 
 * `if` / `else` decisions and vectorized `ifelse()`.
 * `for` and `while` loops; accumulator patterns.

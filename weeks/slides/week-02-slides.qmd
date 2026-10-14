@@ -65,8 +65,7 @@ flowchart LR
 ```
 
 * **Textbook Reading:** R02Pro Chapters 2–3 ([r02pro.github.io](https://r02pro.github.io/))
-* **Homework 1:** Due **tonight at 11:59 PM** on GitHub!
-* **Homework 2:** Released before class; due next Wednesday at 11:59 PM.
+* **Homework 2:** Released before class.
 
 # Cycle 1: Vector Types & Coercion {background-color="#2c3e50"}
 
@@ -426,8 +425,8 @@ x + y
 
 ## Summary & Week 2 Checklist
 
-1. **Submit Homework 1:** Due **tonight at 11:59 PM** on GitHub.
-2. **Weekly Exercise 2:** Released on GitHub. Due **Wednesday Sep 16 at 11:59 PM**.
+1. **Submit Homework 1** on GitHub.
+2. **Weekly Exercise 2:** Released on GitHub; due date on the course website.
 3. **Finish & Push In-Class 2:** Push your rendered `week-02-inclass.html` for participation credit.
 4. **Upcoming in Week 3:** Matrices, Lists, Data Frames + **In-Class Quiz 1** (20 min, Weeks 1–2).
 

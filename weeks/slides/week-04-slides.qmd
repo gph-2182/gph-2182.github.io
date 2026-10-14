@@ -43,7 +43,6 @@ fig-height: 4.5
 ::: {.column width="50%"}
 ### Today\'s Milestones
 
-* **Homework 3:** Due tonight at 11:59 PM.
 * **Homework 4:** Released today (`ggplot2` visualization).
 * **Looking Ahead:** Quiz 2 takes place next week in Week 5.
 :::
@@ -601,7 +600,7 @@ ggplot(df, aes(x = year, y = rate)) +
 ::: {.column width="50%"}
 ### Looking Ahead to Week 5
 
-* **Homework 4:** Released today (due next Wednesday, Sep 30).
+* **Homework 4:** Released today.
 * **Next Week:** Data Wrangling with `dplyr` & Pipes (filter, mutate, select, arrange).
 * 📝 **Quiz 2 (Weeks 3–4):** In the last 30 minutes of Week 5!
 :::

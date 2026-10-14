@@ -36,7 +36,6 @@ format:
 ::: {.column width="50%"}
 ### Today\'s Milestones
 
-* **Homework 2:** Due tonight at 11:59 PM.
 * **Homework 3:** Released today (Matrices, Lists, Data Frames & Import).
 * 📝 **Quiz 1 (Weeks 1–2):** Administered during the last 30 minutes of class. Closed-book, paper handout.
 :::

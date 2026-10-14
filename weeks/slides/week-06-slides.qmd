@@ -36,8 +36,7 @@ format:
 ::: {.column width="50%"}
 ### Today's Milestones
 
-* **Homework 5:** Due tonight at 11:59 PM.
-* **Homework 6:** Released today, due **Oct 21** (two weeks: no class Oct 14!).
+* **Homework 6:** Released today.
 * **Looking Ahead:** Quiz 3 (Weeks 5–6) takes place in Week 7.
 :::
 :::
@@ -429,16 +428,15 @@ It ran without errors, but the patient count **doubled**: patients with multiple
 
 ::: {.columns}
 ::: {.column width="50%"}
-### 📌 To Do (Two Weeks!)
+### 📌 To Do
 
-* **No class Oct 14** (Legislative Monday).
-* **Homework 6:** due **Wednesday, Oct 21 at 11:59 PM**.
+* **Homework 6:** due date on the course website.
 * **Read:** R02Pro Ch 10, 3.6, 3.11 (strings, factors, dates).
-* Push today's worksheet to GitHub **tonight**.
+* Push today's worksheet to GitHub.
 :::
 
 ::: {.column width="50%"}
-### 🔭 Week 7 (Oct 21)
+### 🔭 Week 7
 
 * 📝 **Quiz 3** (covers Weeks 5–6) at end of class.
 * `stringr`: pattern matching & regex basics.

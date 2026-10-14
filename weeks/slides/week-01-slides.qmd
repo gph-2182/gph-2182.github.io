@@ -361,7 +361,7 @@ flowchart LR
 4. **Render:** Confirm the HTML compiles cleanly.
 5. **Push:** Commit and push to GitHub.
 6. **Instant Report:** Go to the **Actions** tab on GitHub: within 2 minutes, see which questions pass.
-7. **Iterate:** Revise and re-push freely until Wednesday 11:59 PM!
+7. **Iterate:** Revise and re-push freely until the deadline!
 
 
 # Cycle 4: AI Policy & Next Steps {background-color="#57068c"}
@@ -418,7 +418,7 @@ flowchart LR
 ## Summary & What To Do Before Week 2
 
 1. **Complete & Push:** In-class exercise 1 `.qmd` to your GitHub repo.
-2. **Weekly Exercise 1:** Released before class on GitHub. Due **Thursday Sep 10 at 11:59 PM** (extended).
+2. **Weekly Exercise 1:** Released on GitHub; due date on the course website.
 3. **Read for Next Week:** R02Pro Chapters 2–3 (Vectors & Subsetting).
 
 4. **Office Hours:** Posted on the course website.

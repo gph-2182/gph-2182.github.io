@@ -36,7 +36,6 @@ format:
 ::: {.column width="50%"}
 ### Today's Milestones
 
-* **Homework 7:** Due tonight at 11:59 PM.
 * **Homework 8:** Released today (control flow & iteration).
 * **Looking Ahead:** Quiz 4 (Weeks 7–8) takes place next week.
 :::
@@ -422,13 +421,13 @@ flags <- ifelse(df$child_mortality > 50, "high", "low")   # NA stays NA for free
 ::: {.column width="50%"}
 ### 📌 To Do This Week
 
-* **Homework 8** (control flow & iteration): due **Wednesday, Nov 4 at 11:59 PM**.
+* **Homework 8** (control flow & iteration): due date on the course website.
 * **Read:** R02Pro Ch 13 (functions & functional programming).
-* Push today's worksheet to GitHub **tonight**.
+* Push today's worksheet to GitHub.
 :::
 
 ::: {.column width="50%"}
-### 🔭 Next Week (Nov 4)
+### 🔭 Next Week
 
 * 📝 **Quiz 4** (covers Weeks 7–8) at end of class.
 * Writing your own functions: arguments, defaults, return values.
