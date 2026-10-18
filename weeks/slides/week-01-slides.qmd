@@ -19,6 +19,11 @@ format:
     height: 700
     css: ../../styles.css
     footer: "GPH-GU 2182 · Week 1"
+    code-line-numbers: false
+execute:
+  echo: true
+  warning: false
+  message: false
 ---
 
 # Welcome to GPH-GU 2182! {background-color="#57068c"}
@@ -102,27 +107,30 @@ flowchart LR
 
 You type commands into the **Console**; R evaluates them and prints results.
 
-```r
+```{r}
 # Arithmetic
 12 + 35
 (100 - 32) * 5 / 9   # Fahrenheit to Celsius
-
-# Math functions
-sqrt(64)
-exp(1)
-log(10)              # Natural logarithm (base e)
-log10(100)           # Common logarithm (base 10)
 ```
 
 ::: {.callout-tip}
 Everything after `#` is a comment and is ignored by R. Use comments to document your thinking!
 :::
 
+## Built-in Math Functions
+
+```{r}
+sqrt(64)
+exp(1)
+log(10)              # Natural logarithm (base e)
+log10(100)           # Common logarithm (base 10)
+```
+
 ## Objects and Variable Assignment
 
 We store values in named objects using the assignment operator `<-` (`Alt + -` or `Option + -`):
 
-```r
+```{r}
 # Assigning a value
 participant_age <- 28
 height_m <- 1.75
@@ -140,7 +148,7 @@ bmi
 
 Functions take **arguments** (inputs) and return an **output**:
 
-```r
+```{r}
 # Rounding
 round(bmi, digits = 1)
 
@@ -151,14 +159,15 @@ mean(vals, na.rm = TRUE)
 
 ### Getting help in R:
 
-* `?round` or `help(round)` — opens the official documentation.
-* `example(round)` — runs examples from the help page.
+* `?round` or `help(round)`: opens the official documentation.
+* `example(round)`: runs examples from the help page.
 
 ## Packages & The Course Textbook: R02Pro
 
 R packages extend R with datasets and specialized functions.
 
-```r
+```{r}
+#| eval: false
 # Install once per computer (done in Console, not script):
 install.packages("r02pro")
 
