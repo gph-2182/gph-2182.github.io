@@ -19,6 +19,11 @@ format:
     height: 700
     css: ../../styles.css
     footer: "GPH-GU 2182 · Week 2"
+    code-line-numbers: false
+execute:
+  echo: true
+  warning: false
+  message: false
 ---
 
 # Welcome to Week 2! {background-color="#57068c"}
@@ -54,32 +59,32 @@ In R, every element in an atomic vector **must have the same type**:
 ::: {.column width="48%"}
 ### 1. Numeric (Double)
 Decimal numbers (default in R):
-```r
+```{r}
 weights <- c(68.5, 72.0, 81.3)
-typeof(weights) # "double"
+typeof(weights)
 ```
 
 ### 2. Integer
 Explicit whole numbers with `L`:
-```r
+```{r}
 counts <- c(1L, 5L, 12L)
-typeof(counts)  # "integer"
+typeof(counts)
 ```
 :::
 
 ::: {.column width="48%"}
 ### 3. Character (Strings)
 Text enclosed in quotes:
-```r
+```{r}
 drugs <- c("aspirin", "statin", "placebo")
-typeof(drugs)   # "character"
+typeof(drugs)
 ```
 
 ### 4. Logical (Booleans)
 `TRUE` or `FALSE` (all caps):
-```r
+```{r}
 adherent <- c(TRUE, FALSE, TRUE)
-typeof(adherent)# "logical"
+typeof(adherent)
 ```
 :::
 :::
@@ -92,13 +97,21 @@ R silently converts everything to the **least restrictive** type:
 
 $$\text{logical} \longrightarrow \text{integer} \longrightarrow \text{double} \longrightarrow \text{character}$$
 
-```r
+```{r}
 # Logical to numeric (TRUE becomes 1, FALSE becomes 0)
-sum(c(TRUE, FALSE, TRUE, TRUE))  # Count how many TRUEs: 3
-mean(c(TRUE, FALSE, TRUE, FALSE))# Proportion of TRUEs: 0.5
+sum(c(TRUE, FALSE, TRUE, TRUE))    # count of TRUEs
+mean(c(TRUE, FALSE, TRUE, FALSE))  # proportion of TRUEs
 
 # Numeric + Character becomes Character
-c(10, 25, "missing")             # c("10", "25", "missing")
+c(10, 25, "missing")
+```
+
+## Coercion in Practice: Prevalence
+
+```{r}
+bp <- c(150, 128, 142, NA, 135, 118)
+bp > 140
+mean(bp > 140, na.rm = TRUE)
 ```
 
 ::: {.callout-tip}
@@ -110,14 +123,25 @@ c(10, 25, "missing")             # c("10", "25", "missing")
 
 R has built-in vector aggregators:
 
-```r
+::: {.columns}
+::: {.column width="50%"}
+```{r}
 chol <- c(185, 220, 240, 195, 210, NA)
+length(chol)      # counts the NA
+sum(is.na(chol))  # missing values
+```
+:::
 
-length(chol)              # Total elements including NA (6)
-sum(is.na(chol))          # Count missing values (1)
-mean(chol, na.rm = TRUE)  # Arithmetic mean (212)
-sd(chol, na.rm = TRUE)    # Standard deviation (20.8)
-summary(chol)             # 5-number summary + Mean + NAs
+::: {.column width="50%"}
+```{r}
+mean(chol, na.rm = TRUE)
+sd(chol, na.rm = TRUE)
+```
+:::
+:::
+
+```{r}
+summary(chol)             # 5-number summary + mean + NAs
 ```
 
 ## 💻 In-Class Exercise 2A (12 min)
@@ -143,7 +167,7 @@ Instead of typing numbers manually, generate sequences automatically:
 ::: {.column width="48%"}
 ### The Colon Operator `:`
 Consecutive integer sequences:
-```r
+```{r}
 1:10
 20:15    # Counts backward!
 -3:3
@@ -153,14 +177,12 @@ Consecutive integer sequences:
 ::: {.column width="48%"}
 ### The `seq()` Function
 Flexible step sizes & lengths:
-```r
+```{r}
 # By step size
 seq(from = 0, to = 100, by = 20)
-# Output: 0 20 40 60 80 100
 
 # By total length
 seq(from = 0, to = 1, length.out = 5)
-# Output: 0.00 0.25 0.50 0.75 1.00
 ```
 :::
 :::
@@ -173,26 +195,22 @@ The `rep()` function replicates values using `times` or `each`:
 ::: {.column width="48%"}
 ### `times` (Pattern repetition)
 Repeats the whole vector:
-```r
+```{r}
 rep(c("A", "B"), times = 3)
-# "A" "B" "A" "B" "A" "B"
 
 # Unequal repetitions per element:
 rep(c("Control", "Treated"), times = c(4, 2))
-# "Control" "Control" "Control" "Control" "Treated" "Treated"
 ```
 :::
 
 ::: {.column width="48%"}
 ### `each` (Element repetition)
 Repeats each item before moving to next:
-```r
+```{r}
 rep(c("A", "B"), each = 3)
-# "A" "A" "A" "B" "B" "B"
 
 # Combining both:
 rep(c("Dose1", "Dose2"), each = 2, times = 2)
-# "Dose1" "Dose1" "Dose2" "Dose2" "Dose1" "Dose1" "Dose2" "Dose2"
 ```
 :::
 :::
@@ -201,9 +219,9 @@ rep(c("Dose1", "Dose2"), each = 2, times = 2)
 
 The modulo operator `%%` calculates the **remainder of division**:
 
-```r
-14 %% 3   # 2  (14 = 4 * 3 + 2)
-10 %% 2   # 0  (10 is even)
+```{r}
+14 %% 3   # remainder of 14 / 3
+10 %% 2   # 10 is even
 ```
 
 ::: {.callout-tip}
@@ -229,7 +247,7 @@ The modulo operator `%%` calculates the **remainder of division**:
 
 We extract elements using square brackets `x[...]`:
 
-```r
+```{r}
 ages <- c(23, 45, 19, 31, 56, 42)
 ```
 
@@ -237,32 +255,31 @@ ages <- c(23, 45, 19, 31, 56, 42)
 ::: {.column width="33%"}
 ### 1. Positive Indices
 Extract by position (1-indexed):
-```r
-ages[1]        # 23
-ages[c(1, 4)]  # 23 31
-ages[2:4]      # 45 19 31
+```{r}
+ages[1]
+ages[c(1, 4)]
+ages[2:4]
 ```
 :::
 
 ::: {.column width="33%"}
 ### 2. Negative Indices
 Exclude specific positions:
-```r
-ages[-1]       # All except 1st
-ages[-c(2, 5)] # Drop 2nd & 5th
-# ages[-2:4]   # ERROR! Use -(2:4)
+```{r}
+ages[-1]
+ages[-c(2, 5)]
 ```
+
+*`ages[-2:4]` is an error: write `ages[-(2:4)]`.*
 :::
 
 ::: {.column width="33%"}
 ### 3. Logical Subsetting
 Extract where `TRUE`:
-```r
+```{r}
 ages[ages > 40]
-# 45 56 42
 
 ages[ages >= 30 & ages <= 50]
-# 45 31 42
 ```
 :::
 :::
@@ -278,28 +295,26 @@ Combine conditions using element-wise logical operators:
 | `!` | Logical **NOT** (inversion) | `!(city %in% c("NY", "CA"))` |
 | `%in%` | **Value matching** (set membership) | `id %in% confirmed_cases` |
 
-```r
+```{r}
 sbp <- c(118, 142, 135, 160, 122)
 stage2_htn <- sbp >= 140
-sbp[stage2_htn]   # 142 160
+sbp[stage2_htn]
 ```
 
 ## Modifying Vectors in Place (Mutation)
 
 Use subsetting on the left side of `<-` to update specific elements:
 
-```r
+```{r}
 scores <- c(88, -99, 95, -99, 72)
 
 # Replace survey code -99 with NA:
 scores[scores == -99] <- NA
 scores
-# 88 NA 95 NA 72
 
 # Cap values at 90 (winsorizing):
 scores[scores > 90 & !is.na(scores)] <- 90
 scores
-# 88 NA 90 NA 72
 ```
 
 ## 💻 In-Class Exercise 2C (15 min)
@@ -323,7 +338,7 @@ glucose <- c(95, 142, 180, 88, 210, 115, -1, 104)
 
 Understanding the difference between `sort()`, `rank()`, and `order()`:
 
-```r
+```{r}
 vals <- c(30, 10, 50, 20)
 ```
 
@@ -331,31 +346,28 @@ vals <- c(30, 10, 50, 20)
 ::: {.column width="33%"}
 ### `sort(x)`
 Returns **sorted values**:
-```r
+```{r}
 sort(vals)
-# 10 20 30 50
 
 sort(vals, decreasing = TRUE)
-# 50 30 20 10
 ```
 :::
 
 ::: {.column width="33%"}
 ### `rank(x)`
 Returns **rank position** of each element:
-```r
+```{r}
 rank(vals)
-# 3 1 4 2
-# (30 is 3rd, 10 is 1st, etc.)
 ```
+
+*`vals[1]` is 30, the 3rd smallest, so its rank is 3.*
 :::
 
 ::: {.column width="33%"}
 ### `order(x)`
 Returns **indices that would sort `x`**:
-```r
+```{r}
 order(vals)
-# 2 4 1 3
 vals[order(vals)] # sorted!
 ```
 :::
@@ -365,12 +377,12 @@ vals[order(vals)] # sorted!
 
 When numbers repeat, how should ranks be assigned?
 
-```r
+```{r}
 scores <- c(80, 95, 80, 70)
 
-rank(scores)                        # Default: average ranks (2.5 4.0 2.5 1.0)
-rank(scores, ties.method = "first") # By appearance: (2 4 3 1)
-rank(scores, ties.method = "min")   # Sports ranking: (2 4 2 1)
+rank(scores)                        # Default: average ranks
+rank(scores, ties.method = "first") # By appearance
+rank(scores, ties.method = "min")   # Sports ranking
 ```
 
 ::: {.callout-tip}
@@ -384,12 +396,10 @@ When R operates on vectors of different lengths, it **silently recycles** the sh
 ::: {.columns}
 ::: {.column width="50%"}
 ### What R Does:
-```r
+```{r}
 x <- c(10, 20, 30, 40)
 y <- c(1, 2)
-x + y
-# Computes: 10+1, 20+2, 30+1, 40+2
-# Output: 11 22 31 42
+x + y   # 10+1, 20+2, 30+1, 40+2
 ```
 :::
 
