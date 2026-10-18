@@ -45,29 +45,6 @@ format:
 # Cycle 1: Pipes & Filtering Rows {background-color="#2c3e50"}
 
 
-## Welcome & Check-In {background-color="#57068c"}
-
-::: {.columns}
-::: {.column width="58%"}
-### 📋 Walk-In Check-In Protocol
-
-1. **Find any open desk** and unpack your laptop.
-2. **Scan the QR code** or enter today's 4-digit PIN on screen to check in.
-3. **A few minutes after class starts**, random pairs will be generated on the screen.
-4. **Move to your assigned station** to sit with your partner *before* lecture starts!
-:::
-
-::: {.column width="42%"}
-::: {.callout-note appearance="simple"}
-### 👥 Today's Roles
-* **🚀 Driver (Student A):** Types for Cycles 1 & 2
-* **🧭 Navigator (Student B):** Types for Cycles 3 & 4
-* *Swap keyboard & roles at mid-class break!*
-:::
-:::
-:::
-
-
 ## Why Data Wrangling?
 
 Analysts spend **50–80%** of their time preparing data, not modeling it.
