@@ -18,6 +18,11 @@ format:
     min-scale: 0.2
     max-scale: 2.0
     auto-stretch: false
+    code-line-numbers: false
+execute:
+  echo: true
+  warning: false
+  message: false
 ---
 
 ## Welcome Back! (Week 7)
@@ -53,9 +58,11 @@ Free-text fields are everywhere, and they are **messy**:
 * Medication entries: `"metformin 500mg BID"`, `"METFORMIN 500 MG"`
 * Site codes: `"NYC-BK-014"`, `"nyc-qn-101"`
 
-```r
+```{r}
 library(stringr)   # every function starts with str_
 library(dplyr)
+library(tidyr)     # drop_na()
+library(r02pro)    # the gm data
 ```
 
 *`stringr` gives consistent, pipe-friendly tools: the first argument is always the string vector.*
@@ -64,16 +71,37 @@ library(dplyr)
 
 ## The Core `stringr` Verbs
 
-```r
+```{r}
 meds <- c("metformin 500mg", "Lisinopril 10mg", "atorvastatin 20mg")
 ```
 
-| Function | Question | Example | Result |
-|:---|:---|:---|:---|
-| `str_detect()` | Does it match? | `str_detect(meds, "statin")` | `F F T` |
-| `str_count()` | How many matches? | `str_count(meds, "m")` | `3 0 1` |
-| `str_extract()` | What matched? | `str_extract(meds, "\\d+mg")` | `"500mg" "10mg" "20mg"` |
-| `str_replace()` | Swap the match | `str_replace(meds, "mg", " mg")` | adds a space |
+```{r}
+#| echo: false
+#| results: asis
+# Every Result cell is computed by running the Example code itself.
+verbs <- tibble(
+  Function = c("str_detect()", "str_count()", "str_extract()", "str_replace()"),
+  Question = c("Does it match?", "How many matches?", "What matched?", "Swap the match"),
+  Example  = c('str_detect(meds, "statin")',
+               'str_count(meds, "m")',
+               'str_extract(meds, "\\\\d+mg")',
+               'str_replace(meds, "mg", " mg")')
+)
+show_result <- function(code) {
+  x <- eval(parse(text = code))
+  if (is.character(x)) x <- encodeString(x, quote = '"')
+  paste(x, collapse = " ")
+}
+tbl <- verbs |>
+  mutate(Result   = paste0("`", vapply(Example, show_result, character(1)), "`"),
+         Function = paste0("`", Function, "`"),
+         Example  = paste0("`", Example, "`")) |>
+  knitr::kable(format = "pipe", align = "llll")
+# Column widths 19/14/30/37 so function names never break mid-word
+tbl[2] <- paste0("|:", strrep("-", 18), "|:", strrep("-", 13),
+                 "|:", strrep("-", 29), "|:", strrep("-", 36), "|")
+cat(tbl, sep = "\n")
+```
 
 * `str_to_lower()`, `str_to_upper()`, `str_trim()`, `str_length()` handle cleanup basics.
 
@@ -81,17 +109,22 @@ meds <- c("metformin 500mg", "Lisinopril 10mg", "atorvastatin 20mg")
 
 ## `str_detect()` Powers `filter()`
 
-```r
+```{r}
 # gm rows for countries whose name contains "stan"
 gm |>
   filter(year == 2008, str_detect(country, "stan")) |>
   select(country, life_expectancy)
 ```
 
-```r
-# Case-insensitive matching: normalize first
+---
+
+## Case-Insensitive Matching
+
+```{r}
+# Normalize case first, then match
 gm |>
-  filter(str_detect(str_to_lower(country), "united"))
+  filter(str_detect(str_to_lower(country), "united")) |>
+  distinct(country)
 ```
 
 *Pattern matching + last week's verbs = powerful cohort selection.*
@@ -153,7 +186,11 @@ In R strings you must **double** the backslash: the regex `\d` is typed `"\\d"`.
 | `^x` | starts with `x` |
 | `x$` | ends with `x` |
 
-```r
+---
+
+## Quantifiers & Anchors in Action
+
+```{r}
 codes <- c("NYC-BK-014", "BOS-DT-2", "NYC-QN-101", "nyc-si-77")
 
 str_detect(codes, "^NYC")        # starts with NYC (case-sensitive!)
@@ -165,7 +202,7 @@ str_detect(codes, "^[A-Z]{3}-")  # three capitals then a dash
 
 ## `str_replace()` and `str_replace_all()`
 
-```r
+```{r}
 notes <- c("pt reports HTN; hx of htn in family",
            "no HTN noted")
 
@@ -213,7 +250,7 @@ Using the `site_codes` vector in your worksheet:
 
 A **factor** stores a categorical variable with known, fixed **levels**:
 
-```r
+```{r}
 library(forcats)
 
 severity <- factor(c("mild", "severe", "moderate", "mild", "severe"),
@@ -231,7 +268,11 @@ table(severity)
 
 The #1 factor trick for readable plots: order categories by their **value**, not alphabetically.
 
-```r
+```{r}
+#| output-location: slide
+#| fig-width: 10
+#| fig-height: 5.2
+#| fig-align: center
 library(ggplot2)
 
 gm |>
@@ -252,7 +293,7 @@ gm |>
 
 Too many categories? Keep the most common, lump the rest into `"Other"`:
 
-```r
+```{r}
 gm |>
   filter(year == 2008) |>
   drop_na(region) |>
@@ -260,8 +301,7 @@ gm |>
   count(region_top, sort = TRUE)
 ```
 
-* `fct_lump(f, n = 5)`: keep the 5 largest levels + `"Other"`.
-* Also useful: `fct_infreq()` (order by frequency), `fct_rev()` (reverse).
+* Keeps the 5 largest levels plus `"Other"`; see also `fct_infreq()` and `fct_rev()`.
 
 ---
 
@@ -291,7 +331,7 @@ gm |>
 
 ## Parsing Dates: Match the Order
 
-```r
+```{r}
 library(lubridate)
 
 ymd("2026-10-21")        # ISO style
@@ -306,20 +346,26 @@ visit_dates <- ymd(c("2026-01-15", "2026-03-02", "2026-10-21"))
 
 ---
 
-## Date Components & Arithmetic
+## Date Components
 
-```r
+```{r}
 d <- ymd("2026-10-21")
 
-year(d);  month(d);  day(d)
-wday(d, label = TRUE)          # Wed
+year(d)
+month(d)
+wday(d, label = TRUE)          # day of the week
+```
 
-# Date arithmetic
+---
+
+## Date Arithmetic
+
+```{r}
 d + days(30)                   # follow-up in 30 days
 d - years(1)                   # one year ago
 ```
 
-```r
+```{r}
 # Elapsed time between events
 admit    <- ymd("2026-09-30")
 discharge <- ymd("2026-10-21")
@@ -330,13 +376,13 @@ as.numeric(discharge - admit)   # length of stay in days
 
 ## Intervals & Age Computation
 
-```r
+```{r}
 dob   <- ymd("1985-06-15")
 visit <- ymd("2026-10-21")
 
 # Exact age in years at visit
 age <- interval(dob, visit) / years(1)
-floor(age)   # completed years: 41
+floor(age)   # completed years
 ```
 
 ::: {.callout-warning}
@@ -349,17 +395,22 @@ Never compute age as `(visit - dob) / 365.25` for clinical work; leap years and 
 
 Asked to extract doses like `"500mg"`, an AI wrote:
 
-```r
+```{r}
+rx <- c("500mg", "500 mg", "dose mg unknown")
 str_extract(rx, "[0-9]*mg")
 ```
 
 **Audit findings:**
 
-1. `*` means *zero or more*: the pattern happily matches a bare `"mg"` with **no digits at all**.
-2. It misses `"500 mg"` (space before the unit) — silently returning `NA`.
+1. `*` means *zero or more*: the pattern matches a bare `"mg"` with **no digits at all**.
+2. On `"500 mg"` (space before the unit) it returns just `"mg"`, silently losing the dose.
 3. Nobody tested edge cases.
 
-```r
+---
+
+## AI Corner: The Audited Regex {background-color="#8e44ad"}
+
+```{r}
 # The audited version: at least one digit, optional space
 str_extract(rx, "\\d+ ?mg")
 ```
