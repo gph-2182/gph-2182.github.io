@@ -18,6 +18,11 @@ format:
     min-scale: 0.2
     max-scale: 2.0
     auto-stretch: false
+    code-line-numbers: false
+execute:
+  echo: true
+  warning: false
+  message: false
 ---
 
 ## Welcome to Week 6!
@@ -53,10 +58,16 @@ Last week's verbs kept data at the **row level**. Public health questions usuall
 * How many countries per region exceeded a smoking threshold?
 * What is each hospital's *median wait time*?
 
-```r
-library(r02pro)
+```{r}
+library(r02pro)   # the gm data
 library(dplyr)
 library(tidyr)
+```
+
+```{r}
+#| include: false
+# Keep printed tibbles short enough to fit on a slide
+options(tibble.print_min = 2, tibble.print_max = 15, pillar.max_footer_lines = 1)
 ```
 
 ---
@@ -65,7 +76,7 @@ library(tidyr)
 
 Without grouping, `summarize()` collapses the whole table to a single row:
 
-```r
+```{r}
 gm |>
   filter(year == 2008, !is.na(life_expectancy)) |>
   summarize(mean_le = mean(life_expectancy),
@@ -82,7 +93,7 @@ gm |>
 
 `group_by()` changes what "everything" means for the next verbs:
 
-```r
+```{r}
 gm |>
   filter(year == 2008, !is.na(life_expectancy)) |>
   group_by(continent) |>
@@ -90,20 +101,14 @@ gm |>
             n_countries = n())
 ```
 
-| continent | mean_le | n_countries |
-|:---|---:|---:|
-| Africa | 58.5 | 51 |
-| Americas | 73.4 | 33 |
-| Asia | 70.6 | 47 |
-| ... | ... | ... |
-
 *One row per continent: the group becomes the unit of analysis.*
 
 ---
 
 ## Grouping by Multiple Variables
 
-```r
+```{r}
+#| R.options: !expr list(tibble.print_max = 4, tibble.print_min = 4)
 gm |>
   filter(year %in% c(1998, 2008), !is.na(life_expectancy)) |>
   group_by(continent, year) |>
@@ -111,25 +116,29 @@ gm |>
 ```
 
 * One row per **continent × year** combination.
-* `.groups = "drop"` returns an ordinary ungrouped tibble (and silences the message).
 
-::: {.callout-warning}
-A grouped tibble stays grouped! Later verbs operate *within groups* until you `ungroup()` or use `.groups = "drop"`.
+::: {.callout-warning appearance="minimal"}
+A grouped tibble stays grouped! Later verbs operate *within groups* until you `ungroup()` or use `.groups = "drop"`, which returns an ordinary tibble (and silences the message).
 :::
 
 ---
 
 ## `count()`: The Fast Path for Frequencies
 
-```r
+```{r}
 # How many countries per continent in 2008?
 gm |> filter(year == 2008) |> count(continent)
-
-# Sorted, largest group first
-gm |> filter(year == 2008) |> count(continent, sort = TRUE)
 ```
 
 `count(x)` is shorthand for `group_by(x) |> summarize(n = n())`.
+
+---
+
+## `count(sort = TRUE)`: Largest Group First
+
+```{r}
+gm |> filter(year == 2008) |> count(continent, sort = TRUE)
+```
 
 ---
 
@@ -161,7 +170,7 @@ gm |> filter(year == 2008) |> count(continent, sort = TRUE)
 
 Real public health data arrives as **separate tables**:
 
-```r
+```{r}
 patients <- tibble(
   patient_id = c("P1", "P2", "P3", "P4"),
   age        = c(34, 58, 41, 29),
@@ -180,16 +189,9 @@ clinics <- tibble(
 
 ## `left_join()`: Keep All Rows on the Left
 
-```r
+```{r}
 patients |> left_join(clinics, by = "clinic_id")
 ```
-
-| patient_id | age | clinic_id | borough |
-|:---|---:|:---|:---|
-| P1 | 34 | C1 | Brooklyn |
-| P2 | 58 | C2 | Queens |
-| P3 | 41 | C1 | Brooklyn |
-| P4 | 29 | C3 | **NA** |
 
 * **Every** patient is kept; unmatched keys get `NA`.
 * The workhorse join for adding context columns to a primary table.
@@ -202,10 +204,9 @@ patients |> left_join(clinics, by = "clinic_id")
 ::: {.column width="50%"}
 ### `inner_join()`: matches only
 
-```r
+```{r}
 patients |>
   inner_join(clinics, by = "clinic_id")
-# P4 (clinic C3) disappears
 ```
 
 Keeps rows present in **both** tables.
@@ -214,10 +215,9 @@ Keeps rows present in **both** tables.
 ::: {.column width="50%"}
 ### `anti_join()`: the leftovers
 
-```r
+```{r}
 patients |>
   anti_join(clinics, by = "clinic_id")
-# ONLY P4
 ```
 
 Keeps left rows with **no match**: your data-quality audit tool!
@@ -263,37 +263,39 @@ Your worksheet defines `visits` (patient visits) and `lab_results` (test outcome
 
 **Untidy (wide):** one row per patient, one column *per visit*
 
-| patient | bp_visit1 | bp_visit2 | bp_visit3 |
-|:---|---:|---:|---:|
-| P1 | 142 | 138 | 131 |
-| P2 | 129 | 125 | 122 |
+```{r}
+bp_wide <- tibble(patient   = c("P1", "P2"),
+                  bp_visit1 = c(142, 129),
+                  bp_visit2 = c(138, 125),
+                  bp_visit3 = c(131, 122))
+bp_wide
+```
 
-**Tidy (long):** one row per patient-visit
-
-| patient | visit | bp |
-|:---|:---|---:|
-| P1 | visit1 | 142 |
-| P1 | visit2 | 138 |
-| ... | ... | ... |
+**Tidy (long):** one row per patient-visit (next slide).
 
 ---
 
 ## `pivot_longer()`: Wide → Long
 
-```r
-library(tidyr)
-
-bp_wide |>
+::: {.columns}
+::: {.column width="55%"}
+```{r}
+bp_long <- bp_wide |>
   pivot_longer(cols = starts_with("bp_"),
                names_to = "visit",
                values_to = "bp",
                names_prefix = "bp_")
+bp_long
 ```
+:::
 
+::: {.column width="45%"}
 * `cols`: which columns to stack (select-style helpers work!).
 * `names_to`: new column holding the old column **names**.
 * `values_to`: new column holding the old cell **values**.
 * `names_prefix`: strip repeated text from the names.
+:::
+:::
 
 *Why? `ggplot2` and `group_by()` need long data: one row per observation.*
 
@@ -303,12 +305,16 @@ bp_wide |>
 
 The inverse: spread a name-value pair back into columns (great for human-readable tables):
 
-```r
+```{r}
 bp_long |>
   pivot_wider(names_from = visit, values_from = bp)
 ```
 
-```r
+---
+
+## `pivot_wider()` for Summary Tables
+
+```{r}
 # Classic use: a summary table with one column per year
 gm |>
   filter(year %in% c(1998, 2008), !is.na(life_expectancy)) |>
@@ -321,7 +327,7 @@ gm |>
 
 ## `drop_na()`: Explicit Missing-Row Removal
 
-```r
+```{r}
 # Drop rows missing ANY column
 gm |> drop_na()
 
@@ -360,9 +366,9 @@ Your worksheet defines `bp_wide` (blood pressure over 3 visits).
 
 ## A Full Mini-Analysis, End to End
 
-*"Which continents improved life expectancy most between 1998 and 2008?"*
-
-```r
+```{r}
+#| R.options: !expr list(tibble.print_max = 4, tibble.print_min = 4)
+# Which continents improved life expectancy most between 1998 and 2008?
 gm |>
   filter(year %in% c(1998, 2008)) |>
   drop_na(life_expectancy) |>
@@ -374,7 +380,7 @@ gm |>
   arrange(desc(gain))
 ```
 
-*Six verbs, one readable story: filter → clean → group → summarize → reshape → derive.*
+*Seven verbs, one readable story: filter → clean → group → summarize → reshape → derive → sort.*
 
 ---
 
@@ -382,11 +388,19 @@ gm |>
 
 An AI assistant merged medication records onto patients:
 
-```r
-patients |> left_join(prescriptions, by = "patient_id")
+```{r}
+prescriptions <- tibble(
+  patient_id = c("P1", "P1", "P2", "P2", "P3", "P3", "P4", "P4"),
+  drug       = c("metformin", "lisinopril", "statin", "aspirin",
+                 "metformin", "statin", "aspirin", "insulin")
+)
+nrow(patients)
+patients |> left_join(prescriptions, by = "patient_id") |> nrow()
 ```
 
 It ran without errors, but the patient count **doubled**: patients with multiple prescriptions now appear once *per prescription*, so every later average is silently weighted by prescription count.
+
+## AI Corner: Auditing Every Join {background-color="#8e44ad"}
 
 **Audit protocol for every join:**
 
