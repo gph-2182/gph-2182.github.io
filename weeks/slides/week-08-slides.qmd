@@ -18,6 +18,11 @@ format:
     min-scale: 0.2
     max-scale: 2.0
     auto-stretch: false
+    code-line-numbers: false
+execute:
+  echo: true
+  warning: false
+  message: false
 ---
 
 ## Welcome to Week 8!
@@ -47,7 +52,7 @@ format:
 
 ## `if`: Run Code Conditionally
 
-```r
+```{r}
 sbp <- 165
 
 if (sbp >= 180) {
@@ -72,10 +77,10 @@ if (sbp >= 180) {
 ::: {.column width="50%"}
 ### Vector condition = error
 
-```r
+```{r}
+#| error: true
 sbp_vec <- c(120, 165, 190)
-if (sbp_vec >= 140) { ... }
-# Error: the condition has length > 1
+if (sbp_vec >= 140) print("elevated")
 ```
 
 `if` inspects **one** value; vectors need `ifelse()` (next!).
@@ -84,11 +89,10 @@ if (sbp_vec >= 140) { ... }
 ::: {.column width="50%"}
 ### `NA` condition = error
 
-```r
+```{r}
+#| error: true
 x <- NA
-if (x > 5) { ... }
-# Error: missing value where
-# TRUE/FALSE needed
+if (x > 5) print("big")
 ```
 
 Guard first: `if (!is.na(x) && x > 5)`.
@@ -101,17 +105,31 @@ Guard first: `if (!is.na(x) && x > 5)`.
 
 `ifelse(condition_vector, value_if_true, value_if_false)` decides **element by element**:
 
-```r
+```{r}
 sbp_vec <- c(120, 165, 190, 135)
 
 ifelse(sbp_vec >= 140, "elevated", "normal")
-#> "normal" "elevated" "elevated" "normal"
 ```
 
-```r
-# Perfect inside mutate()
+---
+
+## `ifelse()` Inside `mutate()`
+
+```{r}
+library(dplyr)
+library(r02pro)   # the gm data
+```
+
+```{r}
+#| include: false
+# Keep printed tibbles short enough to fit on a slide
+options(tibble.print_min = 4, tibble.print_max = 4, pillar.max_footer_lines = 1)
+```
+
+```{r}
 gm |>
   filter(year == 2008) |>
+  select(country, life_expectancy) |>
   mutate(le_group = ifelse(life_expectancy >= 75, "high", "lower"))
 ```
 
@@ -121,10 +139,13 @@ gm |>
 
 Nested `ifelse()` calls get unreadable fast: `dplyr::case_when()` scales cleanly:
 
-```r
+::: {.columns}
+::: {.column width="58%"}
+```{r}
 gm |>
   filter(year == 2008) |>
-  mutate(bp_stage = case_when(
+  select(country, child_mortality) |>
+  mutate(cm_level = case_when(
     child_mortality >= 100 ~ "very high",
     child_mortality >= 50  ~ "high",
     child_mortality >= 10  ~ "moderate",
@@ -132,9 +153,13 @@ gm |>
     TRUE ~ NA
   ))
 ```
+:::
 
+::: {.column width="42%"}
 * Conditions are checked in order; first `TRUE` wins (like `else if` chains).
 * The final `TRUE ~ ...` is the catch-all "else".
+:::
+:::
 
 ---
 
@@ -166,7 +191,7 @@ gm |>
 
 Repeat a code block once per element of a vector:
 
-```r
+```{r}
 sites <- c("Brooklyn", "Queens", "Bronx")
 
 for (s in sites) {
@@ -174,7 +199,11 @@ for (s in sites) {
 }
 ```
 
-```r
+---
+
+## Looping Over Positions
+
+```{r}
 # Looping over positions with seq_along()
 wait_times <- c(45, 12, 85, 30)
 
@@ -191,7 +220,7 @@ for (i in seq_along(wait_times)) {
 
 Build a result **before** the loop, fill it **inside** the loop:
 
-```r
+```{r}
 # Cumulative case counts over an outbreak week
 daily_cases <- c(3, 7, 12, 20, 31, 26, 18)
 
@@ -204,7 +233,6 @@ for (i in seq_along(daily_cases)) {
 }
 
 total_so_far
-#> 3 10 22 42 73 99 117
 ```
 
 ::: {.callout-tip}
@@ -258,7 +286,7 @@ Your worksheet provides `daily_cases` for a 10-day outbreak.
 
 Use when you **don't know in advance** how many iterations you need:
 
-```r
+```{r}
 # An intervention cuts weekly cases by 20%.
 # How many weeks until fewer than 10 cases?
 cases <- 200
@@ -269,8 +297,8 @@ while (cases >= 10) {
   weeks <- weeks + 1
 }
 
-weeks    # 14
-cases    # 8.8
+weeks
+cases
 ```
 
 ---
@@ -281,7 +309,8 @@ cases    # 8.8
 ::: {.column width="50%"}
 ### 1. The condition must eventually fail
 
-```r
+```{r}
+#| eval: false
 while (cases >= 10) {
   # forgot to update cases...
   weeks <- weeks + 1
@@ -293,7 +322,8 @@ while (cases >= 10) {
 ::: {.column width="50%"}
 ### 2. Add a guard rail
 
-```r
+```{r}
+#| eval: false
 while (cases >= 10 && weeks < 1000) {
   cases <- cases * 0.8
   weeks <- weeks + 1
@@ -340,7 +370,7 @@ A vaccination campaign reduces measles cases by 35% per month, starting from 5,0
 
 Loop over groups, applying a full pipeline each time:
 
-```r
+```{r}
 continents <- c("Africa", "Asia", "Europe")
 
 for (ct in continents) {
@@ -358,9 +388,11 @@ for (ct in continents) {
 
 ## AI Corner: The Unnecessary Loop {background-color="#8e44ad"}
 
-Asked to flag high-mortality countries, an AI wrote:
+Asked to flag high-mortality countries in `df`, an AI wrote:
 
-```r
+```{r}
+df <- gm |> filter(year == 2008)
+
 flags <- c()
 for (i in 1:nrow(df)) {
   if (is.na(df$child_mortality[i])) {
@@ -381,8 +413,9 @@ for (i in 1:nrow(df)) {
 2. `1:nrow(df)` breaks on an empty data frame (`1:0` runs twice!).
 3. Three branches of loop for what one vectorized line does:
 
-```r
-flags <- ifelse(df$child_mortality > 50, "high", "low")   # NA stays NA for free
+```{r}
+flags_vec <- ifelse(df$child_mortality > 50, "high", "low")   # NA stays NA for free
+identical(flags, flags_vec)
 ```
 
 ::: {.callout-important}
