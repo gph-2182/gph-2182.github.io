@@ -18,6 +18,11 @@ format:
     min-scale: 0.2
     max-scale: 2.0
     auto-stretch: false
+    code-line-numbers: false
+execute:
+  echo: true
+  warning: false
+  message: false
 ---
 
 ## Welcome to Week 5!
@@ -66,11 +71,17 @@ Analysts spend **50–80%** of their time preparing data, not modeling it.
 
 The `gm` dataset from the `r02pro` package tracks health indicators for world countries over time.
 
-```r
+```{r}
 library(r02pro)
 library(dplyr)
 
-gm   # 65,531 rows x 33 columns
+dim(gm)   # rows, columns
+```
+
+```{r}
+#| include: false
+# Keep printed tibbles short enough to fit on a slide
+options(tibble.print_min = 2, tibble.print_max = 3, pillar.max_footer_lines = 1)
 ```
 
 * `country`, `continent`, `year`, `population`
@@ -89,7 +100,8 @@ The pipe takes the object on its **left** and passes it as the **first argument*
 ::: {.column width="50%"}
 ### Nested (hard to read)
 
-```r
+```{r}
+#| output: false
 head(filter(gm, year == 2008), 3)
 ```
 
@@ -99,7 +111,8 @@ Read from the *inside out*. 😵
 ::: {.column width="50%"}
 ### Piped (reads like a recipe)
 
-```r
+```{r}
+#| output: false
 gm |>
   filter(year == 2008) |>
   head(3)
@@ -108,6 +121,10 @@ gm |>
 Read *top to bottom*: take `gm`, **then** filter, **then** show 3 rows.
 :::
 :::
+
+```{r}
+identical(head(filter(gm, year == 2008), 3), gm |> filter(year == 2008) |> head(3))
+```
 
 ::: {.callout-tip}
 Type `|>` quickly with **Cmd/Ctrl + Shift + M** (after enabling the native pipe in RStudio: Tools → Global Options → Code → "Use native pipe operator").
@@ -119,21 +136,27 @@ Type `|>` quickly with **Cmd/Ctrl + Shift + M** (after enabling the native pipe 
 
 `filter()` keeps rows where a logical condition is `TRUE` (the same logicals you built in Week 2!).
 
-```r
+```{r}
 # Countries observed in 2008 with life expectancy over 80
 gm |>
   filter(year == 2008, life_expectancy > 80)
 ```
 
 * Multiple conditions separated by commas are combined with **AND** (`&`).
-* Use `|` explicitly for **OR**:
 
-```r
+---
+
+## `filter()` with OR
+
+Use `|` explicitly for **OR**:
+
+```{r}
 # Rows from Africa OR Europe
 gm |> filter(continent == "Africa" | continent == "Europe")
 
-# Equivalent shortcut with %in%
-gm |> filter(continent %in% c("Africa", "Europe"))
+# Equivalent shortcut with %in%: same rows
+identical(gm |> filter(continent == "Africa" | continent == "Europe"),
+          gm |> filter(continent %in% c("Africa", "Europe")))
 ```
 
 ---
@@ -142,18 +165,15 @@ gm |> filter(continent %in% c("Africa", "Europe"))
 
 `filter()` **silently drops** rows where the condition evaluates to `NA`!
 
-```r
-# Rows where sugar consumption exceeds 40 g/day
-gm |> filter(sugar > 40)          # NA rows are gone, no warning
-
-# Keep only rows where sugar was actually measured
-gm |> filter(!is.na(sugar))
-
-# Explicitly inspect the missing rows
-gm |> filter(is.na(sugar))
+```{r}
+# Rows where sugar consumption exceeds 40 g/day vs. at most 40
+gm |> filter(sugar > 40) |> nrow()
+gm |> filter(sugar <= 40) |> nrow()
+gm |> filter(is.na(sugar)) |> nrow()   # rows neither condition kept
+nrow(gm)                               # the three counts add up to this
 ```
 
-::: {.callout-warning}
+::: {.callout-warning appearance="minimal"}
 Always ask: *"How many rows did I lose, and why?"* Check with `nrow()` before and after filtering.
 :::
 
@@ -161,19 +181,35 @@ Always ask: *"How many rows did I lose, and why?"* Check with `nrow()` before an
 
 ## `arrange()`: Ordering Rows
 
-```r
+```{r}
 # Lowest child mortality first
 gm |>
   filter(year == 2008) |>
-  arrange(child_mortality)
+  arrange(child_mortality) |>
+  select(country, year, child_mortality)  # (select() is next cycle)
+```
 
+---
+
+## `arrange()`: Descending Order
+
+```{r}
 # Highest first: wrap in desc()
 gm |>
   filter(year == 2008) |>
-  arrange(desc(life_expectancy))
+  arrange(desc(life_expectancy)) |>
+  select(country, year, life_expectancy)
+```
 
-# Tie-breakers: sort by continent, then by population within continent
-gm |> arrange(continent, desc(population))
+---
+
+## `arrange()`: Tie-Breakers
+
+```{r}
+# Sort by continent, then by population within continent
+gm |>
+  arrange(continent, desc(population)) |>
+  select(country, year, continent, population)
 ```
 
 * `NA` values are always placed **last**, regardless of direction.
@@ -188,7 +224,7 @@ gm |> arrange(continent, desc(population))
 
 In your `week-05-inclass.qmd` worksheet:
 
-1. Start from `gm` and keep only rows for the year **2008**.
+1. Start from `gm` and keep only rows for the year **2004** (the most recent year with smoking data).
 2. Keep countries where `smoking_male` is **not missing**.
 3. Keep countries where `smoking_male` exceeds **50** (percent).
 4. Arrange the result from highest to lowest `smoking_male`.
@@ -211,15 +247,17 @@ In your `week-05-inclass.qmd` worksheet:
 
 With 33 columns, most analyses need only a handful:
 
-```r
-# Keep identification + outcome columns
-gm |> select(country, year, life_expectancy)
+```{r}
+gm |> select(country, year, life_expectancy)  # id + outcome columns
+gm |> select(country:year)    # a consecutive range of columns
+```
 
-# Keep a consecutive range of columns
-gm |> select(country:year)
+---
 
-# Drop columns with a minus sign
-gm |> select(-population, -HDI)
+## `select()`: Dropping Columns
+
+```{r}
+gm |> select(-population, -HDI)   # drop with a minus sign
 ```
 
 ---
@@ -228,15 +266,21 @@ gm |> select(-population, -HDI)
 
 Match columns by **name pattern** instead of typing them all:
 
-```r
+```{r}
 # All smoking-related columns
 gm |> select(country, year, starts_with("smoking"))
 
-# All columns measured separately for each sex
-gm |> select(country, year, ends_with("_male"), ends_with("_female"))
-
 # Any column mentioning cancer
 gm |> select(country, year, contains("cancer"))
+```
+
+---
+
+## More `select()` Helpers
+
+```{r}
+# All columns measured separately for each sex
+gm |> select(country, year, ends_with("_male"), ends_with("_female"))
 ```
 
 * `starts_with()`, `ends_with()`, `contains()` are your workhorses.
@@ -248,7 +292,7 @@ gm |> select(country, year, contains("cancer"))
 
 `rename(new_name = old_name)`, and the rest of the data stays untouched:
 
-```r
+```{r}
 gm |>
   select(country, year, life_expectancy, GDP_per_capita) |>
   rename(life_exp = life_expectancy,
@@ -289,7 +333,7 @@ gm |>
 
 `mutate()` adds columns to the **end** of the data frame; existing columns are preserved.
 
-```r
+```{r}
 # Units (see ?gm): GDP_per_capita is in $1,000, population is in 1,000 people,
 # so their product is in millions of dollars.
 gm |>
@@ -300,10 +344,17 @@ gm |>
 
 * Right side is any vectorized expression (Week 2 arithmetic!).
 * **Check the units before you multiply or divide.** `?gm` documents them.
-* New columns can be built from columns you *just* created:
 
-```r
+---
+
+## `mutate()`: Building on New Columns
+
+New columns can be built from columns you *just* created:
+
+```{r}
 gm |>
+  filter(year == 2008) |>
+  select(country, population, GDP_per_capita) |>
   mutate(gdp_millions = GDP_per_capita * population,
          gdp_billions = gdp_millions / 1e3)
 ```
@@ -314,17 +365,23 @@ gm |>
 
 A comparison creates a `TRUE`/`FALSE` column, ready for later filtering:
 
-```r
+```{r}
 gm |>
   filter(year == 2008) |>
   select(country, life_expectancy) |>
   mutate(above_80 = life_expectancy > 80)
 ```
 
-```r
+---
+
+## `mutate()` for Unit Conversions
+
+```{r}
 # Unit conversions are classic mutate() one-liners
 # population is recorded in thousands of people (?gm)
 gm |>
+  filter(year == 2008) |>
+  select(country, population) |>
   mutate(pop_millions = population / 1e3)
 ```
 
@@ -336,9 +393,7 @@ gm |>
 
 ## Putting It All Together
 
-A complete wrangling pipeline, start to finish:
-
-```r
+```{r}
 smoking_2004 <- gm |>
   filter(year == 2004, !is.na(smoking_male), !is.na(smoking_female)) |>
   select(country, continent, population,
@@ -384,10 +439,16 @@ head(smoking_2004)
 
 Run a pipeline **one verb at a time** to find where things go wrong:
 
-```r
+```{r}
 gm |>
   filter(year == 2008)            # Step 1: run up to here. Rows look right?
+```
 
+---
+
+## Debugging Pipelines: Add One Verb at a Time
+
+```{r}
 gm |>
   filter(year == 2008) |>
   select(country, sugar)          # Step 2: expected columns present?
@@ -404,14 +465,17 @@ gm |>
 ::: {.column width="50%"}
 ### 1. `=` vs `==` inside `filter()`
 
-```r
-gm |> filter(year = 2008)   # ERROR
-gm |> filter(year == 2008)  # correct
+```{r}
+#| error: true
+gm |> filter(year = 2008)
 ```
+
+Fix: `filter(year == 2008)`.
 
 ### 2. Forgetting to assign
 
-```r
+```{r}
+#| eval: false
 gm |> mutate(x = sugar * 7)
 # printed... and discarded!
 ```
@@ -420,14 +484,16 @@ gm |> mutate(x = sugar * 7)
 ::: {.column width="50%"}
 ### 3. Quoting column names
 
-```r
-gm |> select("country")  # works, but
-gm |> select(country)    # idiomatic
+```{r}
+# Both work; the bare name is idiomatic
+identical(gm |> select("country"),
+          gm |> select(country))
 ```
 
 ### 4. Overwriting your raw data
 
-```r
+```{r}
+#| eval: false
 gm <- gm |> filter(year == 2008)
 # original gm is gone for this session!
 # Use a new name: gm_2008
@@ -441,7 +507,7 @@ gm <- gm |> filter(year == 2008)
 
 An AI assistant produced this code for *"average sugar consumption in Asia in 2008"*:
 
-```r
+```{r}
 gm %>%
   group_by(continent) %>%
   summarize(mean_sugar = mean(sugar))
@@ -455,7 +521,7 @@ gm %>%
 
 ## AI Corner: The Verified Version {background-color="#8e44ad"}
 
-```r
+```{r}
 # A verifiable Week-5 answer:
 asia_sugar <- gm |> filter(year == 2008, continent == "Asia", !is.na(sugar))
 mean(asia_sugar$sugar)
