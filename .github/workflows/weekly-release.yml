@@ -2,8 +2,9 @@ name: "Weekly Course Release & Deploy"
 
 on:
   schedule:
-    # Runs every Sunday at 12:00 UTC (8:00 AM EDT / 7:00 AM EST)
-    - cron: "0 12 * * 0"
+    # Runs every Sunday at 13:00 UTC (9:00 AM EDT / 8:00 AM EST), never
+    # before the 8:00 AM ET release times in data/schedule_release.json.
+    - cron: "0 13 * * 0"
   push:
     branches:
       - main
