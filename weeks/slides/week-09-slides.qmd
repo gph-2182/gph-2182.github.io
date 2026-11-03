@@ -290,7 +290,7 @@ rate_per("250", 1200000)
 ```
 
 * Check inputs at the **top** of the function, before any work happens.
-* Each condition must be all `TRUE`; the first one that is not stops with an error.
+* Conditions are checked in order: the first one that is not all `TRUE` stops the function with an error.
 
 ---
 
