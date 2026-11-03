@@ -16,18 +16,14 @@ subtitle: "Nov 4, 2026 · 2:00–4:40 PM · Bobst LL138"
 - Defining custom functions: function(args) { body }
 - Argument defaults, return values, and lexical scoping rules
 - Defensive programming: stopifnot() and custom error messages
-- Functional iteration with purrr: map(), map_dbl(), map_dfr()
+- Functional iteration with purrr: map(), map_dbl(), and list_rbind() (formerly map_dfr())
 - Comparing for loops vs purrr::map
 
 ## Materials
 
-::: {.callout-note appearance="simple"}
-Materials will be posted here before class.
-:::
-
-- 📊 **Lecture Slides:** *Available before class*
-- 📝 **In-Class Exercise:** *Available before class*
-- 💻 **Weekly Exercise 9:** *Released before class on GitHub*
+- 📊 **Lecture Slides:** [Interactive Presentation (HTML)](slides/week-09-slides.html)
+- 📝 **In-Class Exercise:** [View Worksheet (HTML)](inclass/week-09-inclass.html) · [Download Starter Code (`.qmd`)](https://gph-2182.github.io/weeks/inclass/week-09-inclass.qmd) · *or run `get_worksheet(9)` in your in-class repo*
+- 💻 **Weekly Exercise 9:** [Accept Assignment on Classroom 50](https://classroom50.org/gph-2182/gph-gu-2182-fall-2026/assignments/weekly-exercise-09/accept) · [How to do it, start to finish](../weekly.qmd)
 
 ## Due
 

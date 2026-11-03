@@ -1,0 +1,603 @@
+---
+title: "Week 9: Writing Custom Functions & purrr"
+subtitle: "GPH-GU 2182: Statistical Programming in R · Fall 2026"
+author: "Yang Feng, PhD"
+institute: "New York University · School of Global Public Health"
+date: "November 4, 2026"
+format:
+  revealjs:
+    theme: default
+    css: ../../styles.css
+    slide-number: true
+    preview-links: auto
+    chalkboard: true
+    transition: slide
+    width: 1280
+    height: 720
+    margin: 0.06
+    min-scale: 0.2
+    max-scale: 2.0
+    auto-stretch: false
+    code-line-numbers: false
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Welcome to Week 9!
+
+::: {.columns}
+::: {.column width="50%"}
+### Today's Roadmap
+
+1. **Your Own Functions:** `function()`, arguments, return values.
+2. **Safer Functions:** defaults, scoping, and input checks.
+3. **Iteration without Loops:** `purrr::map()` and friends.
+4. **Integration:** functions + `map()` over groups.
+5. **AI Corner:** The function that only works on the author's laptop.
+:::
+
+::: {.column width="50%"}
+### Today's Milestones
+
+* **Homework 9:** Released today (functions & purrr).
+* **📝 Quiz 4:** Last 30 minutes of class (covers Weeks 7–8).
+:::
+:::
+
+
+# Cycle 1: Writing Your Own Functions {background-color="#2c3e50"}
+
+
+## Why Write Functions?
+
+Three clinics, three copies of the same line:
+
+```{r}
+#| eval: false
+clinic_a$bmi <- clinic_a$weight / clinic_a$height^2
+clinic_b$bmi <- clinic_b$weight / clinic_b$height^2
+clinic_c$bmi <- clinic_c$weight / clinic_a$height^2   # spot the bug?
+```
+
+* Copy-paste multiplies bugs: the third line silently uses clinic A's heights.
+* **Rule of three:** once you have copied code twice, write a function.
+* A function gives an idea **one name, one place to fix, one place to test**.
+
+---
+
+## Anatomy of a Function
+
+::: {.columns}
+::: {.column width="55%"}
+```{r}
+bmi <- function(weight_kg, height_m) {
+  weight_kg / height_m^2
+}
+
+bmi(70, 1.75)
+```
+:::
+
+::: {.column width="45%"}
+* **Name:** `bmi` (a verb or noun that says what it computes).
+* **Arguments:** `weight_kg`, `height_m` (the inputs).
+* **Body:** the code inside `{ }`.
+* The value of the **last expression** is returned.
+:::
+:::
+
+---
+
+## Functions Are Vectorized for Free
+
+If the body uses vectorized operations, so does your function:
+
+```{r}
+weights <- c(55, 70, 92)
+heights <- c(1.60, 1.75, 1.80)
+
+bmi(weights, heights)
+```
+
+* One call handles one patient or a thousand.
+* Week 8's `ifelse()` and `case_when()` work inside functions the same way.
+
+---
+
+## Functions Inside `mutate()`
+
+A vectorized function drops straight into `mutate()`:
+
+```{r}
+library(dplyr)
+library(r02pro)   # the gm data
+```
+
+```{r}
+#| include: false
+# Keep printed tibbles short enough to fit on a slide
+options(tibble.print_min = 5, tibble.print_max = 5, pillar.max_footer_lines = 1)
+```
+
+```{r}
+tibble(id = 1:3, weight = weights, height = heights) |>
+  mutate(bmi = bmi(weight, height))
+```
+
+---
+
+## Functions Can Use Last Week's Tools
+
+```{r}
+bmi_category <- function(bmi_value) {
+  case_when(
+    bmi_value < 18.5 ~ "underweight",
+    bmi_value < 25   ~ "healthy",
+    bmi_value < 30   ~ "overweight",
+    bmi_value >= 30  ~ "obese"
+  )
+}
+
+bmi_category(c(17.2, 22.9, 28.4, 31.0, NA))
+```
+
+* No catch-all `TRUE ~ ...` line, so a missing BMI stays `NA` instead of becoming `"obese"`.
+* Small functions **compose**: `bmi_category(bmi(weights, heights))`.
+
+---
+
+## Early Exits with `return()`
+
+```{r}
+safe_ratio <- function(num, den) {
+  if (den == 0) {
+    return(NA)
+  }
+  num / den
+}
+
+safe_ratio(10, 4)
+safe_ratio(10, 0)
+```
+
+* `return()` stops the function immediately: use it for **early exits**.
+* Otherwise let the last line be the result (the tidyverse style).
+
+---
+
+## 👥 Paired Exercise 1: Clinical Converters (10 min)
+
+::: {.columns}
+::: {.column width="55%"}
+### Task
+
+1. Write `f_to_c(temp_f)` returning `(temp_f - 32) * 5 / 9`. Test it on 98.6 and 104.
+2. Apply it to the vector `temps_f` in your worksheet.
+3. Write `fever_flag(temp_c)` returning `"fever"` when `temp_c >= 38`, else `"no fever"` (use `ifelse()`).
+4. Compose them inside `mutate()` on the `patients` tibble: `fever_flag(f_to_c(temp_f))`.
+:::
+
+::: {.column width="45%"}
+### Checklist
+
+* Test with a value you know: 98.6 °F is 37 °C.
+* One job per function.
+* Name the function after what it returns.
+:::
+:::
+
+
+# Cycle 2: Arguments, Scoping & Safety {background-color="#2c3e50"}
+
+## Default Arguments
+
+```{r}
+rate_per <- function(cases, population, per = 100000) {
+  cases / population * per
+}
+
+rate_per(250, 1200000)              # uses the default: per 100,000
+rate_per(250, 1200000, per = 1000)  # override: per 1,000
+```
+
+* Put arguments with defaults **last**: the common case needs no typing.
+* **Name** optional arguments when you override them (`per = 1000`).
+
+---
+
+## Argument Matching
+
+```{r}
+rate_per(population = 1200000, cases = 250)   # named: any order works
+rate_per(1200000, 250)                          # positional: order matters!
+```
+
+* Convention: pass the first one or two **data** arguments by position, everything else **by name**.
+* The second call is a silent bug: cases and population are swapped.
+
+---
+
+## Scoping: What Can a Function See?
+
+::: {.columns}
+::: {.column width="50%"}
+### Reaching outside (fragile)
+
+```{r}
+threshold <- 140
+
+flag_high <- function(sbp) {
+  sbp >= threshold   # not an argument!
+}
+
+flag_high(c(120, 135, 150))
+
+threshold <- 130     # someone edits a global...
+flag_high(c(120, 135, 150))
+```
+:::
+
+::: {.column width="50%"}
+### Passing it in (robust)
+
+```{r}
+flag_high <- function(sbp, threshold = 140) {
+  sbp >= threshold
+}
+
+flag_high(c(120, 135, 150))
+flag_high(c(120, 135, 150), threshold = 130)
+```
+
+R looks for a name **inside** the function first, then in the environment where the function was defined.
+:::
+:::
+
+---
+
+## What Happens Inside Stays Inside
+
+```{r}
+total <- 0
+
+add_cases <- function(new_cases) {
+  total <- total + new_cases   # creates a LOCAL copy of total
+  total
+}
+
+add_cases(25)
+total
+```
+
+* Assignment inside a function never changes the global object.
+* To keep a result, **return it and assign it**: `total <- add_cases(25)`.
+
+---
+
+## Defensive Programming: `stopifnot()`
+
+```{r}
+#| error: true
+rate_per <- function(cases, population, per = 100000) {
+  stopifnot(is.numeric(cases), is.numeric(population), all(population > 0))
+  cases / population * per
+}
+
+rate_per(250, 0)
+rate_per("250", 1200000)
+```
+
+* Check inputs at the **top** of the function, before any work happens.
+* Each condition must be all `TRUE`; the first one that is not stops with an error.
+
+---
+
+## Custom Error Messages with `stop()`
+
+```{r}
+#| error: true
+bmi <- function(weight_kg, height_m) {
+  if (any(height_m > 3, na.rm = TRUE)) {
+    stop("height_m looks like centimeters; divide by 100 first")
+  }
+  weight_kg / height_m^2
+}
+
+bmi(70, 175)
+```
+
+::: {.callout-tip}
+A loud error that says **how to fix it** beats a silent BMI of 0.0023 that flows into your paper.
+:::
+
+---
+
+## 👥 Paired Exercise 2: A Reusable Rate Function (10 min)
+
+::: {.columns}
+::: {.column width="55%"}
+### Task
+
+1. Write `incidence_rate(cases, population, per = 100000)`.
+2. Use it inside `mutate()` on the `counties` tibble in your worksheet; then again with `per = 1000`.
+3. Add `stopifnot()` checks: population must be positive and `cases` cannot exceed `population`.
+4. Run it on `bad_counties` and read the error. Then replace the checks with `if` + `stop()` messages a colleague would understand.
+:::
+
+::: {.column width="45%"}
+### Checklist
+
+* Defaults go last.
+* Trigger the error path **on purpose** to test it.
+* Nothing in the body that is not an argument.
+:::
+:::
+
+
+# Cycle 3: Iteration without Loops: purrr {background-color="#2c3e50"}
+
+## From `for` Loop to `map()`
+
+```{r}
+clinic_sbp <- list(
+  brooklyn = c(128, 141, 135, 152),
+  queens   = c(118, 122, 139),
+  bronx    = c(145, 160, 138, 149, 151)
+)
+```
+
+::: {.columns}
+::: {.column width="50%"}
+### Week 8 style
+
+```{r}
+clinic_means <- numeric(length(clinic_sbp))
+for (i in seq_along(clinic_sbp)) {
+  clinic_means[i] <- mean(clinic_sbp[[i]])
+}
+clinic_means
+```
+:::
+
+::: {.column width="50%"}
+### purrr style
+
+```{r}
+library(purrr)
+
+map(clinic_sbp, mean)
+```
+:::
+:::
+
+---
+
+## `map()` Always Returns a List
+
+`map(.x, .f)` applies `.f` to **each element** of `.x`:
+
+* Output has the **same length** as the input.
+* Output keeps the input's **names**.
+* No pre-allocation, no index, no off-by-one bugs.
+
+When each result is a single value, a **typed** variant returns a vector instead of a list.
+
+---
+
+## Typed Variants: `map_dbl()`, `map_int()`, `map_lgl()`, `map_chr()`
+
+```{r}
+map_dbl(clinic_sbp, mean)
+map_int(clinic_sbp, length)
+```
+
+The suffix is a **promise** about the output type, and purrr enforces it:
+
+```{r}
+#| error: true
+map_dbl(clinic_sbp, range)   # range() returns TWO numbers per clinic
+```
+
+---
+
+## Anonymous Functions
+
+For one-off logic, write the function right inside `map()`:
+
+```{r}
+map_dbl(clinic_sbp, \(x) mean(x >= 140))   # share of readings >= 140
+map_lgl(clinic_sbp, \(x) any(x >= 160))     # any reading >= 160?
+```
+
+* `\(x) ...` is shorthand for `function(x) ...`.
+* Older code (and many AI answers) write `~ mean(.x >= 140)`: same idea, older syntax.
+
+---
+
+## A Data Frame Is a List of Columns
+
+So `map()` over a data frame visits **each column**:
+
+```{r}
+gm_2008 <- gm |>
+  filter(year == 2008) |>
+  select(life_expectancy, child_mortality, GDP_per_capita)
+
+map_int(gm_2008, \(col) sum(is.na(col)))            # missing-data audit
+map_dbl(gm_2008, \(col) median(col, na.rm = TRUE))
+```
+
+---
+
+## 👥 Paired Exercise 3: Loop to `map()` (10 min)
+
+::: {.columns}
+::: {.column width="55%"}
+### Task
+
+Your worksheet provides `site_waits`, a named list of wait times (minutes) at four sites.
+
+1. Write a `for` loop computing each site's **median** wait (`na.rm = TRUE`).
+2. Replace the loop with `map_dbl()` and confirm the results are identical.
+3. Use `map_lgl()` to flag sites where **any** wait exceeds 60 minutes.
+4. Use `map_int()` to count waits over 60 minutes at each site.
+:::
+
+::: {.column width="45%"}
+### Checklist
+
+* One site has a missing value: handle it **inside** your anonymous function.
+* `map_dbl()` for one number per element, `map_lgl()` for one `TRUE`/`FALSE`.
+* Compare loop and map with `all.equal()`.
+:::
+:::
+
+
+# Cycle 4: Integration + AI Corner {background-color="#2c3e50"}
+
+## A Function That Returns a Table
+
+```{r}
+summarize_continent <- function(data, ct, yr = 2008) {
+  data |>
+    filter(year == yr, continent == ct) |>
+    summarize(
+      continent   = ct,
+      n_countries = n(),
+      median_le   = median(life_expectancy, na.rm = TRUE)
+    )
+}
+
+summarize_continent(gm, "Asia")
+```
+
+---
+
+## `map()` + `list_rbind()`: One Row per Group
+
+Last week's loop printed one line per continent. Now we get a **table** back:
+
+```{r}
+continents <- c("Africa", "Americas", "Asia", "Europe", "Oceania")
+
+map(continents, \(ct) summarize_continent(gm, ct)) |>
+  list_rbind()
+```
+
+* `list_rbind()` stacks a list of data frames (older code uses `map_dfr()`).
+* `group_by()` + `summarize()` does this particular job too; `map()` shines when the per-group step is **not** a dplyr verb (one plot, one model, or one file per group).
+
+---
+
+## Loop or `map()`?
+
+| Use a `for` / `while` loop when... | Use `map_*()` when... |
+|:---|:---|
+| each step depends on the previous one (running totals, `while`) | each element is handled independently |
+| the point is a side effect (printing, saving files) | the point is the returned values |
+| you are fine pre-allocating output yourself | you want output allocated and type-checked for you |
+
+Both are correct R; `map()` is usually shorter and harder to get wrong.
+
+---
+
+## AI Corner: The Function That Only Works Here {background-color="#8e44ad"}
+
+Asked for "the share of countries with life expectancy at or above a cutoff," an AI wrote:
+
+```{r}
+df <- gm |> filter(year == 2008)
+
+share_above_ai <- function(cutoff) {
+  mean(df$life_expectancy >= cutoff, na.rm = TRUE)
+}
+
+share_above_ai(75)
+```
+
+It runs, handles `NA`, and the number looks plausible. Ship it?
+
+## AI Corner: Auditing the Function {background-color="#8e44ad"}
+
+**Audit findings:**
+
+1. Reads `df` from the global environment. Reuse the name later and the **same call** silently gives a different answer:
+
+```{r}
+df <- gm |> filter(year == 1990)
+share_above_ai(75)
+```
+
+2. Hard-wires `life_expectancy`: useless for any other variable.
+3. No check that `cutoff` is a single number.
+
+## AI Corner: The Audited Version {background-color="#8e44ad"}
+
+::: {.columns}
+::: {.column width="55%"}
+```{r}
+share_above <- function(x, cutoff) {
+  stopifnot(is.numeric(x), is.numeric(cutoff),
+            length(cutoff) == 1)
+  mean(x >= cutoff, na.rm = TRUE)
+}
+
+le_2008 <- gm |>
+  filter(year == 2008) |>
+  pull(life_expectancy)
+
+share_above(le_2008, 75)
+map_dbl(c(60, 70, 80),
+        \(k) share_above(le_2008, k))
+```
+:::
+
+::: {.column width="45%"}
+* The data arrives as an argument `x`, so the function works for any year and any variable.
+* `stopifnot()` rejects a bad `cutoff` before any work happens.
+* `map_dbl()` reuses it across cutoffs in one line.
+
+::: {.callout-important}
+*Everything a function uses should arrive through its arguments.*
+:::
+:::
+:::
+
+---
+
+## 📝 Quiz 4 (Last 30 Minutes)
+
+* **Coverage:** Weeks 7–8 (strings, regex, factors, dates, `if`/`else`, `ifelse()`, `case_when()`, `for` and `while` loops).
+* **Format:** Paper-based, closed-book, no electronic devices.
+* **Length:** 20 minutes, multiple choice.
+
+::: {.callout-note}
+Laptops closed, please. Your in-class worksheet should already be pushed to GitHub before the quiz begins.
+:::
+
+
+# Wrap-Up & Next Steps
+
+## Before We Meet Again
+
+::: {.columns}
+::: {.column width="50%"}
+### 📌 To Do This Week
+
+* **Homework 9** (functions & purrr): due date on the course website.
+* **Read:** R02Pro Ch 11.1–11.4 (simulation & sampling).
+* Push today's worksheet to GitHub.
+:::
+
+::: {.column width="50%"}
+### 🔭 Next Week
+
+* Random sampling and probability distributions.
+* Monte Carlo simulation: your functions + `map()` will run thousands of simulated studies.
+* 🎯 **Final project** released.
+:::
+:::
+
+*Questions? Office hours are listed on the syllabus page, or email anytime.*

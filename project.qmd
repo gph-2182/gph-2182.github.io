@@ -4,7 +4,7 @@ title: "Final Project"
 
 ::: {.callout-note}
 Full instructions, dataset options, and the grading rubric will be released in **Week 10
-(November 4)**. This page summarizes the shape of the project so you can plan
+(November 11)**. This page summarizes the shape of the project so you can plan
 ahead.
 :::
 
@@ -25,8 +25,9 @@ dataset, modeled on a reproducible data science pipeline.
 
 | Date | Milestone |
 |---|---|
-| **Nov 4 (Week 10)** | Final Project released with sample public health datasets & starter template |
+| **Nov 11 (Week 10)** | Final Project released with sample public health datasets & starter template |
 | **Nov–Dec** | Drop-in project support available during instructor & CA weekly office hours |
-| **Dec 9 (Week 14)** | In-class project workshop & consultation clinic in Bobst LL138 |
+| **Dec 2 (Week 13)** | In-class project workshop & consultation clinic in Bobst LL138 |
+| **Dec 9 (Week 14)** | Lightning project presentations in class |
 | **Dec 16, 11:59 PM** | Final project submission due on GitHub. No late submissions accepted. |
 

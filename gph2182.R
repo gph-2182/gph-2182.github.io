@@ -14,13 +14,13 @@
 ##     gph_help()         show the loop again
 ## ---------------------------------------------------------------------------
 
-.gph_version <- "2026-09-10c"
+.gph_version <- "2026-11-03"
 
 .gph_org       <- "gph-2182"
 .gph_classroom <- "gph-gu-2182-fall-2026"
 .gph_home_default <- "~/gph2182"
 .gph_site      <- "https://gph-2182.github.io"
-.gph_n_max     <- 8L
+.gph_n_max     <- 12L
 
 ## -- small output helpers ---------------------------------------------------
 
