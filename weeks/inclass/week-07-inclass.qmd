@@ -1,0 +1,116 @@
+---
+title: "Week 7 In-Class Exercises: Strings, Factors & Dates"
+subtitle: "GPH-GU 2182 · Fall 2026 · Paired Programming"
+author: "YOUR NAME & PARTNER NAME"
+date: "October 21, 2026"
+format:
+  html:
+    toc: true
+    number-sections: true
+    code-tools:
+      source: true
+      toggle: false
+      caption: "Source Code"
+---
+
+::: {.callout-note}
+### Instructions
+Work in pairs. One person types (driver), the other reviews and advises (navigator). Swap roles halfway through!
+
+* 📥 **[Download `week-07-inclass.qmd`](https://gph-2182.github.io/weeks/inclass/week-07-inclass.qmd)** to open and edit in RStudio (or use the **`</> Source Code`** button at the top right).
+* Render this Quarto document to HTML and push it to your GitHub repository by the end of class for participation credit.
+:::
+
+```{r}
+#| label: setup
+#| message: false
+library(r02pro)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(forcats)
+library(lubridate)
+library(ggplot2)
+library(tibble)
+```
+
+# Exercise 1: Medication String Cleanup (Cycle 1)
+
+A clinic's prescription log was hand-entered with inconsistent formatting.
+
+```{r}
+#| label: ex1-data
+prescriptions <- tibble(
+  rx_id = c("R1", "R2", "R3", "R4", "R5", "R6"),
+  drug  = c("Metformin 500mg BID", "LISINOPRIL 10mg", "metformin 850mg",
+            "Atorvastatin 20mg", "METFORMIN 500mg bid", "amlodipine 5mg")
+)
+```
+
+```{r}
+#| label: ex1-strings
+# 1. Add a column drug_lower with the drug text in lowercase (str_to_lower)
+# 2. Filter to rows where drug_lower contains "metformin"
+# 3. Add a dose column extracted with str_extract() and the pattern "\\d+mg"
+# 4. How many prescriptions mention "bid" (any case)? Use str_detect() on
+#    drug_lower and sum() the logical vector
+
+```
+
+# Exercise 2: Validating Surveillance Site Codes (Cycle 2)
+
+Valid site codes look like `"NYC-BK-014"`: three capital letters, two capital letters, then digits.
+
+```{r}
+#| label: ex2-data
+site_codes <- c("NYC-BK-014", "BOS-DT-2", "nyc-qn-101", "NYC-SI-77",
+                "CHI-NW-0009", "NYCBK14", "PHL-CC-31X")
+```
+
+```{r}
+#| label: ex2-regex
+# 1. Which codes match "^[A-Z]{3}-[A-Z]{2}-\\d+$"? Use str_detect()
+# 2. Extract the trailing site number from each code with str_extract() and "\\d+$"
+# 3. Extract the middle 2-letter segment using str_extract() with "-[A-Z]{2}-",
+#    then remove the dashes with str_remove_all()
+# 4. Convert all codes to uppercase with str_to_upper() and re-run the check
+#    from step 1. How many codes are valid now?
+
+```
+
+# Exercise 3: Ordered Regional Charts with forcats (Cycle 3)
+
+```{r}
+#| label: ex3-factors
+# 1. From gm, keep 2008 rows, drop rows missing child_mortality or region,
+#    group by region, and summarize mean_cm = mean(child_mortality)
+# 2. Draw a horizontal bar chart: aes(x = mean_cm, y = region), geom_col().
+#    Notice the unhelpful alphabetical ordering!
+# 3. Redraw the chart with y = fct_reorder(region, mean_cm)
+# 4. Separately: on the filtered 2008 rows, create region_top = fct_lump(region, n = 6)
+#    and count(region_top, sort = TRUE)
+
+```
+
+# Exercise 4: Dates & Length of Stay (Cycle 4 + AI Corner)
+
+```{r}
+#| label: ex4-data
+admissions <- tibble(
+  patient   = c("A", "B", "C", "D"),
+  dob       = c("1985-06-15", "1992-11-03", "1978-02-28", "2001-07-19"),
+  admitted  = c("10/02/2026", "10/05/2026", "09/28/2026", "10/12/2026"),
+  discharged = c("10/09/2026", "10/06/2026", "10/15/2026", "10/13/2026")
+)
+```
+
+```{r}
+#| label: ex4-dates
+# 1. Parse dob with ymd(), and admitted/discharged with mdy() (mutate all three)
+# 2. Add los_days: the length of stay in days, as.numeric(discharged - admitted)
+# 3. Add age_years: floor(interval(dob, admitted) / years(1))
+# 4. AI Corner: an AI computed age as (admitted - dob) / 365.25.
+#    Compute that too (as.numeric(...) / 365.25) and compare: for which
+#    patients does floor() of the two methods disagree? Why is interval() safer?
+
+```

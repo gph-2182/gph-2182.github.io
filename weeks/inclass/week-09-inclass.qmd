@@ -1,0 +1,128 @@
+---
+title: "Week 9 In-Class Exercises: Writing Custom Functions & purrr"
+subtitle: "GPH-GU 2182 · Fall 2026 · Paired Programming"
+author: "YOUR NAME & PARTNER NAME"
+date: "November 4, 2026"
+format:
+  html:
+    toc: true
+    number-sections: true
+    code-tools:
+      source: true
+      toggle: false
+      caption: "Source Code"
+---
+
+::: {.callout-note}
+### Instructions
+Work in pairs. One person types (driver), the other reviews and advises (navigator). Swap roles halfway through!
+
+* 📥 **[Download `week-09-inclass.qmd`](https://gph-2182.github.io/weeks/inclass/week-09-inclass.qmd)** to open and edit in RStudio (or use the **`</> Source Code`** button at the top right).
+* Render this Quarto document to HTML and push it to your GitHub repository **before Quiz 4 starts** (last 30 minutes of class) for participation credit.
+:::
+
+```{r}
+#| label: setup
+#| message: false
+library(dplyr)
+library(purrr)
+```
+
+# Exercise 1: Clinical Converters (Cycle 1)
+
+```{r}
+#| label: ex1-data
+temps_f <- c(98.6, 101.3, 99.1, 104.0, 97.8)
+patients <- tibble(id = 1:5, temp_f = temps_f)
+```
+
+```{r}
+#| label: ex1-functions
+# 1. Write f_to_c(temp_f) that returns (temp_f - 32) * 5 / 9
+#    Test it: f_to_c(98.6) should be 37, then try f_to_c(104)
+# 2. Apply f_to_c() to the whole temps_f vector
+# 3. Write fever_flag(temp_c) that returns "fever" when temp_c >= 38,
+#    otherwise "no fever" (use ifelse())
+# 4. Add two columns to patients with mutate(): temp_c, and
+#    fever = fever_flag(f_to_c(temp_f))
+
+```
+
+# Exercise 2: A Reusable Rate Function (Cycle 2)
+
+```{r}
+#| label: ex2-data
+counties <- tibble(
+  county     = c("Bronx", "Kings", "New York", "Queens", "Richmond"),
+  cases      = c(412, 655, 298, 517, 96),
+  population = c(1379946, 2590516, 1596273, 2278029, 491133)
+)
+
+bad_counties <- tibble(
+  county     = c("Typo County", "Swapped County"),
+  cases      = c(40, 880000),
+  population = c(0, 1200)
+)
+```
+
+```{r}
+#| label: ex2-rate
+#| error: true
+# 1. Write incidence_rate(cases, population, per = 100000)
+# 2. Use it inside mutate() on counties to add rate_100k; then add rate_1k with per = 1000
+# 3. Add stopifnot() checks at the top of the function:
+#    all populations are positive, and no cases value exceeds its population
+# 4. Call incidence_rate(bad_counties$cases, bad_counties$population) and read the error.
+#    Then replace the stopifnot() with if (...) stop("...") checks whose messages
+#    tell a colleague exactly what is wrong
+
+```
+
+# Exercise 3: Loop to map() (Cycle 3)
+
+```{r}
+#| label: ex3-data
+site_waits <- list(
+  harlem   = c(25, 40, 65, 30, 55),
+  flushing = c(15, 20, 35, NA, 22),
+  midwood  = c(70, 45, 90, 62),
+  astoria  = c(30, 28, 41)
+)
+```
+
+```{r}
+#| label: ex3-map
+# 1. Write a for loop that computes each site's median wait (use na.rm = TRUE)
+#    Pre-allocate with numeric(length(site_waits)) and index with seq_along()
+# 2. Replace the loop with map_dbl() and check the two agree:
+#    all.equal(unname(map_result), loop_result)
+# 3. Use map_lgl() to flag sites where ANY wait exceeds 60 minutes
+#    (watch out for the NA at flushing)
+# 4. Use map_int() to count how many waits exceed 60 minutes at each site
+
+```
+
+# Exercise 4: Functions + map() over Groups + AI Corner (Cycle 4)
+
+```{r}
+#| label: ex4-data
+#| message: false
+library(r02pro)
+```
+
+```{r}
+#| label: ex4-integration
+# 1. Write summarize_continent(data, ct, yr = 2008) that filters data to year yr
+#    and continent ct, then summarize()s: continent = ct, n_countries = n(),
+#    and median_cm = median child_mortality (na.rm = TRUE)
+# 2. Use map() over c("Africa", "Americas", "Asia", "Europe", "Oceania")
+#    and list_rbind() to build one table with a row per continent
+# 3. Re-run step 2 for yr = 1990 by passing yr through your anonymous function
+# 4. AI Corner: an AI wrote this to get the share of countries at or above a cutoff:
+#      df <- gm |> filter(year == 2008)
+#      share_above_ai <- function(cutoff) mean(df$life_expectancy >= cutoff, na.rm = TRUE)
+#    List two problems with it, then write share_above(x, cutoff) that takes the
+#    data as an argument and checks its inputs. Use map_dbl() to
+#    compute the share at cutoffs 60, 70, and 80 for 2008.
+
+```

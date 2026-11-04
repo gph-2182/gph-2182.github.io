@@ -1,0 +1,80 @@
+---
+title: "Week 4 In-Class Exercises: Data Visualization with ggplot2"
+subtitle: "GPH-GU 2182 · Fall 2026 · Paired Programming"
+author: "YOUR NAME & PARTNER NAME"
+date: "September 23, 2026"
+format:
+  html:
+    toc: true
+    number-sections: true
+    code-tools:
+      source: true
+      toggle: false
+      caption: "Source Code"
+---
+
+::: {.callout-note}
+### Instructions
+Work in pairs. One person types (driver), the other reviews and advises (navigator). Swap roles halfway through!
+
+* 📥 **[Download `week-04-inclass.qmd`](https://gph-2182.github.io/weeks/inclass/week-04-inclass.qmd)** to open and edit in RStudio (or use the **`</> Source Code`** button at the top right).
+* Render this Quarto document to HTML and push it to your GitHub repository by the end of class for participation credit.
+:::
+
+```{r}
+#| label: setup
+#| message: false
+library(ggplot2)
+```
+
+# Exercise 1: Environmental Air Quality Scatterplot (Cycle 1)
+
+Using the built-in `airquality` dataset, visualize the relationship between solar radiation and ozone concentrations.
+
+```{r}
+#| label: ex1-scatterplot
+# 1. Create a scatterplot of Solar.R (x) vs Ozone (y)
+# 2. Map Wind speed to the point color aesthetic
+# 3. Set alpha = 0.7 and size = 3 outside aes()
+# 4. Add a smooth trendline with geom_smooth(method = "loess", color = "darkblue")
+
+```
+
+# Exercise 2: Comparing Ozone Across Summer Months (Cycle 2)
+
+Compare the distribution of ozone levels across the five summer months (May = 5 through September = 9).
+
+```{r}
+#| label: ex2-distributions
+# 1. Build a violin plot comparing Ozone across Months (x = factor(Month), y = Ozone)
+# 2. Fill the violins by factor(Month) with alpha = 0.5
+# 3. Overlay a boxplot inside the violins with width = 0.2 and fill = "white"
+# 4. Suppress duplicate outlier points on the boxplot using outlier.shape = NA
+
+```
+
+# Exercise 3: Small Multiples with `facet_wrap` (Cycle 3)
+
+Examine how the temperature-ozone relationship changes month by month.
+
+```{r}
+#| label: ex3-facets
+# 1. Create a scatterplot of Temp (x) vs Ozone (y)
+# 2. Add points with alpha = 0.6
+# 3. Add a linear regression line using geom_smooth(method = "lm", color = "red", se = FALSE)
+# 4. Facet by Month into a single row using facet_wrap(~ Month, nrow = 1)
+
+```
+
+# Exercise 4: Publication-Ready Polishing (Cycle 4 + AI Corner)
+
+Take the multi-panel temperature plot from Exercise 3 and polish it to publication standards.
+
+```{r}
+#| label: ex4-publication
+# 1. Map Wind speed to color using scale_color_viridis_c(option = "viridis")
+# 2. Add complete titles, subtitle, axis labels, and caption
+# 3. Apply theme_minimal() and position the legend at the bottom
+
+```
+
