@@ -1,0 +1,618 @@
+---
+title: "Week 10: Statistical Simulation & Sampling"
+subtitle: "GPH-GU 2182: Statistical Programming in R · Fall 2026"
+author: "Yang Feng, PhD"
+institute: "New York University · School of Global Public Health"
+date: "November 11, 2026"
+format:
+  revealjs:
+    theme: default
+    css: ../../styles.css
+    slide-number: true
+    preview-links: auto
+    chalkboard: true
+    transition: slide
+    width: 1280
+    height: 720
+    margin: 0.06
+    min-scale: 0.2
+    max-scale: 2.0
+    auto-stretch: false
+    code-line-numbers: false
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Welcome to Week 10!
+
+::: {.columns}
+::: {.column width="50%"}
+### Today's Roadmap
+
+1. **Randomness You Can Repeat:** `sample()` and `set.seed()`.
+2. **Probability Distributions:** the `d`/`p`/`q`/`r` functions.
+3. **Monte Carlo Simulation:** functions + `map()`, thousands of times.
+4. **Integration:** the Central Limit Theorem, seen by simulation.
+5. **AI Corner:** The simulation that never varies.
+:::
+
+::: {.column width="50%"}
+### Today's Milestones
+
+* **Homework 10:** Released today (simulation & sampling).
+* 🎯 **Final Project:** Released today (details on the course website).
+* **📝 Quiz 5:** Next week (covers Weeks 9–10).
+:::
+:::
+
+```{r}
+#| include: false
+library(dplyr)
+library(purrr)
+library(ggplot2)
+# Keep printed tibbles short enough to fit on a slide
+options(tibble.print_min = 5, tibble.print_max = 5, pillar.max_footer_lines = 1)
+theme_set(theme_minimal(base_size = 18))
+```
+
+
+# Cycle 1: Random Sampling & Reproducibility {background-color="#2c3e50"}
+
+## Why Simulate?
+
+* **Design:** randomize participants to treatment arms; draw a survey sample.
+* **Answer "what if" questions** when the math is hard: how big does an outbreak get?
+* **Check a method** on fake data where you *know* the truth.
+* **See theory happen:** the Central Limit Theorem, from scratch, in a few lines.
+
+All of it rests on one skill: generating random numbers **on purpose** and **reproducibly**.
+
+---
+
+## `sample()`: Shuffle a Vector
+
+```{r}
+ids <- 1:10
+
+sample(ids)
+sample(ids)
+```
+
+* With one argument, `sample()` returns a **random permutation**.
+* Run it twice, get two different orders. Great for randomization, bad for a report you need to re-run.
+
+---
+
+## `set.seed()`: The Same Randomness Every Time
+
+```{r}
+set.seed(2182)
+sample(ids)
+
+set.seed(2182)
+sample(ids)
+```
+
+* R's random numbers are **pseudo-random**: a fixed starting point (the seed) gives the same sequence.
+* Set the seed **once**, near the top of your script or document; any whole number works.
+* Seed + code = the same numbers for you, your collaborator, and the autograder.
+
+---
+
+## Sampling Without Replacement
+
+```{r}
+#| error: true
+set.seed(1)
+sample(1001:1200, size = 5)     # audit 5 of 200 chart IDs
+
+sample(c("A", "B", "O"), size = 5)
+```
+
+* The default `replace = FALSE`: each element can be drawn **at most once**.
+* So you cannot draw 5 items from a pool of 3.
+
+---
+
+## Sampling With Replacement
+
+```{r}
+set.seed(1)
+sample(c("A", "B", "O"), size = 8, replace = TRUE)
+
+sample(1:6, size = 10, replace = TRUE)   # ten rolls of a die
+```
+
+* `replace = TRUE` puts each draw back: repeats are allowed.
+* Use it for **independent draws** (rolls, patients, bootstrap samples).
+
+---
+
+## Unequal Probabilities with `prob =`
+
+```{r}
+set.seed(3)
+blood <- sample(c("O", "A", "B", "AB"), size = 1000, replace = TRUE,
+                prob = c(0.45, 0.40, 0.11, 0.04))
+
+table(blood) / 1000
+```
+
+* `prob` gives each value its chance of being drawn.
+* With many draws the shares settle near those chances, but never exactly on them.
+
+---
+
+## Randomizing a Trial
+
+```{r}
+set.seed(42)
+arm <- sample(rep(c("drug", "placebo"), each = 6))
+
+arm
+table(arm)
+```
+
+* Shuffling a **balanced** vector guarantees 6 per arm.
+* `sample(c("drug", "placebo"), 12, replace = TRUE)` flips a coin per person: arms can end up 8 and 4.
+
+---
+
+## 👥 Paired Exercise 1: Sampling & Seeds (10 min)
+
+::: {.columns}
+::: {.column width="55%"}
+### Task
+
+1. Shuffle `patient_ids` twice without a seed, then twice after `set.seed(10)`. What changes?
+2. Randomize 16 participants: 8 `"drug"`, 8 `"placebo"`.
+3. Pick 4 of the 12 `clinics` for a site audit (no repeats).
+4. Simulate smoking status for 1,000 adults with an 18% smoking rate using `prob =`; compare the simulated share with 0.18.
+:::
+
+::: {.column width="45%"}
+### Checklist
+
+* One `set.seed()` at the top of each chunk.
+* `replace = TRUE` only when repeats make sense.
+* Check balance with `table()`.
+:::
+:::
+
+
+# Cycle 2: Probability Distributions in R {background-color="#2c3e50"}
+
+## Four Functions per Distribution
+
+| Prefix | Returns | Normal example |
+|:---|:---|:---|
+| `d` | density (or probability of exactly *x*) | `dnorm(x, mean, sd)` |
+| `p` | cumulative probability $P(X \le x)$ | `pnorm(q, mean, sd)` |
+| `q` | quantile: the *x* with $P(X \le x) = p$ | `qnorm(p, mean, sd)` |
+| `r` | random draws | `rnorm(n, mean, sd)` |
+
+Swap the suffix for other distributions: `binom`, `pois`, `exp`, and many more.
+
+---
+
+## The Normal Distribution: `pnorm()`
+
+Birth weight is roughly normal with mean 3,400 g and SD 500 g.
+
+```{r}
+pnorm(2500, mean = 3400, sd = 500)        # P(weight < 2500): low birth weight
+
+1 - pnorm(4000, mean = 3400, sd = 500)    # P(weight > 4000)
+pnorm(4000, mean = 3400, sd = 500, lower.tail = FALSE)   # same thing
+```
+
+* `pnorm()` gives the area **to the left**; subtract from 1 for the area to the right.
+
+---
+
+## Seeing `pnorm()` as an Area
+
+```{r}
+#| output-location: slide
+#| fig-width: 10
+#| fig-height: 4.6
+#| fig-align: center
+bw <- tibble(weight = seq(1500, 5300, by = 10),
+             density = dnorm(weight, mean = 3400, sd = 500))
+
+ggplot(bw, aes(weight, density)) +
+  geom_area(data = filter(bw, weight <= 2500), fill = "firebrick", alpha = 0.5) +
+  geom_line(linewidth = 1) +
+  labs(x = "Birth weight (g)", y = "Density",
+       title = "Shaded area = pnorm(2500, mean = 3400, sd = 500)")
+```
+
+---
+
+## Quantiles with `qnorm()`
+
+```{r}
+qnorm(0.10, mean = 3400, sd = 500)   # 10th percentile of birth weight
+
+qnorm(0.975)                         # the familiar 1.96 (standard normal)
+
+pnorm(qnorm(0.10, 3400, 500), 3400, 500)   # q undoes p
+```
+
+* `p` turns a value into a probability; `q` turns a probability back into a value.
+* With no `mean` and `sd`, R uses the **standard normal** (0 and 1).
+
+---
+
+## Simulating with `rnorm()`
+
+```{r}
+set.seed(2182)
+sim_bw <- rnorm(10000, mean = 3400, sd = 500)
+
+mean(sim_bw < 2500)                        # simulated share
+pnorm(2500, mean = 3400, sd = 500)         # exact answer
+```
+
+* The **mean of a logical vector** is the share of `TRUE`s: an estimated probability.
+* Simulation and theory agree to about two decimal places with 10,000 draws.
+
+---
+
+## Counts: The Binomial Distribution
+
+Twenty adults, each vaccinated with probability 0.6, independently:
+
+```{r}
+dbinom(12, size = 20, prob = 0.6)       # P(exactly 12)
+
+pbinom(14, size = 20, prob = 0.6)       # P(at most 14)
+1 - pbinom(14, size = 20, prob = 0.6)   # P(at least 15)
+```
+
+* For counts, "at least 15" is **1 minus "at most 14"**, not 1 minus "at most 15".
+
+---
+
+## Counts: The Poisson Distribution
+
+An emergency room averages 6 arrivals per hour:
+
+```{r}
+dpois(6, lambda = 6)          # P(exactly 6 arrivals)
+1 - ppois(9, lambda = 6)      # P(more than 9 arrivals)
+
+set.seed(1)
+rpois(8, lambda = 6)          # arrivals in each hour of an 8-hour shift
+```
+
+* Poisson: counts of events in a fixed window of time or space, with mean `lambda`.
+
+---
+
+## Choosing a Distribution
+
+| Distribution | Typical public health use | R suffix |
+|:---|:---|:---|
+| Normal | blood pressure, birth weight, height | `norm` |
+| Binomial | number vaccinated out of *n* people | `binom` |
+| Poisson | arrivals per hour, cases per week | `pois` |
+| Exponential | waiting time, length of hospital stay | `exp` |
+
+```{r}
+set.seed(1)
+rexp(5, rate = 1 / 4)    # five stays, mean 4 days (rate = 1 / mean)
+```
+
+---
+
+## 👥 Paired Exercise 2: Distributions (10 min)
+
+::: {.columns}
+::: {.column width="55%"}
+### Task
+
+1. Systolic BP is normal with mean 125, SD 15. What share has SBP ≥ 140? What is the 95th percentile?
+2. Simulate 5,000 SBP values with `rnorm()` and compare the simulated share ≥ 140 with your answer.
+3. 25 patients each take their medication with probability 0.8. Find P(exactly 20) and P(at least 22).
+4. A ward averages 2.5 falls per week. Find P(no falls) and P(more than 5 falls).
+:::
+
+::: {.column width="45%"}
+### Checklist
+
+* `p` for probabilities, `q` for cutoffs.
+* "At least *k*" for counts: `1 - pbinom(k - 1, ...)`.
+* Seed before every `r` call you want to reproduce.
+:::
+:::
+
+
+# Cycle 3: Monte Carlo Simulation {background-color="#2c3e50"}
+
+## The Monte Carlo Recipe
+
+1. Write a **function** that simulates **one** study, day, or outbreak.
+2. Run it **many times** with `map_*()` (Week 9).
+3. **Summarize** the results: a mean, a share, a histogram.
+
+::: {.callout-tip}
+The share of simulated runs where something happens is your **estimated probability**. More runs, better estimate.
+:::
+
+---
+
+## Example: Pooled Testing
+
+Ten swabs share one test; the pool is positive if **anyone** is infected (prevalence 5%).
+
+```{r}
+one_pool <- function(n = 10, prevalence = 0.05) {
+  infected <- rbinom(n, size = 1, prob = prevalence)
+  any(infected == 1)
+}
+
+set.seed(2182)
+pool_results <- map_lgl(1:10000, \(i) one_pool())
+
+mean(pool_results)      # Monte Carlo estimate
+1 - 0.95^10             # exact answer
+```
+
+---
+
+## How Many Runs Is Enough?
+
+```{r}
+set.seed(1)
+estimate <- function(B) mean(map_lgl(1:B, \(i) one_pool()))
+
+map_dbl(c(100, 1000, 10000, 100000), estimate)
+```
+
+* Each estimate wobbles around the truth, `r round(1 - 0.95^10, 4)`.
+* The error shrinks like $1/\sqrt{B}$: **100 times** more runs buys **10 times** more precision.
+* Report how many runs you used, and the seed.
+
+---
+
+## Simulating an Outbreak
+
+Each case infects a Poisson number of new cases, with mean `r` (the reproduction number):
+
+```{r}
+simulate_outbreak <- function(r, n_gen = 10) {
+  cases <- 1
+  total <- 1
+  for (g in seq_len(n_gen)) {
+    cases <- rpois(1, lambda = r * cases)   # next generation
+    total <- total + cases
+  }
+  total
+}
+```
+
+* A `for` loop (Week 8): each generation **depends on the previous one**.
+* The function returns the outbreak's total size after `n_gen` generations.
+
+---
+
+## One Outbreak at a Time
+
+```{r}
+set.seed(2182)
+simulate_outbreak(r = 0.9)
+simulate_outbreak(r = 0.9)
+simulate_outbreak(r = 1.5)
+simulate_outbreak(r = 1.5)
+```
+
+* Same `r`, very different outbreaks: **chance** dominates while cases are few.
+* One run tells us little. We need the **distribution** of outcomes.
+
+---
+
+## Thousands of Outbreaks
+
+```{r}
+set.seed(2182)
+outbreaks <- tibble(r = rep(c(0.9, 1.5), each = 2000)) |>
+  mutate(size = map_dbl(r, \(x) simulate_outbreak(r = x)))
+
+outbreaks |>
+  group_by(r) |>
+  summarize(mean_size = mean(size),
+            p_small   = mean(size <= 5),
+            p_large   = mean(size >= 100))
+```
+
+---
+
+## The Distribution of Outbreak Sizes
+
+```{r}
+#| echo: false
+#| fig-width: 10
+#| fig-height: 4.6
+#| fig-align: center
+ggplot(outbreaks, aes(size)) +
+  geom_histogram(bins = 30, fill = "steelblue", color = "white") +
+  scale_x_log10() +
+  facet_wrap(~ r, labeller = label_both) +
+  labs(x = "Total outbreak size (log scale)", y = "Number of simulated outbreaks")
+```
+
+* Even with a reproduction number of 1.5, many outbreaks die out by chance before they take off.
+
+---
+
+## 👥 Paired Exercise 3: ER Surge Risk (10 min)
+
+::: {.columns}
+::: {.column width="55%"}
+### Task
+
+An ER averages 6 arrivals per hour and can handle 9 per hour.
+
+1. Write `surge_hours(n_hours = 8, rate = 6, capacity = 9)`: simulate one shift with `rpois()` and return the number of hours with arrivals **above** capacity.
+2. After `set.seed(2182)`, run 5,000 shifts with `map_dbl()`.
+3. Estimate P(at least one surge hour) and the mean number of surge hours.
+4. Compare with the exact answers `1 - ppois(9, 6)^8` and `8 * (1 - ppois(9, 6))`.
+:::
+
+::: {.column width="45%"}
+### Checklist
+
+* The function simulates **one** shift.
+* `map_dbl()` repeats it.
+* A share of `TRUE`s is a probability.
+:::
+:::
+
+
+# Cycle 4: The Central Limit Theorem + AI Corner {background-color="#2c3e50"}
+
+## Skewed Data: Length of Stay
+
+```{r}
+#| fig-width: 10
+#| fig-height: 3.8
+#| fig-align: center
+set.seed(2182)
+stays <- tibble(days = rexp(10000, rate = 1 / 4))   # mean stay 4 days
+ggplot(stays, aes(days)) +
+  geom_histogram(bins = 40, fill = "grey60", color = "white")
+```
+
+---
+
+## Simulating Sample Means
+
+What does the **mean** of *n* stays look like, across many samples?
+
+```{r}
+set.seed(2182)
+clt <- tibble(n = rep(c(1, 5, 30), each = 3000)) |>
+  mutate(xbar = map_dbl(n, \(k) mean(rexp(k, rate = 1 / 4))))
+
+clt |>
+  group_by(n) |>
+  summarize(mean_xbar = mean(xbar), sd_xbar = sd(xbar),
+            theory_sd = 4 / sqrt(first(n)))
+```
+
+* Centered at 4 every time; spread shrinks like $\sigma / \sqrt{n}$.
+
+---
+
+## Sample Means Become Normal
+
+```{r}
+#| echo: false
+#| fig-width: 10
+#| fig-height: 4.6
+#| fig-align: center
+ggplot(clt, aes(xbar)) +
+  geom_histogram(bins = 40, fill = "steelblue", color = "white") +
+  facet_wrap(~ n, scales = "free", labeller = label_both) +
+  labs(x = "Sample mean length of stay (days)", y = "Count")
+```
+
+* The data stay skewed, but the **mean** of 30 stays is close to normal: the **Central Limit Theorem**.
+
+---
+
+## AI Corner: The Simulation That Never Varies {background-color="#8e44ad"}
+
+Asked to "estimate the standard error of the mean length of stay for n = 30 by simulation," an AI wrote:
+
+```{r}
+sim_mean_los <- function(n = 30) {
+  set.seed(123)                       # "for reproducibility"
+  mean(rexp(n, rate = 1 / 4))
+}
+
+sim_means_ai <- map_dbl(1:1000, \(i) sim_mean_los())
+sd(sim_means_ai)
+```
+
+It runs, it is reproducible, and the comment sounds responsible. Ship it?
+
+## AI Corner: Auditing the Simulation {background-color="#8e44ad"}
+
+**Audit findings:**
+
+```{r}
+length(unique(sim_means_ai))
+```
+
+1. `set.seed(123)` runs **inside** the function, so every call restarts the same random sequence.
+2. All 1,000 "replicates" are the **same number**; the estimated standard error is 0.
+3. A paper built on this would claim perfect precision.
+
+## AI Corner: The Audited Version {background-color="#8e44ad"}
+
+::: {.columns}
+::: {.column width="55%"}
+```{r}
+sim_mean_los <- function(n = 30) {
+  mean(rexp(n, rate = 1 / 4))
+}
+
+set.seed(123)          # once, outside
+sim_means <- map_dbl(1:1000,
+                     \(i) sim_mean_los())
+
+length(unique(sim_means))
+sd(sim_means)
+4 / sqrt(30)           # theory
+```
+:::
+
+::: {.column width="45%"}
+* The function only simulates; it never touches the seed.
+* The seed is set **once**, before the whole simulation.
+* Check: are the replicates actually different? Does the answer match theory?
+
+::: {.callout-important}
+*Set the seed once, at the top, never inside a function you call repeatedly.*
+:::
+:::
+:::
+
+---
+
+## 🎯 The Final Project
+
+* Instructions, dataset options, and the grading rubric are on the **Project** page of the course website.
+* Everything from this course counts: import, wrangling, visualization, functions, simulation, and (next week) regression.
+* Start now: pick a public health question and a dataset, and skim the rubric.
+* Later weeks include an in-class project workshop and presentations; dates are on the course website.
+
+
+# Wrap-Up & Next Steps
+
+## Before We Meet Again
+
+::: {.columns}
+::: {.column width="50%"}
+### 📌 To Do This Week
+
+* **Homework 10** (simulation & sampling): due date on the course website.
+* **Read:** R02Pro Ch 11.5–11.6 (hypothesis testing & regression).
+* Push today's worksheet to GitHub.
+* Read the final project instructions.
+:::
+
+::: {.column width="50%"}
+### 🔭 Next Week
+
+* Linear and logistic regression with `lm()` and `glm()`.
+* Tidy model output with `broom`.
+* **📝 Quiz 5** in the last 30 minutes of class (covers Weeks 9–10).
+:::
+:::
+
+*Questions? Office hours are listed on the syllabus page, or email anytime.*

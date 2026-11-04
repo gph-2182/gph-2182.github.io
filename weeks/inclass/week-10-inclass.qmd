@@ -1,0 +1,113 @@
+---
+title: "Week 10 In-Class Exercises: Statistical Simulation & Sampling"
+subtitle: "GPH-GU 2182 · Fall 2026 · Paired Programming"
+author: "YOUR NAME & PARTNER NAME"
+date: "November 11, 2026"
+format:
+  html:
+    toc: true
+    number-sections: true
+    code-tools:
+      source: true
+      toggle: false
+      caption: "Source Code"
+---
+
+::: {.callout-note}
+### Instructions
+Work in pairs. One person types (driver), the other reviews and advises (navigator). Swap roles halfway through!
+
+* 📥 **[Download `week-10-inclass.qmd`](https://gph-2182.github.io/weeks/inclass/week-10-inclass.qmd)** to open and edit in RStudio (or use the **`</> Source Code`** button at the top right).
+* Render this Quarto document to HTML and push it to your GitHub repository **by the end of class** for participation credit.
+:::
+
+```{r}
+#| label: setup
+#| message: false
+library(dplyr)
+library(purrr)
+library(ggplot2)
+```
+
+# Exercise 1: Sampling & Seeds (Cycle 1)
+
+```{r}
+#| label: ex1-data
+patient_ids <- 101:115
+participants <- 1:16
+clinics <- c("Bellevue", "Elmhurst", "Harlem", "Jacobi", "Kings County",
+             "Lincoln", "Metropolitan", "North Central Bronx", "Queens",
+             "Coney Island", "Woodhull", "Gouverneur")
+```
+
+```{r}
+#| label: ex1-sampling
+# 1. Shuffle patient_ids with sample() twice WITHOUT a seed and compare.
+#    Then run set.seed(10) before each of two more shuffles. What changes?
+# 2. After set.seed(2182), randomize the 16 participants into 8 "drug" and
+#    8 "placebo" by shuffling rep(c("drug", "placebo"), each = 8).
+#    Put the result in a tibble with columns participant and arm, and check
+#    the balance with table()
+# 3. Pick 4 of the 12 clinics for a site audit (no clinic twice)
+# 4. Simulate smoking status for 1,000 adults: sample "smoker" / "non-smoker"
+#    with replace = TRUE and prob = c(0.18, 0.82).
+#    Compare the simulated share of smokers with 0.18
+
+```
+
+# Exercise 2: Probability Distributions (Cycle 2)
+
+```{r}
+#| label: ex2-distributions
+# 1. Systolic BP (SBP) is normal with mean 125 and SD 15.
+#    (a) What share of adults has SBP >= 140? (pnorm)
+#    (b) What is the 95th percentile of SBP? (qnorm)
+# 2. After set.seed(2182), simulate 5,000 SBP values with rnorm() and compare
+#    the simulated share >= 140 with your answer to 1(a)
+# 3. 25 patients each take their medication with probability 0.8.
+#    (a) P(exactly 20 take it)  (b) P(at least 22 take it)
+#    Hint: "at least 22" is 1 minus "at most 21"
+# 4. A hospital ward averages 2.5 falls per week (Poisson).
+#    (a) P(no falls in a week)  (b) P(more than 5 falls in a week)
+
+```
+
+# Exercise 3: Monte Carlo: ER Surge Risk (Cycle 3)
+
+An emergency room averages 6 arrivals per hour and can handle 9 per hour.
+
+```{r}
+#| label: ex3-montecarlo
+# 1. Write surge_hours(n_hours = 8, rate = 6, capacity = 9) that simulates ONE
+#    shift with rpois(n_hours, lambda = rate) and returns the number of hours
+#    whose arrivals are above capacity
+# 2. After set.seed(2182), run 5,000 shifts with map_dbl() and store the results
+# 3. Estimate (a) P(at least one surge hour in a shift) and
+#    (b) the mean number of surge hours per shift
+# 4. Compare with the exact answers:
+#    (a) 1 - ppois(9, 6)^8   (b) 8 * (1 - ppois(9, 6))
+#    How close is each estimate? What happens with only 100 shifts?
+
+```
+
+# Exercise 4: The Central Limit Theorem + AI Corner (Cycle 4)
+
+Hospital length of stay is skewed: model it as exponential with a mean of 4 days (`rate = 1 / 4`).
+
+```{r}
+#| label: ex4-clt
+# 1. After set.seed(2182), build a tibble with n = rep(c(2, 40), each = 2000)
+#    and add xbar = the mean of n simulated stays, using map_dbl()
+# 2. Draw a histogram of xbar faceted by n (facet_wrap(~ n, scales = "free"))
+#    Which panel looks closer to a normal curve?
+# 3. For each n, compare sd(xbar) with the theory value 4 / sqrt(n)
+# 4. AI Corner: an AI wrote this to estimate the standard error of the mean of 40 stays:
+#      sim_mean_los <- function(n = 40) {
+#        set.seed(123)
+#        mean(rexp(n, rate = 1 / 4))
+#      }
+#      se_ai <- sd(map_dbl(1:1000, \(i) sim_mean_los()))
+#    Run it. What is wrong, and why? Write a fixed version that gives a sensible
+#    standard error, and check that your 1,000 replicates are all different.
+
+```

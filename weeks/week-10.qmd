@@ -17,17 +17,13 @@ subtitle: "Nov 11, 2026 · 2:00–4:40 PM · Bobst LL138"
 - Random sampling and permutation with sample()
 - Monte Carlo simulation of public health epidemics
 - Empirical demonstrations of the Central Limit Theorem (CLT)
-- Final Project Announcement & Guidelines
+- Final project announcement: see the [Project page](../project.qmd)
 
 ## Materials
 
-::: {.callout-note appearance="simple"}
-Materials will be posted here before class.
-:::
-
-- 📊 **Lecture Slides:** *Available before class*
-- 📝 **In-Class Exercise:** *Available before class*
-- 💻 **Weekly Exercise 10:** *Released before class on GitHub*
+- 📊 **Lecture Slides:** [Interactive Presentation (HTML)](slides/week-10-slides.html)
+- 📝 **In-Class Exercise:** [View Worksheet (HTML)](inclass/week-10-inclass.html) · [Download Starter Code (`.qmd`)](https://gph-2182.github.io/weeks/inclass/week-10-inclass.qmd) · *or run `get_worksheet(10)` in your in-class repo*
+- 💻 **Weekly Exercise 10:** [Accept Assignment on Classroom 50](https://classroom50.org/gph-2182/gph-gu-2182-fall-2026/assignments/weekly-exercise-10/accept) · [How to do it, start to finish](../weekly.qmd)
 
 ## Due
 
