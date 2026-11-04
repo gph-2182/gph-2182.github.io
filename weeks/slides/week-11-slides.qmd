@@ -1,0 +1,669 @@
+---
+title: "Week 11: Statistical Modeling & Regression"
+subtitle: "GPH-GU 2182: Statistical Programming in R · Fall 2026"
+author: "Yang Feng, PhD"
+institute: "New York University · School of Global Public Health"
+date: "November 18, 2026"
+format:
+  revealjs:
+    theme: default
+    css: ../../styles.css
+    slide-number: true
+    preview-links: auto
+    chalkboard: true
+    transition: slide
+    width: 1280
+    height: 720
+    margin: 0.06
+    min-scale: 0.2
+    max-scale: 2.0
+    auto-stretch: false
+    code-line-numbers: false
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Welcome to Week 11!
+
+::: {.columns}
+::: {.column width="50%"}
+### Today's Roadmap
+
+1. **Hypothesis Tests:** `t.test()`, `prop.test()`, `chisq.test()`.
+2. **Linear Regression:** `lm()`, coefficients, R-squared.
+3. **Logistic Regression:** `glm()`, odds ratios, 95% CIs.
+4. **Tidy Models:** `broom` and publication tables.
+5. **AI Corner:** The negative odds ratio.
+:::
+
+::: {.column width="50%"}
+### Today's Milestones
+
+* **Homework 11:** Released today (modeling & regression).
+* **📝 Quiz 5:** Last 30 minutes of class (covers Weeks 9–10).
+:::
+:::
+
+```{r}
+#| include: false
+library(dplyr)
+library(purrr)
+library(ggplot2)
+library(forcats)
+library(broom)
+library(r02pro)
+# Keep printed tibbles short enough to fit on a slide
+options(tibble.print_min = 5, tibble.print_max = 5, pillar.max_footer_lines = 1,
+        show.signif.stars = FALSE, width = 80)
+theme_set(theme_minimal(base_size = 18))
+```
+
+
+# Cycle 1: Hypothesis Testing {background-color="#2c3e50"}
+
+## From Describing to Testing
+
+* Weeks 5–6: `group_by()` + `summarize()` **describe** differences between groups.
+* Today: is a difference **bigger than chance** would produce?
+* **Null hypothesis:** no difference in the population.
+* **p-value:** how surprising our data would be *if* the null were true. Small (below 0.05) = evidence of a real difference.
+* **95% confidence interval:** a range of plausible values for the true difference.
+
+::: {.callout-warning}
+A p-value is not the size of an effect. Always report the estimate and its CI too.
+:::
+
+---
+
+## Today's Data: NHANES Adults
+
+```{r}
+library(NHANES)
+
+adults <- NHANES |>
+  distinct(ID, .keep_all = TRUE) |>   # some people appear twice: keep one row each
+  filter(Age >= 20)
+
+nrow(adults)
+```
+
+* `NHANES`: a teaching sample from the US National Health and Nutrition Examination Survey, 2009–2012.
+* We ignore the survey weights, so results describe **this sample**.
+
+---
+
+## Comparing Two Means: `t.test()`
+
+```{r}
+bp_test <- t.test(BPSysAve ~ Sex, data = adults)
+bp_test
+```
+
+---
+
+## Reading the t-test
+
+```{r}
+bp_test$estimate
+bp_test$conf.int
+bp_test$p.value
+```
+
+* Men's average systolic BP is `r round(diff(bp_test$estimate), 1)` mmHg higher; the 95% CI for the female minus male difference is `r round(bp_test$conf.int[1], 1)` to `r round(bp_test$conf.int[2], 1)` mmHg.
+* The test result is a **list** (Week 3): pull pieces out with `$`.
+
+---
+
+## Comparing Two Proportions: Counts First
+
+Have women and men ever smoked (100+ cigarettes in their life) at the same rate?
+
+```{r}
+smoking <- adults |>
+  filter(!is.na(Smoke100)) |>
+  group_by(Sex) |>
+  summarize(smokers = sum(Smoke100 == "Yes"), n = n()) |>
+  mutate(share = smokers / n)
+smoking
+```
+
+---
+
+## Comparing Two Proportions: `prop.test()`
+
+```{r}
+smoke_test <- prop.test(x = smoking$smokers, n = smoking$n)
+smoke_test
+```
+
+* `x` = number with the outcome, `n` = group size, one entry per group.
+
+---
+
+## Two Categorical Variables: `chisq.test()`
+
+Is diabetes associated with education level?
+
+```{r}
+edu_diab <- table(adults$Education, adults$Diabetes)
+edu_diab
+chisq.test(edu_diab)
+```
+
+---
+
+## Which Test?
+
+| Question | Outcome | Groups | Test |
+|:---|:---|:---|:---|
+| Do average BP values differ? | numeric | 2 | `t.test(y ~ group, data = ...)` |
+| Do two rates differ? | yes/no | 2 | `prop.test(x = ..., n = ...)` |
+| Are two categories related? | categorical | 2 or more | `chisq.test(table(a, b))` |
+
+* Each returns a list: `$p.value` always; `$estimate` and `$conf.int` for `t.test()` and `prop.test()`.
+* With thousands of people, even tiny differences get small p-values: ask whether the size **matters**.
+
+---
+
+## 👥 Paired Exercise 1: Hypothesis Tests (10 min)
+
+::: {.columns}
+::: {.column width="55%"}
+### Task
+
+1. Compare total cholesterol (`TotChol`) between physically active and inactive adults (`PhysActive`) with `t.test()`.
+2. Count adults with diabetes by `Sex`, then compare the two shares with `prop.test()`.
+3. Is ever smoking (`Smoke100`) related to BMI category (`BMI_WHO`)? Use `table()` and `chisq.test()`.
+4. Write one plain-language sentence for each p-value.
+:::
+
+::: {.column width="45%"}
+### Checklist
+
+* Formula: `outcome ~ group`.
+* Drop missing values before counting.
+* Report the estimate and CI, not only the p-value.
+:::
+:::
+
+
+# Cycle 2: Linear Regression with `lm()` {background-color="#2c3e50"}
+
+## Countries in 2004
+
+```{r}
+gm04 <- gm |>
+  filter(year == 2004, !is.na(continent),
+         !is.na(life_expectancy), !is.na(sanitation))
+nrow(gm04)
+```
+
+* `life_expectancy`: years a newborn would live at current death rates.
+* `sanitation`: percent of people using at least basic sanitation services.
+
+---
+
+## Life Expectancy and Sanitation
+
+```{r}
+#| output-location: slide
+#| fig-width: 10
+#| fig-height: 4.8
+#| fig-align: center
+ggplot(gm04, aes(sanitation, life_expectancy)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE, color = "firebrick") +
+  labs(x = "Population using basic sanitation (%)",
+       y = "Life expectancy (years)")
+```
+
+---
+
+## Fitting a Line with `lm()`
+
+```{r}
+fit_le <- lm(life_expectancy ~ sanitation, data = gm04)
+fit_le
+```
+
+* Formula: **outcome `~` predictor**, then `data =`.
+* **Intercept:** predicted life expectancy when sanitation is 0% (outside the data, so not meaningful here).
+* **Slope:** change in predicted life expectancy per 1-point increase in sanitation.
+
+---
+
+## Interpreting the Slope
+
+```{r}
+coef(fit_le)
+coef(fit_le)["sanitation"] * 10
+```
+
+* Countries with 10 percentage points more sanitation coverage have, on average, a life expectancy about `r round(10 * coef(fit_le)["sanitation"], 1)` years higher.
+* This is an **association**: richer countries have both better sanitation and better health care.
+
+---
+
+## The Full Report: `summary()`
+
+```{r}
+summary(fit_le)
+```
+
+---
+
+## R-squared
+
+```{r}
+summary(fit_le)$r.squared
+```
+
+* Sanitation alone accounts for about `r round(100 * summary(fit_le)$r.squared)`% of the country-to-country variation in life expectancy.
+* R-squared runs from 0 (explains nothing) to 1 (explains everything).
+* A high R-squared does not make the relationship causal, and a low one can still be an important effect.
+
+---
+
+## Adding a Categorical Predictor
+
+```{r}
+fit_cont <- lm(life_expectancy ~ sanitation + continent, data = gm04)
+coef(fit_cont)
+```
+
+* `continent` is text, so R creates one coefficient per continent **except the first alphabetically**: Africa is the **reference level**.
+* `continentEurope`: difference from Africa **at the same sanitation level**.
+
+---
+
+## Choosing the Reference Level
+
+```{r}
+gm04_eu <- gm04 |>
+  mutate(continent = fct_relevel(continent, "Europe"))
+
+coef(lm(life_expectancy ~ sanitation + continent, data = gm04_eu))
+```
+
+* `fct_relevel()` (forcats, Week 7) moves a level to the front: it becomes the reference.
+* Same model, same fit; the coefficients now compare each continent with Europe.
+
+---
+
+## Several Predictors: Blood Pressure
+
+```{r}
+fit_bp <- lm(BPSysAve ~ Age + Sex, data = adults)
+coef(fit_bp)
+```
+
+* **Age:** among people of the same sex, each extra year goes with `r round(coef(fit_bp)["Age"], 2)` mmHg higher systolic BP.
+* **Sexmale:** men average `r round(coef(fit_bp)["Sexmale"], 1)` mmHg higher than women **of the same age** (female is the reference).
+* `lm()` drops rows with a missing value in any model variable.
+
+---
+
+## 👥 Paired Exercise 2: Linear Regression (10 min)
+
+::: {.columns}
+::: {.column width="55%"}
+### Task
+
+1. Fit `lm(life_expectancy ~ GDP_per_capita, data = gm04)`. Interpret the slope (`GDP_per_capita` is in **\$1,000** per person).
+2. Compare its R-squared with the sanitation model's.
+3. Plot the two variables with `geom_smooth(method = "lm")`. Does a straight line fit well?
+4. Fit `BPSysAve ~ Age + Sex + BMI` in `adults`. Interpret the `BMI` coefficient, then make `"male"` the reference level with `fct_relevel()` and refit.
+:::
+
+::: {.column width="45%"}
+### Checklist
+
+* Coefficient units: outcome units per 1 unit of the predictor.
+* Say "holding the other predictors fixed".
+* Check which level is the reference.
+:::
+:::
+
+
+# Cycle 3: Logistic Regression with `glm()` {background-color="#2c3e50"}
+
+## Yes/No Outcomes
+
+* Diabetes (`Yes`/`No`), smoking, vaccination: the outcome is a **probability**.
+* A straight line can predict probabilities below 0 or above 1.
+* Logistic regression models the **odds**: probability divided by 1 minus probability.
+
+```{r}
+p <- 0.2
+p / (1 - p)    # odds: 1 person with the outcome for every 4 without
+```
+
+---
+
+## Fitting with `glm()`
+
+```{r}
+fit_diab <- glm(Diabetes ~ Age + BMI + Sex, family = binomial, data = adults)
+coef(fit_diab)
+levels(adults$Diabetes)
+```
+
+* `family = binomial` makes it a logistic regression.
+* R models the chance of the **second** level, `"Yes"`.
+* Coefficients are on the **log-odds** scale: hard to read directly.
+
+---
+
+## From Log Odds to Odds Ratios
+
+```{r}
+exp(coef(fit_diab))
+```
+
+* **Odds ratio (OR):** how many times the odds multiply. OR = 1 means no association.
+* **Age:** each extra year multiplies the odds of diabetes by `r round(exp(coef(fit_diab))["Age"], 2)`, holding BMI and sex fixed.
+* **Sexmale:** men have `r round(exp(coef(fit_diab))["Sexmale"], 2)` times the odds of women with the same age and BMI.
+
+---
+
+## 95% Confidence Intervals for Odds Ratios
+
+```{r}
+exp(confint(fit_diab))
+```
+
+* Exponentiate the **interval endpoints**, just like the estimates.
+* An interval that excludes 1 means the association is statistically significant at the 5% level.
+* The male OR's interval runs from `r round(exp(confint(fit_diab))["Sexmale", 1], 2)` to `r round(exp(confint(fit_diab))["Sexmale", 2], 2)`.
+
+---
+
+## Odds Ratio for a 10-Year Difference
+
+```{r}
+exp(10 * coef(fit_diab)["Age"])
+```
+
+* A one-year OR is close to 1 and easy to undersell.
+* Multiply the **coefficient** by 10, then exponentiate: someone 10 years older has about `r round(exp(10 * coef(fit_diab)["Age"]), 1)` times the odds of diabetes.
+
+---
+
+## Predicted Probabilities
+
+```{r}
+new_people <- tibble(Age = c(40, 60), BMI = 30, Sex = "male")
+
+predict(fit_diab, newdata = new_people, type = "response")
+```
+
+* `type = "response"` returns **probabilities**, not log odds.
+* The new data need every predictor in the model, with the same names.
+
+---
+
+## Predicted Risk by Age
+
+```{r}
+#| output-location: slide
+#| fig-width: 10
+#| fig-height: 4.6
+#| fig-align: center
+grid <- tibble(Age = rep(20:80, times = 2), BMI = 28,
+               Sex = rep(c("female", "male"), each = 61))
+grid |>
+  mutate(prob = predict(fit_diab, newdata = grid, type = "response")) |>
+  ggplot(aes(Age, prob, color = Sex)) +
+  geom_line(linewidth = 1.2) +
+  labs(x = "Age (years)", y = "Predicted probability of diabetes",
+       title = "Logistic model, BMI fixed at 28")
+```
+
+---
+
+## 👥 Paired Exercise 3: Logistic Regression (10 min)
+
+::: {.columns}
+::: {.column width="55%"}
+### Task
+
+1. Check `levels(adults$Smoke100)`, then fit `glm(Smoke100 ~ Age + Sex + Education, family = binomial, data = adults)`.
+2. Turn the coefficients into odds ratios with `exp()`, and get 95% CIs with `exp(confint())`.
+3. Interpret the ORs for `Sexmale` and `EducationCollege Grad`. What is the reference group for each?
+4. Predict the probability of ever smoking for a 30-year-old woman who is a college graduate, and for one with an 8th-grade education.
+:::
+
+::: {.column width="45%"}
+### Checklist
+
+* `family = binomial`.
+* `exp()` the estimates **and** the CI endpoints.
+* `type = "response"` for probabilities.
+:::
+:::
+
+
+# Cycle 4: Tidy Models with `broom` + AI Corner {background-color="#2c3e50"}
+
+## Model Output Is Messy
+
+* `coef()` gives a named vector, `confint()` a matrix, `summary()` a printout.
+* The **broom** package turns any model into **tibbles** you can `filter()`, `mutate()`, and plot.
+
+| Function | Returns | One row per |
+|:---|:---|:---|
+| `tidy()` | estimates, SEs, p-values, CIs | coefficient |
+| `glance()` | R-squared, number of observations, AIC | model |
+| `augment()` | fitted values and residuals | observation |
+
+---
+
+## `tidy()`: One Row per Coefficient
+
+```{r}
+library(broom)
+
+tidy(fit_bp, conf.int = TRUE)
+```
+
+* Columns: `estimate`, `std.error`, `statistic`, `p.value`, `conf.low`, `conf.high`.
+
+---
+
+## `tidy()` for Logistic Models
+
+```{r}
+tidy(fit_diab, exponentiate = TRUE, conf.int = TRUE)
+```
+
+* `exponentiate = TRUE` turns the estimates **and** the CI endpoints into odds ratios.
+* The intercept row becomes baseline odds; it is usually dropped from a table.
+
+---
+
+## `glance()`: One Row per Model
+
+```{r}
+glance(fit_le) |>
+  select(r.squared, adj.r.squared, nobs)
+
+list(sanitation = fit_le, plus_continent = fit_cont) |>
+  map_dfr(glance, .id = "model") |>
+  select(model, r.squared, adj.r.squared, nobs)
+```
+
+* `map_dfr()` (Week 9) stacks one row per model: easy side-by-side comparison.
+
+---
+
+## `augment()`: One Row per Observation
+
+```{r}
+le_aug <- augment(fit_le)
+
+le_aug |>
+  select(life_expectancy, sanitation, .fitted, .resid)
+```
+
+* `.fitted`: the model's prediction. `.resid`: observed minus predicted.
+
+---
+
+## Checking the Fit with Residuals
+
+```{r}
+#| echo: false
+#| fig-width: 10
+#| fig-height: 4.6
+#| fig-align: center
+ggplot(le_aug, aes(.fitted, .resid)) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(x = "Predicted life expectancy (years)", y = "Residual (years)")
+```
+
+* A few countries sit far **below** their prediction: something besides sanitation matters there.
+
+---
+
+## Building a Publication Table
+
+```{r}
+or_table <- tidy(fit_diab, exponentiate = TRUE, conf.int = TRUE) |>
+  filter(term != "(Intercept)") |>
+  mutate(Predictor = case_when(term == "Age" ~ "Age (per year)",
+                               term == "BMI" ~ "BMI (per 1 kg/m2)",
+                               term == "Sexmale" ~ "Male (vs. female)"),
+         p = ifelse(p.value < 0.001, "< 0.001", format(round(p.value, 3), nsmall = 3))) |>
+  select(Predictor, OR = estimate, `CI low` = conf.low, `CI high` = conf.high, p)
+```
+
+* Readable labels, no intercept, rounded p-values. Next: print it with `knitr::kable()`.
+
+---
+
+## The Table
+
+```{r}
+knitr::kable(or_table, digits = 2,
+             caption = "Odds ratios for diabetes, NHANES adults")
+```
+
+* Next week: richer tables with `gt`.
+
+---
+
+## AI Corner: The Negative Odds Ratio {background-color="#8e44ad"}
+
+Asked to "estimate the odds ratio of diabetes for physically active versus inactive adults, adjusting for age," an AI wrote:
+
+```{r}
+fit_ai <- glm(Diabetes ~ PhysActive + Age, family = binomial, data = adults)
+
+tidy(fit_ai, conf.int = TRUE) |>
+  filter(term == "PhysActiveYes") |>
+  select(term, estimate, conf.low, conf.high)
+```
+
+**AI's write-up:** *"The odds ratio for physical activity is `r round(coef(fit_ai)["PhysActiveYes"], 2)`, so active adults have `r round(-100 * coef(fit_ai)["PhysActiveYes"])`% lower odds of diabetes."*
+
+The code runs and the sentence sounds right. Ship it?
+
+## AI Corner: Auditing the Odds Ratio {background-color="#8e44ad"}
+
+**Audit findings:**
+
+```{r}
+levels(adults$PhysActive)
+exp(coef(fit_ai)["PhysActiveYes"])
+```
+
+1. `tidy()` without `exponentiate = TRUE` reports **log odds**. An odds ratio can never be negative.
+2. "`r round(-100 * coef(fit_ai)["PhysActiveYes"])`% lower" read the log odds as a percentage. The real OR is `r round(exp(coef(fit_ai)["PhysActiveYes"]), 2)`: about `r round(100 * (1 - exp(coef(fit_ai)["PhysActiveYes"])))`% lower odds.
+3. The reference level checks out: `"No"` comes first, so the comparison is active versus inactive.
+
+## AI Corner: The Audited Version {background-color="#8e44ad"}
+
+::: {.columns}
+::: {.column width="58%"}
+```{r}
+tidy(fit_ai, exponentiate = TRUE,
+     conf.int = TRUE) |>
+  filter(term == "PhysActiveYes") |>
+  select(term, estimate,
+         conf.low, conf.high)
+```
+:::
+
+::: {.column width="42%"}
+* Estimate **and** CI endpoints are on the odds-ratio scale.
+* Sanity checks: ORs are positive; the CI contains the estimate; the reference level is the one you meant.
+
+::: {.callout-important}
+*Logistic coefficients are log odds. Exponentiate before you call them odds ratios.*
+:::
+:::
+:::
+
+---
+
+## 👥 Paired Exercise 4: broom + AI Audit (10 min)
+
+::: {.columns}
+::: {.column width="55%"}
+### Task
+
+1. Fit `BPSysAve ~ Age + Sex` and `BPSysAve ~ Age + Sex + BMI`; compare them with `glance()` and `map_dfr()`.
+2. `augment()` your GDP model from Exercise 2 and plot `.resid` against `.fitted`. What pattern do you see?
+3. Make a publication table of odds ratios for your Exercise 3 smoking model with `tidy()` and `knitr::kable()`.
+4. Audit the AI code in the worksheet: find the flaw and fix it.
+:::
+
+::: {.column width="45%"}
+### Checklist
+
+* `tidy(..., exponentiate = TRUE, conf.int = TRUE)` for logistic models.
+* Drop the intercept from an OR table.
+* Check the reference level.
+:::
+:::
+
+---
+
+## 📝 Quiz 5 (Last 30 Minutes)
+
+* **Coverage:** Weeks 9–10 (writing functions, `stopifnot()`, `map()` and `map_*()`, `sample()` and `set.seed()`, the `d`/`p`/`q`/`r` functions, Monte Carlo simulation, the Central Limit Theorem).
+* **Format:** Paper-based, closed-book, no electronic devices.
+* **Length:** 20 minutes, multiple choice.
+
+::: {.callout-note}
+Laptops closed, please. Your in-class worksheet should already be pushed to GitHub before the quiz begins.
+:::
+
+
+# Wrap-Up & Next Steps
+
+## Before We Meet Again
+
+::: {.columns}
+::: {.column width="50%"}
+### 📌 To Do This Week
+
+* **Homework 11** (modeling & regression): due date on the course website.
+* **Read:** R02Pro Ch 14 (advanced Quarto).
+* Push today's worksheet to GitHub.
+* 🎯 **Final project:** keep going; instructions and milestones are on the course website.
+:::
+
+::: {.column width="50%"}
+### 🔭 Next Week
+
+* Advanced Quarto: parameterized reports.
+* Publication tables with `gt` and interactive tables with `DT`.
+* Today's models feed straight into those tables.
+:::
+:::
+
+*Questions? Office hours are listed on the syllabus page, or email anytime.*

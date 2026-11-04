@@ -1,0 +1,856 @@
+---
+title: "Week 12: Advanced Quarto, Tables & Case Studies"
+subtitle: "GPH-GU 2182: Statistical Programming in R · Fall 2026"
+author: "Yang Feng, PhD"
+institute: "New York University · School of Global Public Health"
+date: "November 25, 2026"
+format:
+  revealjs:
+    theme: default
+    css: ../../styles.css
+    slide-number: true
+    preview-links: auto
+    chalkboard: true
+    transition: slide
+    width: 1280
+    height: 720
+    margin: 0.06
+    min-scale: 0.2
+    max-scale: 2.0
+    auto-stretch: false
+    code-line-numbers: false
+    include-in-header:
+      text: |
+        <style>
+        /* gt tables default to 16px, too small on a 1280px slide */
+        .reveal .gt_table { font-size: 22px !important; }
+        </style>
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Welcome to Week 12!
+
+::: {.columns}
+::: {.column width="50%"}
+### Today's Roadmap
+
+1. **Parameterized Reports:** one `.qmd`, many cohorts.
+2. **Publication Tables:** `gt`.
+3. **Cross-References, Inline R & `DT`:** reports that update themselves.
+4. **Case Study:** an end-to-end public health report.
+5. **AI Corner:** The table that is off by 100x.
+:::
+
+::: {.column width="50%"}
+### Today's Milestones
+
+* **Homework 12:** Released today (Quarto & tables).
+* 🎯 **Final Project:** next week is the in-class workshop; bring a draft that renders.
+* No quiz this week.
+:::
+:::
+
+```{r}
+#| include: false
+library(dplyr)
+library(purrr)
+library(ggplot2)
+library(r02pro)
+library(NHANES)
+library(gt)
+library(DT)
+# Keep printed tibbles short enough to fit on a slide
+options(tibble.print_min = 5, tibble.print_max = 5, pillar.max_footer_lines = 1)
+theme_set(theme_minimal(base_size = 18))
+```
+
+
+# Cycle 1: Parameterized Reports {background-color="#2c3e50"}
+
+## One Report, Many Cohorts
+
+* A health department writes the **same report** for every borough, clinic, or year.
+* Copy, paste, and edit five times, and every bug needs fixing in five places.
+* A **parameterized report** is written once. You choose a value (a borough, a year) and render, and every table, figure, and sentence follows.
+
+::: {.callout-tip}
+The parameter is to a report what an argument is to a function (Week 9).
+:::
+
+---
+
+## Step 1: Declare Parameters in the YAML
+
+```yaml
+---
+title: "Child Health Report"
+format: html
+params:
+  continent: "Africa"
+  year: 2015
+---
+```
+
+* `params:` lists each parameter with its **default** value.
+* Inside the document, R sees them as a list: `params$continent`, `params$year`.
+
+---
+
+## Step 2: Use `params$` Instead of Typed Values
+
+```{r}
+# Quarto creates `params` when it renders a report with a params: header.
+# A slide deck has no such header, so here we create the same list by hand.
+params <- list(continent = "Africa", year = 2015)
+
+report_data <- gm |>
+  filter(continent == params$continent, year == params$year,
+         !is.na(life_expectancy))
+
+nrow(report_data)
+```
+
+* Never type `"Africa"` or `2015` again below the YAML: use `params$...` everywhere.
+
+---
+
+## Step 3: Render Each Version from the Terminal
+
+This command runs in RStudio's **Terminal** tab (not the R Console), so it is shown here, not run:
+
+```bash
+quarto render report.qmd -P continent:Asia -P year:2010
+```
+
+* `-P name:value` overrides one default; anything you leave out keeps its YAML value.
+* Add `--output report-asia.html` to keep each version in its own file.
+* Plain `quarto render report.qmd` (or the Render button) uses the defaults.
+
+---
+
+## The Same Idea in R: A Function
+
+```{r}
+child_health_table <- function(cont, yr) {
+  stopifnot(cont %in% gm$continent)
+  gm |>
+    filter(continent == cont, year == yr,
+           !is.na(life_expectancy), !is.na(child_mortality)) |>
+    group_by(region) |>
+    summarize(countries = n(),
+              life_exp  = mean(life_expectancy),
+              under5    = mean(child_mortality)) |>
+    arrange(desc(life_exp))
+}
+```
+
+* The arguments play the role of `params`: the function returns the table for **any** continent and year.
+* `stopifnot()` stops early on a value that has no data, instead of returning an empty table.
+
+---
+
+## Calling It
+
+```{r}
+#| error: true
+child_health_table("Africa", 2015)
+
+child_health_table("Antarctica", 2015)
+```
+
+---
+
+## Map Over Parameter Values
+
+```{r}
+conts <- c("Africa", "Americas", "Asia", "Europe", "Oceania")
+tables <- map(conts, \(x) child_health_table(x, 2015))
+names(tables) <- conts
+
+map_int(tables, nrow)       # regions per continent
+tables$Oceania
+```
+
+* One function, five reports' worth of tables, in three lines (`map()` from Week 9).
+
+---
+
+## A Plot Function, Too
+
+```{r}
+le_trend <- function(cont) {
+  gm |>
+    filter(continent == cont, year >= 1960, year <= 2015,
+           !is.na(life_expectancy)) |>
+    group_by(year) |>
+    summarize(median_le = median(life_expectancy)) |>
+    ggplot(aes(year, median_le)) +
+    geom_line(linewidth = 1.2, color = "steelblue") +
+    labs(title = paste("Median life expectancy,", cont),
+         x = "Year", y = "Life expectancy (years)")
+}
+```
+
+* The title is built from the parameter with `paste()`, so it is right for every continent.
+
+---
+
+## One Call, One Figure
+
+```{r}
+#| fig-width: 10
+#| fig-height: 4.4
+#| fig-align: center
+le_trend("Asia")
+```
+
+---
+
+## 👥 Paired Exercise 1: Parameter Pieces (10 min)
+
+::: {.columns}
+::: {.column width="55%"}
+### Task
+
+The worksheet's YAML declares `params` with `continent` and `year`.
+
+1. Build `report_data` from `gm` using **only** `params$...` (no typed values).
+2. Write `mortality_table(cont, yr)`: regions, number of countries, median and maximum under-5 mortality, sorted.
+3. `map()` it over all five continents; count rows with `map_int()`.
+4. From the **Terminal**, render the worksheet with `-P continent:Europe` and compare.
+:::
+
+::: {.column width="45%"}
+### Checklist
+
+* `stopifnot()` guards the input.
+* The function never uses `params`: it uses its own arguments.
+* `gm` units: check `?gm`.
+:::
+:::
+
+
+# Cycle 2: Publication Tables with `gt` {background-color="#2c3e50"}
+
+## A Summary Worth Publishing
+
+NHANES adults, grouped by age:
+
+```{r}
+adults <- NHANES |>
+  filter(Age >= 20) |>
+  mutate(age_group = cut(Age, breaks = c(20, 35, 50, 65, Inf), right = FALSE,
+                         labels = c("20-34", "35-49", "50-64", "65+")))
+
+age_summary <- adults |>
+  group_by(age_group) |>
+  summarize(n = n(),
+            bmi = mean(BMI, na.rm = TRUE),
+            sbp = mean(BPSysAve, na.rm = TRUE),
+            diabetes = mean(Diabetes == "Yes", na.rm = TRUE))
+```
+
+* `cut()` turns a number into groups; `right = FALSE` puts age 35 in "35-49".
+
+---
+
+## Printed Tibbles Are for You, Not Your Reader
+
+```{r}
+age_summary
+```
+
+* Cryptic names, `<dbl>` labels, too many digits, a proportion where a reader expects a percent.
+* A report needs a **table**: title, labels, units, sensible rounding, a source.
+
+---
+
+## `gt()`: Start a Table
+
+```{r}
+age_summary |> gt()
+```
+
+* `gt` ("grammar of tables") builds a table step by step with `|>`, like `ggplot2` builds a plot with `+`.
+
+---
+
+## Title and Source: `tab_header()`, `tab_source_note()`
+
+```{r}
+#| output-location: column
+age_summary |>
+  gt() |>
+  tab_header(
+    title = "Health by age group",
+    subtitle = "US adults aged 20+"
+  ) |>
+  tab_source_note(
+    "Source: NHANES 2009-2012 (R package NHANES)"
+  )
+```
+
+---
+
+## Format Numbers: `fmt_number()`, `fmt_integer()`, `fmt_percent()`
+
+```{r}
+#| output-location: column
+age_tbl <- age_summary |>
+  gt() |>
+  fmt_integer(columns = n) |>
+  fmt_number(columns = c(bmi, sbp),
+             decimals = 1) |>
+  fmt_percent(columns = diabetes,
+              decimals = 1)
+age_tbl
+```
+
+* `fmt_percent()` **multiplies by 100**: give it a proportion (0.137), not a percent (13.7).
+* Formatting changes the display only; the data underneath keep full precision.
+
+---
+
+## Readable Labels: `cols_label()`
+
+```{r}
+#| output-location: column
+age_tbl <- age_tbl |>
+  cols_label(
+    age_group = "Age group",
+    n = "N",
+    bmi = "BMI (kg/m²)",
+    sbp = "Systolic BP (mmHg)",
+    diabetes = "Diabetes"
+  )
+age_tbl
+```
+
+* The data keep their short names; only the **displayed** labels change.
+
+---
+
+## Group Columns: `tab_spanner()`
+
+```{r}
+#| output-location: column
+age_tbl <- age_tbl |>
+  tab_spanner(label = "Means",
+              columns = c(bmi, sbp)) |>
+  tab_header(
+    title = "Health by age group",
+    subtitle = "US adults aged 20+"
+  ) |>
+  tab_source_note(
+    "Source: NHANES 2009-2012"
+  )
+age_tbl
+```
+
+---
+
+## Highlight a Row: `tab_style()`
+
+```{r}
+#| output-location: column
+age_tbl |>
+  tab_style(
+    style = cell_fill(color = "#fde2e2"),
+    locations = cells_body(
+      rows = diabetes > 0.15
+    )
+  )
+```
+
+* `rows =` takes a condition on the **data**, like `filter()`.
+* Use emphasis sparingly: one message per table.
+
+---
+
+## A `gt` Recipe for Your Project
+
+| Step | Function |
+|:---|:---|
+| Start from a small summary tibble | `group_by()` + `summarize()` |
+| Make the table | `gt()` |
+| Title, subtitle | `tab_header()` |
+| Readable column names with units | `cols_label()` |
+| Rounding, commas, percents | `fmt_number()`, `fmt_integer()`, `fmt_percent()` |
+| Group related columns | `tab_spanner()` |
+| Cite the data | `tab_source_note()` |
+
+---
+
+## 👥 Paired Exercise 2: Table 1 by Race/Ethnicity (10 min)
+
+::: {.columns}
+::: {.column width="55%"}
+### Task
+
+1. For NHANES adults (20+), summarize by `Race1`: number of adults, mean age, mean BMI, share with diabetes, share physically active.
+2. Turn it into a `gt` table with a title and subtitle.
+3. Label every column, with units.
+4. Format: integers for N, one decimal for means, percents for shares; a spanner over the two shares; a source note.
+:::
+
+::: {.column width="45%"}
+### Checklist
+
+* Shares stay proportions (0 to 1) until `fmt_percent()`.
+* `na.rm = TRUE` inside `mean()`.
+* Does any percent exceed 100%? Then something is wrong.
+:::
+:::
+
+
+# Cycle 3: Cross-References, Inline R & `DT` {background-color="#2c3e50"}
+
+## Hand-Typed Numbers Drift
+
+```{r}
+diab_rate <- mean(adults$Diabetes == "Yes", na.rm = TRUE)
+diab_rate
+```
+
+* A report says "`r round(100 * diab_rate)`% of adults have diabetes", typed by hand. Then you drop a few rows, or switch the parameter, and the sentence is **silently wrong**.
+* Fix: let R write the number into the sentence. This is **inline R**.
+
+---
+
+## Inline R: R Writes the Numbers
+
+What you type in the text of a `.qmd`:
+
+```markdown
+Among `r knitr::inline_expr('format(nrow(adults), big.mark = ",")')` adults, `r knitr::inline_expr('round(100 * diab_rate, 1)')`% have diabetes.
+```
+
+What the reader sees:
+
+> Among `r format(nrow(adults), big.mark = ",")` adults, `r round(100 * diab_rate, 1)`% have diabetes.
+
+* A backtick, the letter `r`, a space, an R expression, a closing backtick.
+* Compute the number in a chunk first, and keep the inline code short.
+
+---
+
+## Labelling a Figure
+
+Give the chunk a `label` that starts with `fig-` and a caption:
+
+```{{r}}
+#| label: fig-bmi-age
+#| fig-cap: "BMI by age group, US adults aged 20+ (NHANES 2009-2012)."
+ggplot(adults, aes(age_group, BMI)) +
+  geom_boxplot(fill = "lightblue") +
+  labs(x = "Age group", y = "BMI (kg/m²)")
+```
+
+Then refer to it in the text with `@fig-bmi-age`:
+
+```markdown
+As @fig-bmi-age shows, median BMI is similar across age groups.
+```
+
+---
+
+## The Labelled Figure
+
+```{r}
+#| label: fig-bmi-age
+#| fig-cap: "BMI by age group, US adults aged 20+ (NHANES 2009-2012)."
+#| echo: false
+#| fig-width: 10
+#| fig-height: 3.7
+#| fig-align: center
+ggplot(adults, aes(age_group, BMI)) +
+  geom_boxplot(fill = "lightblue") +
+  labs(x = "Age group", y = "BMI (kg/m²)")
+```
+
+As @fig-bmi-age shows, median BMI is similar across age groups.
+
+---
+
+## Why Not Just Write "the Figure Below"?
+
+* Quarto **numbers** figures for you and turns `@fig-...` into a clickable "Figure 1".
+* Add, move, or delete a figure and every number and link updates.
+* The rules: the label starts with `fig-`; the chunk has a `fig-cap`; the reference is `@` plus the label, with no space.
+* A typo in the reference shows up as **?@fig-...** in the rendered page: search for it before you submit.
+
+---
+
+## Labelling a Table
+
+Same idea with the prefix `tbl-` and a `tbl-cap`; it works with `gt` tables:
+
+```{r}
+#| label: tbl-age
+#| tbl-cap: "Diabetes by age group."
+#| echo: fenced
+age_summary |>
+  select(age_group, n, diabetes) |>
+  gt() |>
+  fmt_percent(columns = diabetes, decimals = 1)
+```
+
+---
+
+## Referring to the Table
+
+```markdown
+@tbl-age shows that diabetes is far more common after age 50.
+```
+
+renders as:
+
+> @tbl-age shows that diabetes is far more common after age 50.
+
+* Put the caption in `tbl-cap` (numbered by Quarto) **or** in `tab_header()`, not both with different wording.
+
+---
+
+## Sections: `{#sec-...}`
+
+```markdown
+## Methods {#sec-methods}
+
+...
+
+The model is described in @sec-methods.
+```
+
+* Add `{#sec-name}` after a heading, then refer to it with `@sec-name`.
+* Sections need numbers to be referenced: add `number-sections: true` to the YAML under `format: html:`.
+
+| You want | Label | Caption option | Reference |
+|:---|:---|:---|:---|
+| Figure | `label: fig-...` | `fig-cap:` | `@fig-...` |
+| Table | `label: tbl-...` | `tbl-cap:` | `@tbl-...` |
+| Section | `{#sec-...}` after heading | (the heading) | `@sec-...` |
+
+---
+
+## `DT`: Interactive Tables
+
+```{r}
+adults |>
+  distinct(ID, .keep_all = TRUE) |>        # NHANES repeats some people
+  select(ID, Gender, Age, BMI, Diabetes) |>
+  datatable(rownames = FALSE, options = list(pageLength = 5))
+```
+
+---
+
+## `gt` or `DT`?
+
+| | `gt` | `DT` |
+|:---|:---|:---|
+| Purpose | a table to **read and cite** | data to **search and sort** |
+| Size | a few rows of summaries | hundreds or thousands of rows |
+| Output | HTML, Word, PDF | HTML only |
+| In your project | your "Table 1" and results tables | optional: let readers browse the cleaned data |
+
+* Useful `DT` options: `pageLength =` (rows per page), `filter = "top"` (a search box per column), `rownames = FALSE`.
+
+---
+
+## 👥 Paired Exercise 3: A Self-Updating Results Section (10 min)
+
+::: {.columns}
+::: {.column width="55%"}
+### Task
+
+1. Compute `n_adults`, `pct_active` and `mean_sbp` in a chunk.
+2. Write a sentence that reports all three with **inline R**.
+3. Make a labelled figure (`fig-`) with a caption, and a labelled `gt` table (`tbl-`); refer to both in a sentence.
+4. Show 100 rows of the data with `DT`, 5 rows per page, a filter box per column.
+:::
+
+::: {.column width="45%"}
+### Checklist
+
+* Render, then search the page for `?@` (a broken reference).
+* No number in your sentences is typed by hand.
+:::
+:::
+
+
+# Cycle 4: Case Study + AI Corner {background-color="#2c3e50"}
+
+## The Question
+
+**How does diabetes prevalence among US adults rise with age and BMI, and is the pattern the same for women and men?**
+
+A one-page, dashboard-style report with a `sex` parameter:
+
+1. Prepare the data **once**, with a function.
+2. **Key numbers** at the top, written by inline R.
+3. **One figure** that answers the question, cross-referenced.
+4. **One table** with the numbers behind it.
+5. Render for each sex: `-P sex:female`, `-P sex:male`.
+
+---
+
+## Step 1: Prepare the Data with a Function
+
+```{r}
+prep_adults <- function(data, sex) {
+  stopifnot(sex %in% c("female", "male"))
+  data |>
+    filter(Age >= 20, Gender == sex, !is.na(Diabetes), !is.na(BMI)) |>
+    mutate(age_group = cut(Age, breaks = c(20, 35, 50, 65, Inf), right = FALSE,
+                           labels = c("20-34", "35-49", "50-64", "65+")),
+           obese = BMI >= 30)
+}
+
+params <- list(sex = "female")     # in the report, from the YAML
+cohort <- prep_adults(NHANES, params$sex)
+nrow(cohort)
+```
+
+---
+
+## Step 2: Key Numbers, Written by R
+
+```{r}
+key <- cohort |>
+  summarize(n = n(), diabetes = mean(Diabetes == "Yes"), obese = mean(obese))
+```
+
+::: {.columns}
+::: {.column width="33%"}
+::: {.callout-note appearance="simple"}
+**Adults in the cohort**
+
+[`r format(key$n, big.mark = ",")`]{style="font-size: 1.8em"}
+:::
+:::
+::: {.column width="33%"}
+::: {.callout-warning appearance="simple"}
+**With diabetes**
+
+[`r round(100 * key$diabetes, 1)`%]{style="font-size: 1.8em"}
+:::
+:::
+::: {.column width="33%"}
+::: {.callout-important appearance="simple"}
+**With obesity (BMI 30+)**
+
+[`r round(100 * key$obese, 1)`%]{style="font-size: 1.8em"}
+:::
+:::
+:::
+
+* Each big number is inline R, so it changes when `sex` changes.
+
+---
+
+## Step 3: The Figure
+
+```{r}
+#| output-location: slide
+#| fig-width: 10
+#| fig-height: 4.6
+#| fig-align: center
+cohort |>
+  group_by(age_group, obese) |>
+  summarize(diabetes = mean(Diabetes == "Yes"), .groups = "drop") |>
+  mutate(bmi_group = if_else(obese, "BMI 30+", "BMI under 30")) |>
+  ggplot(aes(age_group, diabetes, fill = bmi_group)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = scales::label_percent()) +
+  labs(x = "Age group", y = "With diabetes", fill = NULL,
+       title = paste("Diabetes by age and BMI,", params$sex, "adults"))
+```
+
+---
+
+## Step 4: The Table Behind It
+
+```{r}
+#| output-location: column
+cohort |>
+  group_by(age_group) |>
+  summarize(
+    n = n(),
+    obese = mean(obese),
+    diab = mean(Diabetes == "Yes")
+  ) |>
+  gt() |>
+  cols_label(age_group = "Age group",
+             n = "N",
+             obese = "BMI 30+",
+             diab = "Diabetes") |>
+  fmt_percent(columns = c(obese, diab),
+              decimals = 1) |>
+  tab_header(paste("Adults:",
+                   params$sex))
+```
+
+---
+
+## Step 5: Every Value of the Parameter
+
+```{r}
+key_numbers <- function(sex) {
+  prep_adults(NHANES, sex) |>
+    summarize(sex = sex, n = n(),
+              diabetes = mean(Diabetes == "Yes"), obese = mean(obese))
+}
+
+map(c("female", "male"), key_numbers) |>
+  bind_rows()
+```
+
+* In the report, `quarto render report.qmd -P sex:male` gives the whole page for men.
+* NHANES in R is resampled for teaching: describe patterns in this sample, not official US rates.
+
+---
+
+## Quarto Dashboards (Optional)
+
+Quarto can also lay a report out as a dashboard. Shown here, not run:
+
+```yaml
+---
+title: "Diabetes Dashboard"
+format: dashboard
+params:
+  sex: "female"
+---
+```
+
+* Each `##` heading becomes a **row** of cards; each chunk's output becomes a card.
+* Your final project is an ordinary `format: html` report; everything today (params, `gt`, cross-references, inline R) works there.
+
+---
+
+## Checklist for Your Project Report
+
+* **Tables:** at least one `gt` table, labelled `tbl-` and referenced in the text.
+* **Figures:** each labelled `fig-` with a `fig-cap`, each referenced with `@fig-...`.
+* **Numbers in sentences:** inline R, never typed by hand (this is in the rubric).
+* **Repeated work:** a function, used more than once, and `map()` over groups.
+* **Render** from top to bottom, then search the page for `?@` and for `NA`.
+
+
+## AI Corner: The Table That Is Off by 100x {background-color="#8e44ad"}
+
+Asked to "make a publication-ready table of diabetes prevalence by age group," an AI wrote:
+
+```{r}
+ai_summary <- adults |>
+  group_by(age_group) |>
+  summarize(n = n(),
+            pct_diabetes = 100 * mean(Diabetes == "Yes", na.rm = TRUE))
+
+ai_tbl <- ai_summary |>
+  gt() |>
+  cols_label(age_group = "Age group", n = "N",
+             pct_diabetes = "Diabetes prevalence") |>
+  fmt_percent(columns = pct_diabetes, decimals = 1)
+```
+
+Clean code, nice labels, `fmt_percent()` as taught. Ship it?
+
+## AI Corner: Look at the Output {background-color="#8e44ad"}
+
+```{r}
+#| echo: false
+ai_tbl
+```
+
+## AI Corner: Auditing the Table {background-color="#8e44ad"}
+
+**Audit findings:**
+
+```{r}
+range(ai_summary$pct_diabetes)
+```
+
+1. The AI already multiplied by 100, then `fmt_percent()` multiplied by 100 **again**.
+2. Every prevalence is 100 times too large: the oldest group shows `r format(round(100 * max(ai_summary$pct_diabetes), 1), big.mark = ",")`%, which is impossible.
+3. A reader skimming the table, or an AI summarizing it, could repeat that number without noticing.
+
+## AI Corner: The Audited Version {background-color="#8e44ad"}
+
+::: {.columns}
+::: {.column width="55%"}
+```{r}
+#| output-location: fragment
+adults |>
+  group_by(age_group) |>
+  summarize(n = n(),
+            diabetes = mean(Diabetes == "Yes",
+                            na.rm = TRUE)) |>
+  gt() |>
+  cols_label(age_group = "Age group",
+             n = "N",
+             diabetes = "Diabetes prevalence") |>
+  fmt_percent(columns = diabetes,
+              decimals = 1)
+```
+:::
+
+::: {.column width="45%"}
+* Keep proportions (0 to 1) in the data; let `fmt_percent()` do the 100x **once**.
+* Check: is every percent between 0% and 100%? Does one cell match a number you computed yourself?
+
+::: {.callout-important}
+*Read the rendered table, not just the code.*
+:::
+:::
+:::
+
+---
+
+## 👥 Paired Exercise 4: A Mini Report + AI Audit (10 min)
+
+::: {.columns}
+::: {.column width="55%"}
+### Task
+
+1. Use `prep_adults()` (given) with `params$sex`; compute the key numbers and report them with **inline R**.
+2. Make the age-by-BMI diabetes figure, labelled and referenced.
+3. **AI audit:** run the worksheet's AI table of physical activity by age group. Find what is wrong, explain why, and fix it.
+4. Render with `-P sex:male`: did every number and title change?
+:::
+
+::: {.column width="45%"}
+### Checklist
+
+* The parameter appears only in the YAML and as `params$sex`.
+* Percents between 0% and 100%.
+* No `?@` in the rendered page.
+:::
+:::
+
+
+# Wrap-Up & Next Steps
+
+## Before We Meet Again
+
+::: {.columns}
+::: {.column width="50%"}
+### 📌 To Do This Week
+
+* **Homework 12** (Quarto & tables): due date on the course website.
+* **Read:** R02Pro Ch 14.
+* Push today's worksheet to GitHub.
+* Add one `gt` table, one cross-referenced figure, and inline R numbers to your project report.
+:::
+
+::: {.column width="50%"}
+### 🔭 Next Week
+
+* Scientific communication: reproducible pipelines, code review, verifying AI help.
+* **In-class final project workshop:** bring a draft that renders, with your introduction, data preparation, and at least two figures.
+:::
+:::
+
+*Questions? Office hours are listed on the syllabus page, or email anytime.*

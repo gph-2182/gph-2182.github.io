@@ -1,0 +1,215 @@
+---
+title: "Week 12 In-Class Exercises: Advanced Quarto, Tables & Case Studies"
+subtitle: "GPH-GU 2182 · Fall 2026 · Paired Programming"
+author: "YOUR NAME & PARTNER NAME"
+date: "November 25, 2026"
+params:
+  continent: "Asia"
+  year: 2010
+  sex: "female"
+format:
+  html:
+    toc: true
+    number-sections: true
+    code-tools:
+      source: true
+      toggle: false
+      caption: "Source Code"
+---
+
+::: {.callout-note}
+### Instructions
+Work in pairs. One person types (driver), the other reviews and advises (navigator). Swap roles halfway through!
+
+* 📥 **[Download `week-12-inclass.qmd`](https://gph-2182.github.io/weeks/inclass/week-12-inclass.qmd)** to open and edit in RStudio (or use the **`</> Source Code`** button at the top right).
+* This worksheet has **parameters**: look at `params:` in the YAML header at the top of the `.qmd`.
+* Render this Quarto document to HTML and push it to your GitHub repository **by the end of class** for participation credit.
+:::
+
+```{r}
+#| label: setup
+#| message: false
+library(dplyr)
+library(purrr)
+library(ggplot2)
+library(r02pro)
+library(NHANES)
+library(gt)
+library(DT)
+
+# When you render, Quarto fills `params` from the YAML header. If you run the
+# chunks one at a time in RStudio, this line supplies the same defaults.
+if (!exists("params")) params <- list(continent = "Asia", year = 2010, sex = "female")
+```
+
+# Exercise 1: Parameter Pieces (Cycle 1)
+
+```{r}
+#| label: ex1-params
+#| error: true
+# 1. Print params$continent and params$year. Then build report_data: the rows
+#    of gm for that continent and year with non-missing child_mortality.
+#    Use ONLY params$continent and params$year (do not type "Asia" or 2010).
+#    How many countries are in report_data?
+# 2. Write mortality_table(cont, yr) that
+#    - stops with stopifnot() unless cont is one of the continents in gm
+#    - keeps rows of gm for that continent and year with non-missing child_mortality
+#    - returns one row per region with: countries (the number of countries),
+#      median_u5 and max_u5 (median and maximum under-5 mortality,
+#      per 1,000 live births), sorted from the highest median_u5 to the lowest
+#    Test it with mortality_table(params$continent, params$year), and check
+#    that mortality_table("Atlantis", 2010) stops with an error
+#    (this chunk has error: true, so the document still renders)
+# 3. map() mortality_table() over all five continents for params$year, name the
+#    list with the continent names, and use map_int() to count the regions in each
+# 4. Which region in the whole world had the highest median under-5 mortality
+#    in params$year? (Hint: bind_rows() the list from 3, or loop over it.)
+
+```
+
+**Task 5 (Terminal, not the Console):** in RStudio's **Terminal** tab, render this worksheet for another continent:
+
+```bash
+quarto render week-12-inclass.qmd -P continent:Europe
+```
+
+Open the new HTML. Which numbers changed? Did anything still say "Asia"? (Then render again without `-P` before you push.)
+
+# Exercise 2: Table 1 by Race/Ethnicity (Cycle 2)
+
+```{r}
+#| label: ex2-data
+adults <- NHANES |>
+  filter(Age >= 20)
+```
+
+```{r}
+#| label: ex2-gt
+# 1. Summarize adults by Race1: n (number of adults), mean_age, mean_bmi,
+#    diabetes (share with Diabetes == "Yes") and active (share with
+#    PhysActive == "Yes"). Use na.rm = TRUE inside mean(). Keep the shares as
+#    proportions between 0 and 1. Call the result race_summary.
+# 2. Turn race_summary into a gt table with gt(), with tab_header():
+#    a title and a subtitle that says who is in the table
+# 3. cols_label(): readable labels with units (age in years, BMI in kg/m²)
+# 4. fmt_integer() for n, fmt_number(decimals = 1) for the two means,
+#    fmt_percent(decimals = 1) for the two shares
+# 5. tab_spanner() with the label "Share of adults" over diabetes and active,
+#    and tab_source_note() citing NHANES 2009-2012 (R package NHANES)
+# 6. Check: is every percent in the table between 0% and 100%?
+
+```
+
+# Exercise 3: A Self-Updating Results Section (Cycle 3)
+
+```{r}
+#| label: ex3-numbers
+# 1. Using adults (from Exercise 2), compute
+#    n_adults:   the number of adults
+#    pct_active: the percent (0 to 100) who are physically active, rounded to 1 decimal
+#    mean_sbp:   the mean systolic blood pressure BPSysAve, rounded to 1 decimal
+#                (na.rm = TRUE)
+# 2. Below this chunk, in the TEXT (not in a chunk), write one sentence that
+#    reports all three numbers with inline R. Inline R is a backtick, the letter
+#    r, a space, an R expression, and a closing backtick, for example
+#        `r n_adults`
+#    No number in your sentence may be typed by hand.
+
+```
+
+*Write your sentence with inline R here.*
+
+```{r}
+#| label: fig-sbp-age
+#| fig-cap: "Systolic blood pressure by age, US adults aged 20+ (NHANES 2009-2012)."
+# 3. This chunk is already labelled fig-sbp-age and has a caption.
+#    Draw a scatterplot of BPSysAve (y) against Age (x) for adults, with
+#    geom_point(alpha = 0.2) and geom_smooth(), and axis labels with units.
+
+```
+
+```{r}
+#| label: tbl-active
+#| tbl-cap: "Physical activity by sex, US adults aged 20+."
+# 4. This chunk is already labelled tbl-active and has a caption.
+#    Summarize adults by Gender: n and active (share with PhysActive == "Yes"),
+#    and show it as a gt table with readable labels and fmt_percent().
+
+```
+
+*5. Write a sentence here that refers to the figure and the table by their labels (an `@` followed by the label). Render, and check that they show up as "Figure 1" and "Table 1", not as `?@...`.*
+
+```{r}
+#| label: ex3-dt
+# 6. Show the first 100 adults (slice_head()) with columns ID, Gender, Age,
+#    BMI, BPSysAve and PhysActive as a DT table: datatable() with
+#    rownames = FALSE, filter = "top", and options = list(pageLength = 5).
+#    Try the search box and the column filters in the rendered HTML.
+
+```
+
+# Exercise 4: A Mini Report + AI Audit (Cycle 4)
+
+```{r}
+#| label: ex4-data
+# Given: prepare one sex's adults once, with a function
+prep_adults <- function(data, sex) {
+  stopifnot(sex %in% c("female", "male"))
+  data |>
+    filter(Age >= 20, Gender == sex, !is.na(Diabetes), !is.na(BMI)) |>
+    mutate(age_group = cut(Age, breaks = c(20, 35, 50, 65, Inf), right = FALSE,
+                           labels = c("20-34", "35-49", "50-64", "65+")),
+           obese = BMI >= 30)
+}
+```
+
+```{r}
+#| label: ex4-key
+# 1. Create cohort <- prep_adults(NHANES, params$sex). Then compute
+#    n_cohort, pct_diabetes and pct_obese (percents, rounded to 1 decimal).
+#    Below this chunk, write one sentence with inline R that reports all
+#    three AND the sex (inline R works for text too: params$sex).
+
+```
+
+*Write your key-numbers sentence with inline R here.*
+
+```{r}
+#| label: fig-diabetes
+#| fig-cap: "Share of adults with diabetes by age group and BMI."
+# 2. This chunk is already labelled fig-diabetes and has a caption.
+#    Using cohort, compute the share with diabetes by age_group and obese,
+#    and draw side-by-side bars (geom_col(position = "dodge")) with the
+#    title built from params$sex with paste().
+#    Then, below the chunk, write a sentence that refers to the figure.
+
+```
+
+```{r}
+#| label: ex4-ai
+# 3. AI audit. Asked for "a publication-ready table of physical activity by age
+#    group, and a sentence describing it", an AI wrote:
+#
+#      ai_active <- cohort |>
+#        group_by(age_group) |>
+#        summarize(n = n(),
+#                  pct_active = 100 * mean(PhysActive == "Yes", na.rm = TRUE))
+#      ai_active |>
+#        gt() |>
+#        cols_label(age_group = "Age group", n = "N",
+#                   pct_active = "Physically active") |>
+#        fmt_percent(columns = pct_active, decimals = 1)
+#
+#      "Physical activity falls from 67% among adults aged 20-34 to 45%
+#       among adults aged 65+."
+#
+#    (a) Run the AI's code. What is wrong with the table, and why?
+#    (b) Write a fixed version of the table.
+#    (c) Is the AI's sentence right for params$sex? Check its two numbers with R.
+#        Why is a hand-typed sentence risky in a parameterized report?
+#    (d) Rewrite the sentence below this chunk with inline R.
+# 4. In the Terminal, render with -P sex:male. Did every number and title change?
+
+```
+
+*Write the corrected sentence with inline R here.*

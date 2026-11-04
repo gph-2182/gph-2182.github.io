@@ -21,13 +21,9 @@ subtitle: "Nov 18, 2026 · 2:00–4:40 PM · Bobst LL138"
 
 ## Materials
 
-::: {.callout-note appearance="simple"}
-Materials will be posted here before class.
-:::
-
-- 📊 **Lecture Slides:** *Available before class*
-- 📝 **In-Class Exercise:** *Available before class*
-- 💻 **Weekly Exercise 11:** *Released before class on GitHub*
+- 📊 **Lecture Slides:** [Interactive Presentation (HTML)](slides/week-11-slides.html)
+- 📝 **In-Class Exercise:** [View Worksheet (HTML)](inclass/week-11-inclass.html) · [Download Starter Code (`.qmd`)](https://gph-2182.github.io/weeks/inclass/week-11-inclass.qmd) · *or run `get_worksheet(11)` in your in-class repo*
+- 💻 **Weekly Exercise 11:** [Accept Assignment on Classroom 50](https://classroom50.org/gph-2182/gph-gu-2182-fall-2026/assignments/weekly-exercise-11/accept) · [How to do it, start to finish](../weekly.qmd)
 
 ## Due
 

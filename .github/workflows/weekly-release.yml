@@ -54,6 +54,8 @@ jobs:
             any::gt
             any::DT
             any::broom
+            any::NHANES
+            any::microbenchmark
 
       - name: Run automated release manager & render website
         run: |

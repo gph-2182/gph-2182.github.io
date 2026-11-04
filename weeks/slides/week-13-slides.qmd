@@ -1,0 +1,651 @@
+---
+title: "Week 13: Scientific Communication & Project Workshop"
+subtitle: "GPH-GU 2182: Statistical Programming in R · Fall 2026"
+author: "Yang Feng, PhD"
+institute: "New York University · School of Global Public Health"
+date: "December 2, 2026"
+format:
+  revealjs:
+    theme: default
+    css: ../../styles.css
+    slide-number: true
+    preview-links: auto
+    chalkboard: true
+    transition: slide
+    width: 1280
+    height: 720
+    margin: 0.06
+    min-scale: 0.2
+    max-scale: 2.0
+    auto-stretch: false
+    code-line-numbers: false
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Welcome to Week 13!
+
+::: {.columns}
+::: {.column width="50%"}
+### Today's Roadmap
+
+1. **Code Quality:** readable code, functions, benchmarking.
+2. **Reproducible Repositories:** could a stranger re-run your report?
+3. **The AI-Use Appendix:** verification you can show.
+4. **Project Workshop:** peer review and consultation clinic.
+5. **AI Corner:** The appendix entry that verified nothing.
+:::
+
+::: {.column width="50%"}
+### Today's Milestones
+
+* **Weekly Exercise 12:** due date on the course website.
+* **No new weekly exercise:** the rest of the term is project time.
+* 🎯 **Bring your project draft:** it renders, with an introduction, data preparation, and at least two figures.
+:::
+:::
+
+```{r}
+#| include: false
+library(dplyr)
+library(purrr)
+library(ggplot2)
+library(r02pro)
+library(microbenchmark)
+# Keep printed tibbles short enough to fit on a slide
+options(tibble.print_min = 6, tibble.print_max = 6, pillar.max_footer_lines = 1)
+theme_set(theme_minimal(base_size = 18))
+```
+
+
+# Cycle 1: Code Quality, Profiling & Benchmarking {background-color="#2c3e50"}
+
+## Code Quality Is Part of the Grade
+
+The **Reproducibility & code quality** row of the project rubric is worth 15 points. A grader reading your code looks for:
+
+* **Names that explain themselves:** `life_exp_2019`, not `x2` or `df_final_v3`.
+* **One step per line** and consistent spacing, so a pipeline reads top to bottom.
+* **Comments that say why**, not what: `# drop territories without population data`.
+* **One package chunk** at the top; no dead code, no leftover `View()` or `head()` calls.
+* **Labelled chunks** (`#| label: fig-trend`), so errors point to a place.
+
+---
+
+## Before: It Works, But Can You Read It?
+
+```{r}
+x<-gm[gm$year==2019&!is.na(gm$continent),];aggregate(x$life_expectancy,list(x$continent),mean,na.rm=T)
+```
+
+* Correct numbers, but a reader must decode every symbol.
+* `T` can be overwritten (`T <- 0`); always write `TRUE`.
+
+---
+
+## After: The Same Answer, Readable
+
+```{r}
+gm |>
+  filter(year == 2019, !is.na(continent)) |>        # drop rows with no continent
+  group_by(continent) |>
+  summarize(mean_life_exp = mean(life_expectancy, na.rm = TRUE))
+```
+
+* Same numbers, and each line says what it does.
+* Column names describe the result (`mean_life_exp`, not `x`).
+
+---
+
+## Don't Repeat Yourself: Write a Function
+
+```{r}
+#| error: true
+mean_ci <- function(x, conf = 0.95) {
+  if (!is.numeric(x)) stop("`x` must be numeric.")
+  if (conf <= 0 || conf >= 1) stop("`conf` must be between 0 and 1.")
+  x <- x[!is.na(x)]
+  se <- sd(x) / sqrt(length(x))
+  z <- qnorm(1 - (1 - conf) / 2)
+  round(c(mean = mean(x), lower = mean(x) - z * se, upper = mean(x) + z * se), 2)
+}
+rbind(y1999 = mean_ci(gm$life_expectancy[gm$year == 1999]),
+      y2019 = mean_ci(gm$life_expectancy[gm$year == 2019]))
+mean_ci(gm$continent)
+```
+
+---
+
+## Three Ways to Get Daily Counts
+
+Turning **cumulative** counts into daily counts:
+
+```{r}
+set.seed(2182)
+cumulative <- cumsum(rpois(1000, lambda = 50))   # 1,000 days of cumulative cases
+
+daily_grow <- function(x) {          # grows the result one element at a time
+  out <- c()
+  for (i in 2:length(x)) out <- c(out, x[i] - x[i - 1])
+  out
+}
+daily_prealloc <- function(x) {      # makes room for the result first
+  out <- numeric(length(x) - 1)
+  for (i in 2:length(x)) out[i - 1] <- x[i] - x[i - 1]
+  out
+}
+# Third way: the built-in, vectorized diff(cumulative)
+```
+
+---
+
+## How Long Does It Take? `system.time()`
+
+```{r}
+all.equal(daily_grow(cumulative), diff(cumulative))      # same answer first
+all.equal(daily_prealloc(cumulative), diff(cumulative))
+
+system.time(for (k in 1:100) daily_grow(cumulative))     # 100 runs
+```
+
+* `elapsed` is wall-clock seconds. One timing is noisy: the next run may differ.
+
+---
+
+## `microbenchmark()`: Compare Precisely
+
+```{r}
+set.seed(1)
+mb <- microbenchmark(
+  grow     = daily_grow(cumulative),
+  prealloc = daily_prealloc(cumulative),
+  diff     = diff(cumulative),
+  times = 100
+)
+print(mb, unit = "us", signif = 3)
+```
+
+```{r}
+#| include: false
+med <- summary(mb, unit = "us")$median
+names(med) <- summary(mb)$expr
+```
+
+* Each expression runs 100 times; times are in microseconds (millionths of a second).
+* Here `diff()` is about `r round(med[["grow"]] / med[["diff"]])` times faster than growing a vector in a loop.
+
+---
+
+## Seeing the Benchmark
+
+```{r}
+#| fig-width: 10
+#| fig-height: 4.2
+#| fig-align: center
+autoplot(mb)
+```
+
+* Log scale: each grid step is a factor of 10. Your timings differ from mine; the **ranking** does not.
+
+---
+
+## Profiling: Find the Slow Step First
+
+```r
+# Run in RStudio: profvis opens an interactive viewer, so it cannot run in slides
+library(profvis)
+profvis({
+  states <- readr::read_csv("data/us-states.csv")
+  daily  <- daily_grow(states$cases)
+})
+```
+
+* `profvis` shows how long each line took. Fix the **slowest** line, nothing else.
+* For a project report, clear and correct beats fast: optimize only what is actually slow.
+* Rule of thumb: **vectorized** functions (`diff()`, `cumsum()`, `mean()`) beat loops; never grow a vector inside a loop.
+
+---
+
+## 👥 Paired Exercise 1: Faster Daily Counts (10 min)
+
+::: {.columns}
+::: {.column width="55%"}
+### Task
+
+1. Write `daily_grow()`, `daily_prealloc()`, and use `diff()` on the `cumulative` vector from the worksheet.
+2. Check all three agree with `all.equal()`.
+3. Benchmark them with `microbenchmark(times = 50)` and draw `autoplot()`.
+4. Rewrite the messy one-liner in the worksheet as a readable pipeline.
+:::
+
+::: {.column width="45%"}
+### Checklist
+
+* Same answer **before** comparing speed.
+* Quote speed-ups with inline R, not by hand.
+* Then look at your own project: any copy-pasted code that should be a function?
+:::
+:::
+
+
+# Cycle 2: Reproducible Repositories for Scientific Audit {background-color="#2c3e50"}
+
+## The Audit Question
+
+> Could someone else **clone your repository** and get **every number** in your report, without asking you anything?
+
+* That is what a journal's reproducibility check does, and what your grader does.
+* The rubric asks for a report that **renders from a fresh clone with no errors**.
+* A "fresh clone" has only what you committed: no files on your Desktop, no objects in your Environment, no packages loaded by hand.
+
+---
+
+## A Reproducible Project Layout
+
+```{r}
+#| echo: false
+proj <- file.path(tempdir(), "final-project")
+dir.create(file.path(proj, "data"), recursive = TRUE, showWarnings = FALSE)
+invisible(file.create(file.path(proj, c("README.md", "report.qmd", "report.html",
+  "final-project.Rproj", ".gitignore", "data/README.md", "data/us-states.csv"))))
+```
+
+```{r}
+list.files(proj, recursive = TRUE, all.files = TRUE)
+```
+
+* `README.md`: who, which data, how to run. `data/README.md`: the data dictionary.
+* `report.qmd` plus the rendered `report.html`, committed together.
+* `.Rproj` opens RStudio **in this folder**; `.gitignore` keeps clutter out.
+
+---
+
+## Paths: Relative, Never Absolute
+
+| Path | Works on |
+|:---|:---|
+| `"/Users/maria/Desktop/project/data/us-states.csv"` | Maria's laptop only |
+| `"C:/Users/jun/Downloads/us-states.csv"` | Jun's laptop only |
+| `"data/us-states.csv"` | Every clone of the repository |
+
+* Quarto renders a report **from the report's own folder**, so `"data/..."` always points inside your repository.
+* No `setwd()`: it hard-codes your computer's folders, and Quarto does not need it.
+
+---
+
+## AI Code That Only Works on One Computer
+
+Asked to "load my COVID data and get started," an AI wrote (not run here: it fails on every computer but the author's):
+
+```r
+rm(list = ls())                                   # wipes the reader's workspace
+setwd("/Users/maria/Desktop/final project")       # Maria's folders only
+install.packages("tidyverse")                     # reinstalls on every render
+library(tidyverse)
+states <- read_csv("C:/Users/maria/Downloads/us-states.csv")
+```
+
+* Every line except `library()` breaks reproducibility or someone else's session.
+* Install packages **once, in the Console**. Read data with **relative** paths.
+
+---
+
+## Automate the Check
+
+```{r}
+check_report <- function(path) {
+  if (!file.exists(path)) stop("No file at ", path)
+  code <- readLines(path, warn = FALSE)
+  patterns <- c(setwd = "setwd\\(", install = "install\\.packages\\(",
+                rm_all = "rm\\(list", abs_path = "[\"'](/|~|[A-Za-z]:)")
+  tibble(problem = names(patterns),
+         lines   = map_chr(patterns, \(p) toString(which(grepl(p, code)))))
+}
+```
+
+* `readLines()` reads the report as text, one element per line.
+* `grepl()` flags lines matching each pattern; `which()` gives their line numbers.
+
+---
+
+## Running the Check
+
+```{r}
+ai_code <- c('rm(list = ls())', 'setwd("/Users/maria/Desktop/final project")',
+             'install.packages("tidyverse")', 'library(tidyverse)',
+             'states <- read_csv("C:/Users/maria/Downloads/us-states.csv")')
+demo_file <- tempfile(fileext = ".qmd")
+writeLines(ai_code, demo_file)
+
+check_report(demo_file)
+```
+
+* A hit is a **line to read**, not a verdict: a sentence like "never use `setwd()`" in your prose is flagged too.
+
+---
+
+## Other Reproducibility Habits
+
+* **Seed once**, near the top, before any randomness (Week 10).
+* **No hidden state:** restart R before rendering; the report must create every object it uses.
+* **Commit the data** your report reads (under 50 MB per file) and the rendered `report.html`.
+* **End with `sessionInfo()`** (already in the template): it records R and package versions.
+* **Render, then commit, then push**, so `report.html` always matches `report.qmd`.
+
+---
+
+## 👥 Paired Exercise 2: Reproducibility Audit (10 min)
+
+::: {.columns}
+::: {.column width="55%"}
+### Task
+
+1. Write `check_report(path)` in the worksheet and run it on the demo file it creates.
+2. Add one more pattern: `View(`, which opens a window and has no place in a report.
+3. In the **Console**, run `check_report()` on your own `report.qmd` and record what it found as a comment.
+4. Fix each real problem in your project.
+:::
+
+::: {.column width="45%"}
+### Checklist
+
+* `readLines()` + `grepl()` + `which()`.
+* Escape regex specials: `"setwd\\("`.
+* Read every hit; some are false alarms in prose.
+:::
+:::
+
+
+# Cycle 3: Responsible AI Auditing & the AI-Use Appendix {background-color="#2c3e50"}
+
+## Why an AI-Use Appendix?
+
+* AI assistants are **allowed** in the project; every substantive use must be **disclosed**.
+* The appendix is worth **15 points**: as much as the video.
+* It is graded on **verification**, not on how much or how little AI you used.
+* Not using AI is fine: say so, and document how you verified two key results instead.
+
+---
+
+## What Each Entry Records
+
+| Column | What to write |
+|:---|:---|
+| **Tool** | Which assistant (and version, if you know it). |
+| **What I asked** | A summary or the prompt itself. |
+| **What I kept or changed** | Which parts you used, edited, or rejected. |
+| **How I verified it** | The concrete check, and what it showed. |
+
+Plus at least one entry where the AI was **wrong, incomplete, or needed changes**, with a sentence on what you learned.
+
+---
+
+## Four Ways to Verify
+
+1. **Known value:** run it on a tiny input whose answer you can work out by hand.
+2. **Documentation:** read the help page (`?cut`) for the arguments the AI chose.
+3. **Second method:** compute the same thing another way and compare.
+4. **Edge cases:** boundaries, zeros, `NA`, empty groups, negative numbers.
+
+"It ran without errors" is **not** a verification.
+
+---
+
+## An AI Function to Verify
+
+Asked for "age groups: child under 18, adult 18 to 64, senior 65 and over," an AI wrote:
+
+```{r}
+age_group <- function(age) {
+  cut(age, breaks = c(0, 18, 65, Inf),
+      labels = c("child", "adult", "senior"))
+}
+age_group(c(5, 40, 80))
+```
+
+Three typical ages, three correct labels. Done?
+
+---
+
+## Edge Cases Reveal the Bug
+
+```{r}
+test_ages <- c(0, 17, 18, 64, 65)
+tibble(age = test_ages, ai_label = age_group(test_ages))
+```
+
+* `?cut`: intervals are **closed on the right** by default (`right = TRUE`), so 18 lands in `(0, 18]`.
+* Age 0 is outside `(0, 18]` entirely: every newborn becomes `NA`.
+
+---
+
+## A Fix, Checked by a Second Method
+
+```{r}
+age_group <- function(age) {
+  cut(age, breaks = c(0, 18, 65, Inf), right = FALSE,
+      labels = c("child", "adult", "senior"))
+}
+by_hand <- case_when(test_ages < 18 ~ "child",
+                     test_ages < 65 ~ "adult",
+                     TRUE ~ "senior")
+identical(as.character(age_group(test_ages)), by_hand)
+```
+
+* `right = FALSE` makes intervals `[0, 18)`, `[18, 65)`, `[65, Inf)`.
+* Two independent methods agree on every boundary.
+
+---
+
+## Weak and Strong Appendix Entries
+
+| | Weak | Strong |
+|:---|:---|:---|
+| **Asked** | "Help with age groups." | "Code to cut age into child (<18), adult (18–64), senior (65+)." |
+| **Kept** | "Used the code." | "Kept `cut()`; added `right = FALSE`." |
+| **Verified** | "Checked it, looks right." | "Tested ages 0, 17, 18, 64, 65: the AI version gave `NA` for 0 and put 18 in child. Fixed; matches a `case_when()` version (chunk `check-age`)." |
+
+: {tbl-colwidths="[12,30,58]"}
+
+---
+
+## Make the Verification Visible
+
+```{r}
+#| label: check-age
+# Verification for AI-use appendix entry 2: boundaries of age_group()
+stopifnot(identical(as.character(age_group(c(0, 17, 18, 64, 65))),
+                    c("child", "child", "adult", "adult", "senior")))
+```
+
+* `stopifnot()` prints nothing when the check passes and **stops the render** if it ever fails.
+* Point to the chunk label from your appendix: the grader can see the check, not just read about it.
+
+---
+
+## 👥 Paired Exercise 3: Verify, Then Disclose (10 min)
+
+::: {.columns}
+::: {.column width="55%"}
+### Task
+
+1. The worksheet gives an AI-written `bmi_category()` (CDC cut-offs 18.5, 25, 30). Test it on the boundary values.
+2. Find the bug, fix it, and confirm the fix with a `case_when()` version.
+3. Add a `stopifnot()` check that would catch the bug.
+4. Write the appendix entry for this use, in the worksheet's table format.
+:::
+
+::: {.column width="45%"}
+### Checklist
+
+* Test **exactly** at each cut-off.
+* Read `?cut` before guessing.
+* The entry names the concrete check and its result.
+:::
+:::
+
+
+# Cycle 4: Project Workshop + AI Corner {background-color="#2c3e50"}
+
+## AI Corner: The Appendix Entry That Verified Nothing {background-color="#8e44ad"}
+
+A student asked an AI for daily new cases from `us-states.csv`, then asked it to "write my AI-use appendix entry." It produced the code and the entry:
+
+```r
+daily <- states |>
+  arrange(state, date) |>
+  mutate(new_cases = cases - lag(cases))
+```
+
+**"How I verified it":** *"I checked `new_cases` against the NYT daily figures for every state; all values were correct and non-negative."*
+
+Sounds thorough. Paste it in?
+
+## AI Corner: Auditing the Claim {background-color="#8e44ad"}
+
+```{r}
+states <- tibble(state = rep(c("State A", "State B"), each = 3),
+                 date  = rep(as.Date("2020-03-20") + 0:2, 2),
+                 cases = c(80, 130, 160, 10, 14, 23))     # toy cumulative counts
+states |> arrange(state, date) |> mutate(new_cases = cases - lag(cases))
+```
+
+1. No `group_by(state)`: the first day of State B subtracts State A's last count.
+2. The NYT files have **no** daily figures to check against, and real revisions make some daily counts negative.
+3. Nobody ran the check the entry describes: the AI **wrote a verification it never did**.
+
+## AI Corner: The Audited Version {background-color="#8e44ad"}
+
+::: {.columns}
+::: {.column width="55%"}
+```{r}
+daily <- states |>
+  arrange(state, date) |>
+  group_by(state) |>
+  mutate(new_cases = cases - lag(cases)) |>
+  ungroup()
+
+# Check: per state, daily counts add up
+daily |>
+  group_by(state) |>
+  summarize(sum_new = sum(new_cases, na.rm = TRUE),
+            last_minus_first = last(cases) - first(cases))
+```
+:::
+
+::: {.column width="45%"}
+* Group by state, so differences never cross states.
+* A check that was **actually run**: daily counts add up to the change in the cumulative count.
+* Honest entry: "Rejected the ungrouped version; verified with the sum check in chunk `check-daily`."
+
+::: {.callout-important}
+*Never let the AI write the "How I verified it" column. Only you know what you checked.*
+:::
+:::
+:::
+
+---
+
+## Peer Review: How It Works
+
+* Pair up with someone **outside** your usual partner if you can.
+* **Round 1 (20 min):** the author shows the draft; the reviewer works through the checklist and records it in the worksheet.
+* **Round 2 (20 min):** swap roles.
+* The reviewer drives the checklist; the author answers questions but does not defend.
+* End each round with **one strength** and **the top three fixes**, each tied to a rubric row.
+
+---
+
+## The Reviewer's Checklist
+
+| Rubric row | Points | Ask |
+|:---|---:|:---|
+| Introduction | 5 | Can I state the question in one sentence? |
+| Packages & data prep | 15 | One package chunk? Source cited? Steps explained? |
+| Exploratory analysis | 20 | Labelled figures with units? One point each? |
+| Function + simulation/model | 10 | Checked function used twice? Plan for the rest? |
+| Summary | 5 | Planned, or already drafted? |
+| Reproducibility & code | 15 | Fresh-clone test passes? Inline R for numbers? |
+| AI-use appendix | 15 | Each entry has a concrete verification? |
+
+The video (15 points) is not reviewed today.
+
+---
+
+## The Fresh-Clone Test
+
+Run in the **Terminal** (it needs git, so it cannot run in these slides). Copy your repository's URL from the green **Code** button on GitHub:
+
+```bash
+cd ~/Desktop
+git clone <your-repository-URL> fresh-copy
+cd fresh-copy
+quarto render report.qmd
+```
+
+* Renders here? Then a grader's clone renders too. Fails? Look for a file you never committed or an absolute path.
+* Delete `fresh-copy` afterwards so you never edit the wrong folder.
+
+---
+
+## Consultation Clinic
+
+While pairs review, the instructor and CAs circulate. Bring **one specific question**, for example:
+
+* "My figure has 50 overlapping state lines. How do I make one clear point?"
+* "Is a bootstrap or a regression the better fit for my question?"
+* "My report fails to render on the fresh clone; here is the error."
+
+Questions about your own question, data, or figures are the best use of this time.
+
+---
+
+## 👥 Paired Exercise 4: Peer Review + AI Audit (40 min)
+
+::: {.columns}
+::: {.column width="55%"}
+### Task
+
+1. Run the **fresh-clone test** on your own repository.
+2. Peer review, two rounds of 20 minutes: record the checklist for your partner's draft in the worksheet's `review` table.
+3. List your partner's top three fixes.
+4. AI Corner: run the ungrouped code on the toy `states` data, show the cross-state error, and fix it.
+:::
+
+::: {.column width="45%"}
+### Checklist
+
+* Be specific: name the figure, chunk, or line.
+* Tie every fix to a rubric row.
+* Leave with a to-do list for your own draft.
+:::
+:::
+
+
+# Wrap-Up & Next Steps
+
+## Before We Meet Again
+
+::: {.columns}
+::: {.column width="50%"}
+### 📌 To Do This Week
+
+* **Weekly Exercise 12:** due date on the course website.
+* Work through your top three fixes from today's review.
+* Prepare a **2-minute lightning talk**: your question, one figure, one finding so far, one open problem.
+* Push today's worksheet to GitHub.
+:::
+
+::: {.column width="50%"}
+### 🔭 Next Week
+
+* Lightning talks: a work-in-progress share, not graded as part of the project.
+* Writing your own R package: `usethis`, `devtools`, `roxygen2`.
+* Interactive dashboards with Shiny.
+* Course wrap-up.
+:::
+:::
+
+*Project instructions, rubric, and the due date are on the course website.*

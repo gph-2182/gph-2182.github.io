@@ -1,0 +1,119 @@
+---
+title: "Week 14 In-Class Exercises: Project Presentations & The Future of R"
+subtitle: "GPH-GU 2182 · Fall 2026 · Paired Programming"
+author: "YOUR NAME & PARTNER NAME"
+date: "December 9, 2026"
+format:
+  html:
+    toc: true
+    number-sections: true
+    code-tools:
+      source: true
+      toggle: false
+      caption: "Source Code"
+---
+
+::: {.callout-note}
+### Instructions
+Work in pairs. One person types (driver), the other reviews and advises (navigator). Swap roles halfway through!
+
+* 📥 **[Download `week-14-inclass.qmd`](https://gph-2182.github.io/weeks/inclass/week-14-inclass.qmd)** to open and edit in RStudio (or use the **`</> Source Code`** button at the top right).
+* Today is built around the lightning talks: fill in Exercise 1 **during** the talks and work on Exercises 2 to 4 between the rounds.
+* Exercise 3 uses the `shiny` package. If `library(shiny)` fails, run `install.packages("shiny")` once in the **Console** (never inside this file).
+* Render this Quarto document to HTML and push it to your GitHub repository **by the end of class** for participation credit. Your lightning talk and this worksheet together make up today's in-class credit.
+:::
+
+```{r}
+#| label: setup
+#| message: false
+library(dplyr)
+library(ggplot2)
+library(r02pro)
+```
+
+# Exercise 1: Lightning Talk Feedback Log (Cycles 1 and 4)
+
+```{r}
+#| label: ex1-talk-log
+# 1. During the talks, build a tibble talk_log with one row per talk you
+#    watched (at least three, from either round) and the columns
+#      speaker, question, strength, suggestion
+#    Keep each entry to one short sentence; suggestions are actions
+#    ("label the y-axis with units"), not judgments
+# 2. Print talk_log and count its rows with nrow()
+# 3. If you presented, add a comment with the feedback you received and the
+#    ONE change you will make to your report because of it
+
+```
+
+# Exercise 2: A Documented Function (Cycle 2)
+
+```{r}
+#| label: ex2-package-function
+# 1. Write prop_ci(x, n, conf = 0.95) that returns a tibble with columns
+#    estimate, lower, upper for the share x / n, using
+#      se = sqrt(p * (1 - p) / n)  and  z = qnorm(1 - (1 - conf) / 2)
+# 2. Add input checks with informative stop() messages:
+#    n is a positive number; x is between 0 and n; conf is strictly between 0 and 1
+# 3. Document the function with roxygen2 comments (lines starting with #'):
+#    a title, @param for x, n, and conf, @return, and @examples
+# 4. Test it:
+#    (a) prop_ci(30, 100) should give estimate 0.3; check it with stopifnot()
+#    (b) check that the interval for conf = 0.99 is wider than for conf = 0.95
+#    (c) show that prop_ci(120, 100) stops with your message
+#        (add #| error: true at the top of this chunk so the render continues)
+# Optional, in the CONSOLE only: usethis::create_package(file.path(tempdir(), "phtools"))
+# and look at the files it creates
+
+```
+
+# Exercise 3: A Tiny Shiny App (Cycle 3)
+
+```{r}
+#| label: ex3-shiny
+# 1. Write plot_continent(data, cont, yr) that draws a histogram of
+#    life_expectancy for the countries of one continent in one year, with
+#    axis labels and a title that names the continent and year.
+#    Stop with a message if cont is not one of the continents in data.
+#    Test it on gm for "Africa" in 2019
+# 2. Add library(shiny) at the top of this chunk. Write a ui with fluidPage():
+#    a selectInput() with ID "cont" for the five continents, a sliderInput()
+#    with ID "yr" for years 1950 to 2019 (use sep = ""), and plotOutput("hist")
+# 3. Write server <- function(input, output) { ... } that fills output$hist
+#    with renderPlot() calling plot_continent(gm, input$cont, input$yr)
+# 4. Run the app in the CONSOLE with shinyApp(ui, server). Do NOT put
+#    shinyApp() in this chunk: the render would wait for the app forever.
+#    Write one sentence (as a comment) on what you see when you move the slider
+
+```
+
+# Exercise 4: AI Audit + Finishing Plan (Cycle 4)
+
+An AI wrote this documented function for a dashboard showing population by continent, in millions:
+
+```{r}
+#| label: ex4-data
+#' Population by continent
+#' @param data gm-style data; `population` is in persons.
+#' @param yr Year to summarize.
+#' @return One row per continent, population in millions.
+continent_pop <- function(data, yr) {
+  data |>
+    filter(year == yr, !is.na(continent)) |>
+    group_by(continent) |>
+    summarize(pop_millions = sum(population, na.rm = TRUE) / 1e6)
+}
+```
+
+```{r}
+#| label: ex4-ai-audit
+# 1. Run continent_pop(gm, 2010). Then look up one country whose population
+#    you know roughly (for example China, India, or the United States) in gm
+#    for 2010. What is wrong with the AI's numbers?
+# 2. Read ?gm: what unit is population in? Fix the function AND its @param line
+# 3. Add a stopifnot() check: your fixed continent_pop(gm, 2010) gives Asia
+#    more than 1,000 million people, and the AI's version does not
+# 4. Finishing plan: as comments, list the three things you will do to your
+#    final project before you submit, each tied to a rubric row
+
+```

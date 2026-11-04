@@ -1,0 +1,193 @@
+---
+title: "Week 13 In-Class Exercises: Scientific Communication & Project Workshop"
+subtitle: "GPH-GU 2182 · Fall 2026 · Paired Programming"
+author: "YOUR NAME & PARTNER NAME"
+date: "December 2, 2026"
+format:
+  html:
+    toc: true
+    number-sections: true
+    code-tools:
+      source: true
+      toggle: false
+      caption: "Source Code"
+---
+
+::: {.callout-note}
+### Instructions
+Work in pairs. One person types (driver), the other reviews and advises (navigator). Swap roles halfway through!
+
+* 📥 **[Download `week-13-inclass.qmd`](https://gph-2182.github.io/weeks/inclass/week-13-inclass.qmd)** to open and edit in RStudio (or use the **`</> Source Code`** button at the top right).
+* This worksheet uses the `microbenchmark` package. If `library(microbenchmark)` fails, run `install.packages("microbenchmark")` once in the **Console** (never inside this file).
+* Have your **final project** open too: Exercises 2 and 4 use it.
+* Render this Quarto document to HTML and push it to your GitHub repository **by the end of class** for participation credit.
+:::
+
+```{r}
+#| label: setup
+#| message: false
+library(dplyr)
+library(purrr)
+library(ggplot2)
+library(r02pro)
+library(microbenchmark)
+```
+
+# Exercise 1: Code Quality & Benchmarking (Cycle 1)
+
+```{r}
+#| label: ex1-data
+set.seed(2182)
+cumulative <- cumsum(rpois(1000, lambda = 50))   # 1,000 days of cumulative cases
+
+# A messy but correct one-liner: mean child mortality by continent in 2015
+y<-gm[gm$year==2015&!is.na(gm$continent),];aggregate(y$child_mortality,list(y$continent),mean,na.rm=T)
+```
+
+```{r}
+#| label: ex1-benchmark
+# 1. Write daily_grow(x): a for loop that starts with out <- c() and appends
+#    x[i] - x[i - 1] for i in 2:length(x), growing the result one element at a time
+# 2. Write daily_prealloc(x): the same loop, but create
+#    out <- numeric(length(x) - 1) first and fill out[i - 1]
+# 3. Check with all.equal() that both agree with diff(cumulative)
+# 4. Benchmark the three with microbenchmark(..., times = 50), store the result
+#    as mb, print it, and draw autoplot(mb)
+# 5. Rewrite the messy one-liner from the ex1-data chunk as a readable dplyr
+#    pipeline (filter, group_by, summarize) with a descriptive column name
+
+```
+
+How many times faster is `diff()` than `daily_grow()` here? Answer with inline R code (compute the ratio of medians from `summary(mb)` in the chunk above), not a typed number:
+
+*Your answer:*
+
+# Exercise 2: Reproducibility Audit (Cycle 2)
+
+```{r}
+#| label: ex2-data
+# AI-suggested start of a report; it only works on one computer
+ai_code <- c(
+  'rm(list = ls())',
+  'setwd("/Users/maria/Desktop/final project")',
+  'install.packages("tidyverse")',
+  'library(tidyverse)',
+  'states <- read_csv("C:/Users/maria/Downloads/us-states.csv")',
+  'View(states)',
+  'clean <- read_csv("data/us-states.csv")'
+)
+demo_file <- tempfile(fileext = ".qmd")
+writeLines(ai_code, demo_file)
+```
+
+```{r}
+#| label: ex2-repro-check
+# 1. Write check_report(path) that
+#    - stops with an informative message if the file does not exist
+#    - reads the file with readLines(path, warn = FALSE)
+#    - checks each line against these regex patterns with grepl():
+#        setwd    "setwd\\("
+#        install  "install\\.packages\\("
+#        rm_all   "rm\\(list"
+#        abs_path "[\"'](/|~|[A-Za-z]:)"
+#    - returns a tibble with columns problem and lines (the matching line
+#      numbers, e.g. toString(which(grepl(p, code))))
+# 2. Add a fifth pattern that catches View( calls
+# 3. Run check_report(demo_file). Which lines does it flag? Is the last line
+#    (a relative path) correctly left alone?
+# 4. In the CONSOLE (not in this chunk), run check_report() on your own
+#    project's report.qmd. Record what it found here as comments, and say
+#    which hits were real problems and which were false alarms (for example,
+#    the word setwd() in a sentence)
+
+```
+
+**Fresh-clone test.** In the Terminal, clone your project repository into a new folder and render it (see the slides). Did it render? If not, what was missing?
+
+*Your answer:*
+
+# Exercise 3: Verify, Then Disclose (Cycle 3)
+
+An AI was asked for "a function that labels BMI with the CDC categories: underweight below 18.5, healthy weight 18.5 to under 25, overweight 25 to under 30, obesity 30 or higher." It wrote:
+
+```{r}
+#| label: ex3-data
+bmi_category <- function(bmi) {
+  cut(bmi, breaks = c(0, 18.5, 25, 30, Inf),
+      labels = c("Underweight", "Healthy weight", "Overweight", "Obesity"))
+}
+test_bmi <- c(17, 18.5, 22, 25, 29.9, 30, 41)
+```
+
+```{r}
+#| label: ex3-verify
+# 1. Run bmi_category(test_bmi) and put the results next to test_bmi in a
+#    tibble. Which values get the wrong label according to the CDC definition?
+# 2. Read ?cut. Which argument explains the bug? Write a fixed bmi_category()
+# 3. Second method: label test_bmi with case_when() and check with identical()
+#    that it agrees with your fixed version (convert the factor with as.character())
+# 4. Write a stopifnot() check on the three cut-off values 18.5, 25, and 30
+#    that passes for your fix and would have failed for the AI's version
+
+```
+
+**Appendix entry.** Fill in one row of an AI-use appendix for this use of AI, in the same format as your project's appendix. The last column must name the concrete check you ran and what it showed.
+
+| # | Tool | What I asked | What I kept or changed | How I verified it |
+|:--|:--|:--|:--|:--|
+| 1 | | | | |
+
+# Exercise 4: Peer Review + AI Corner (Cycle 4)
+
+## Peer review
+
+Before the review, run the fresh-clone test on your own repository (Exercise 2). Then review your partner's draft against the rubric, one round each.
+
+```{r}
+#| label: ex4-data
+review <- tibble(
+  rubric_row = c("Introduction", "Packages & data prep", "Exploratory analysis",
+                 "Function + simulation/model", "Summary",
+                 "Reproducibility & code", "AI-use appendix"),
+  points = c(5, 15, 20, 10, 5, 15, 15)
+)
+```
+
+```{r}
+#| label: ex4-peer-review
+# Partner's name (as a comment):
+# 1. Add a column status to review with mutate(): "done", "partly", or
+#    "missing" for each rubric row of your partner's current draft
+# 2. Add a column note: one specific sentence per row (name the figure,
+#    chunk, or line you mean)
+# 3. Use filter() to list the rows that are not "done", and sum their points:
+#    how many points are still at stake?
+# 4. Write your partner's ONE strength and TOP THREE fixes as comments below,
+#    each fix tied to a rubric row
+
+```
+
+## AI Corner: the appendix entry that verified nothing
+
+An AI wrote this code to get daily new cases from `us-states.csv`, together with an appendix entry claiming "I checked `new_cases` against the NYT daily figures for every state; all values were correct and non-negative."
+
+```{r}
+#| label: ex4-ai-data
+states <- tibble(
+  state = rep(c("State A", "State B"), each = 3),
+  date  = rep(as.Date("2020-03-20") + 0:2, 2),
+  cases = c(80, 130, 160, 10, 14, 23)          # toy cumulative counts
+)
+```
+
+```{r}
+#| label: ex4-ai-audit
+# 1. Run the AI's code on the toy states data:
+#      states |> arrange(state, date) |> mutate(new_cases = cases - lag(cases))
+#    Which row is wrong, and why?
+# 2. Fix it so differences never cross states
+# 3. Run a check that the entry only claimed: per state, the sum of new_cases
+#    (ignoring NA) equals the last cumulative count minus the first
+# 4. As a comment, rewrite the "How I verified it" sentence honestly
+
+```
