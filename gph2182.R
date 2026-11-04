@@ -8,13 +8,14 @@
 ## Then:
 ##     gph_setup()        once per computer: connect RStudio to GitHub
 ##     gph_start(2)       open Weekly Exercise 2 as an RStudio project
+##     gph_project()      open your final project repository
 ##     gph_check()        run the autograder's checks on your own machine
 ##     gph_submit()       stage, commit, push, and report the result
 ##     gph_doctor()       tell me what is wrong with my setup
 ##     gph_help()         show the loop again
 ## ---------------------------------------------------------------------------
 
-.gph_version <- "2026-11-03"
+.gph_version <- "2026-11-04"
 
 .gph_org       <- "gph-2182"
 .gph_classroom <- "gph-gu-2182-fall-2026"
@@ -71,6 +72,22 @@
 .gph_inclass_accept_url <- function() {
   sprintf("https://classroom50.org/%s/%s/assignments/in-class-exercises/accept",
           .gph_org, .gph_classroom)
+}
+
+.gph_project_spec <- function(login) {
+  sprintf("%s/%s-final-project-%s", .gph_org, .gph_classroom, tolower(login))
+}
+
+.gph_project_accept_url <- function() {
+  sprintf("https://classroom50.org/%s/%s/assignments/final-project/accept",
+          .gph_org, .gph_classroom)
+}
+
+#' Is the project open here the final project?
+.gph_project_here <- function(path = ".") {
+  slug <- .gph_slug(path)
+  src  <- if (is.na(slug)) basename(normalizePath(path, mustWork = FALSE)) else slug
+  grepl("final-project", src, fixed = TRUE)
 }
 
 .gph_repo_exists <- function(spec) {
@@ -430,7 +447,7 @@
 #' Print the weekly loop.
 gph_help <- function() {
   cat("
-GPH-GU 2182  |  seven commands, and that is all of them
+GPH-GU 2182  |  eight commands, and that is all of them
 =======================================================
 
 ONCE per computer
@@ -441,6 +458,9 @@ ONCE for the whole semester
 
 ONCE per exercise
   gph_start(N)     download and open weekly exercise N
+
+ONCE for the final project
+  gph_project()    download and open your final project repository
 
 EVERY time, until it passes
   gph_check()      run the autograder's checks on your own machine
@@ -599,6 +619,35 @@ gph_inclass <- function(where = NULL) {
   )
 }
 
+#' Download and open your final project repository.
+gph_project <- function(where = NULL) {
+  if (!is.null(where)) .gph_where(where)
+
+  login <- .gph_login()
+  if (is.null(login)) {
+    .gph_no("I cannot tell who you are on GitHub, so I cannot find your repository.")
+    .gph_dot("Run gph_setup() first, then try gph_project() again.")
+    return(invisible(FALSE))
+  }
+  .gph_ok("GitHub sees you as: ", login)
+
+  .gph_fetch(
+    spec       = .gph_project_spec(login),
+    accept_url = .gph_project_accept_url(),
+    what       = "your final project repository",
+    not_accepted_hint = c(
+      "If that page says you are not a member of the organization, accept the",
+      "emailed invitation first, then link your NetID at",
+      paste0("  https://classroom50.org/", .gph_org, "/", .gph_classroom, "/onboard")
+    ),
+    after_open = c(
+      "",
+      "Write report.qmd, render it, then push with gph_submit().",
+      "Instructions and rubric: https://gph-2182.github.io/project.html"
+    )
+  )
+}
+
 ## -- gph_check --------------------------------------------------------------
 
 #' Run the autograder's own checks locally, in a separate R process.
@@ -609,6 +658,11 @@ gph_inclass <- function(where = NULL) {
 #' Environment. What passes here is what passes on GitHub.
 gph_check <- function(quiet = FALSE) {
   runner <- "tests/run_tests.R"
+  if (.gph_project_here() && !file.exists(runner)) {
+    .gph_dot("The final project has no autograder. Check it yourself instead:")
+    .gph_dot("render report.qmd from top to bottom with no errors, then gph_submit().")
+    return(invisible(NA))
+  }
   if (!file.exists(runner)) {
     .gph_no("No ", runner, " here, so this is not an exercise project.")
     .gph_dot("Open one with gph_start(N), then run gph_check() again.")
@@ -673,7 +727,9 @@ gph_submit <- function(message = NULL, wait = TRUE) {
 
   if (is.null(message)) {
     n <- .gph_exercise_here()
-    message <- if (is.na(n)) {
+    message <- if (.gph_project_here()) {
+      paste("Final project: update", format(Sys.time(), "%b %d %H:%M"))
+    } else if (is.na(n)) {
       paste("Update", format(Sys.time(), "%b %d %H:%M"))
     } else {
       sprintf("Weekly exercise %d: update %s", n, format(Sys.time(), "%b %d %H:%M"))
@@ -710,6 +766,13 @@ gph_submit <- function(message = NULL, wait = TRUE) {
   slug <- .gph_slug()
   if (is.na(slug)) return(invisible(TRUE))
   actions <- paste0("https://github.com/", slug, "/actions")
+
+  # Nothing to wait for in a repository without an autograder (final project).
+  if (!dir.exists(file.path(".github", "workflows"))) {
+    .gph_ok("Submitted. This repository has no autograder; your last push before")
+    .gph_dot("the deadline is what gets graded. See it on GitHub: https://github.com/", slug)
+    return(invisible(TRUE))
+  }
 
   if (!isTRUE(wait)) {
     .gph_dot("Results will appear here in a minute or two: ", actions)
@@ -818,7 +881,11 @@ gph_doctor <- function() {
   in_class <- !is.na(slug) && grepl("in-class-exercises", slug, fixed = TRUE)
   n <- .gph_exercise_here()
   cat("\n")
-  if (in_class) {
+  if (.gph_project_here()) {
+    cat("GPH-GU 2182  |  final project\n")
+    cat("Write report.qmd, render it, then push with gph_submit().\n")
+    cat("Instructions and rubric: https://gph-2182.github.io/project.html\n")
+  } else if (in_class) {
     cat("GPH-GU 2182  |  in-class exercises\n")
     cat("This week's worksheet:  source(\"get_worksheet.R\"); get_worksheet(N)\n")
     cat("Add both partners' names, then commit and push before class ends.\n")
@@ -828,6 +895,7 @@ gph_doctor <- function() {
   } else {
     cat("GPH-GU 2182 helpers loaded.\n")
     cat("Weekly exercise: gph_start(N).  In-class repository: gph_inclass()\n")
+    cat("Final project: gph_project()\n")
   }
   cat("Stuck? gph_doctor()   Full loop? gph_help()\n\n")
   invisible(NULL)

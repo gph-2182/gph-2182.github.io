@@ -2,32 +2,206 @@
 title: "Final Project"
 ---
 
-::: {.callout-note}
-Full instructions, dataset options, and the grading rubric will be released in **Week 10
-(November 11)**. This page summarizes the shape of the project so you can plan
-ahead.
+Each student writes a reproducible statistical analysis of a public health
+dataset: a Quarto report in a GitHub repository, a 5-minute video walkthrough,
+and an AI-use appendix. The project is worth **30% of your course grade** and is
+scored out of **100 points**.
+
+::: {.callout-important}
+## Due 11:59 PM ET, Wednesday December 16, 2026
+
+Your **last push** to your project repository before the deadline is graded.
+No late submissions are accepted. If you have an approved accommodation, contact
+the instructor well before the deadline.
 :::
 
-Each student produces a comprehensive statistical analysis of a public-health
-dataset, modeled on a reproducible data science pipeline.
+## Getting started
 
-## Deliverables (due 11:59 PM, Wednesday December 16)
+1. **Accept the assignment:**
+   [Final Project on Classroom 50](https://classroom50.org/gph-2182/gph-gu-2182-fall-2026/assignments/final-project/accept).
+   This creates your private repository from the starter template.
+2. **Open it in RStudio.** In the Console:
 
-1. **A GitHub repository** containing all code and a reproducible **Quarto
-   report** with sections on introduction, data preparation, exploratory data
-   analysis (publication tables, `ggplot2` figures, statistical results, interpretations), and summary. The report
-   must render cleanly from your repository as submitted.
-2. **A 5-minute recorded video walkthrough** (via Loom, Zoom, or similar screen recorder) summarizing your research question, key findings, and a tour of your visualizations.
-3. **An AI-use appendix**: disclosing what you asked AI assistants, what code was generated, and
-   how you verified or debugged the output.
+   ```r
+   source("https://gph-2182.github.io/gph2182.R")
+   gph_project()
+   ```
+
+3. **Pick your dataset** from the menu below and write it in your `README.md`.
+4. **Write `report.qmd`**, render it to `report.html`, and push often with
+   `gph_submit()` (or commit and push from the Git tab). Every push is a backup.
+
+The starter repository contains:
+
+| File | What it is |
+|:---|:---|
+| `report.qmd` | Your report. Its section headings match the rubric below. |
+| `data/` | The COVID-19 data files (Option A) and a data dictionary for every option. Put your own data files here too. |
+| `README.md` | Your name, dataset choice, video link, and integrity statement. |
+
+## Choose a dataset
+
+Pick **one** primary dataset. You may bring in additional public data to enrich
+it (for example, state populations to turn case counts into rates); cite every
+source you use.
+
+::: {.panel-tabset}
+
+### A. US COVID-19 (NYT)
+
+Daily **cumulative** COVID-19 cases and deaths for the United States and each
+state, January 2020 to March 23, 2023, from
+[The New York Times](https://github.com/nytimes/covid-19-data), free for
+non-commercial use with credit to The New York Times.
+
+* Files (already in your `data/` folder): `us.csv` (one row per day for the
+  whole country) and `us-states.csv` (one row per state or territory per day).
+* Columns: `date`, `state`, `fips`, `cases`, `deaths`.
+* Watch out: the counts are **cumulative**, so daily new cases are differences
+  between consecutive days; reporting backlogs make some differences negative.
+* Use the copies in `data/`, not the live GitHub files, so everyone works from
+  the same snapshot.
+
+### B. NHANES
+
+A survey-based sample of **10,000 US residents** from the 2009 to 2012 National
+Health and Nutrition Examination Survey, with about 75 variables on demographics,
+body measurements, blood pressure, cholesterol, diabetes, sleep, physical
+activity, smoking, and alcohol.
+
+* Load it with `library(NHANES)` and the data frame `NHANES` (install the
+  package once with `install.packages("NHANES")` in the Console, never inside
+  your report).
+* Documentation: `?NHANES` in R.
+* Watch out: many variables apply only to some ages (for example adults 20+),
+  so missing values are common and often meaningful. The package version has
+  been resampled for teaching, so describe results as patterns in this sample,
+  not official US estimates.
+
+### C. Gapminder (`gm`)
+
+The `gm` data from the course package `r02pro`: country-year records of life
+expectancy, child mortality, income, BMI, smoking, cancer incidence, health
+spending, and more.
+
+* Load it with `library(r02pro)`; documentation is `?gm`.
+* Watch out: units vary by column (check `?gm` before converting anything),
+  and coverage differs a lot across variables and years.
+* You have used `gm` all semester, so the bar for a fresh question is higher:
+  combine variables in a way we did not in class, or join `gm` with another
+  public dataset.
+
+### D. Your own dataset
+
+Any **public** public-health dataset you can legally share in your repository,
+for example from [NYC Open Data](https://opendata.cityofnewyork.us/),
+[CDC data](https://data.cdc.gov/), the
+[WHO Global Health Observatory](https://www.who.int/data/gho), or
+[Our World in Data](https://ourworldindata.org/).
+
+* **Approval required by Wednesday, November 25:** email the instructor a link
+  to the data and a short paragraph with your question and the variables you
+  plan to use.
+* Files must be under 50 MB each so they fit in your repository.
+* No individual-level data that is not already public and de-identified.
+
+:::
+
+## What your report must contain
+
+Your report tells a **story** with the data. Do not just list statistics; build
+a coherent argument that answers a question you care about, in a way your
+classmates probably will not.
+
+1. **Introduction.** The question, why a public health reader should care, the
+   data and methods you use, and what the reader will learn.
+2. **Packages and data preparation.** Load every package in one chunk at the
+   top and say what each is for. Cite and link the data source; describe how
+   it was collected and any quirks (missing values, units, cumulative counts).
+   Explain each cleaning step and why you did it. Show the final data
+   compactly (never print hundreds of rows) and summarize the variables you
+   use in a table or a short paragraph with inline R.
+3. **Exploratory analysis.** Reveal something that is not obvious from the raw
+   data: create new variables, summarize by groups, reshape, or join tables.
+   Include **at least three `ggplot2` figures**, each making one clear point
+   with informative titles, axis labels, and units, and **at least one
+   well-formatted table**. Explain every figure and table in words, quoting
+   key numbers with inline R.
+4. **Going further: functions plus simulation or modeling.** Write **at least
+   one custom function** with input checks that you use more than once, and
+   use **either** a simulation (for example a bootstrap interval or a
+   permutation test, Week 10) **or** a regression model with `lm()`/`glm()`
+   (Week 11). Interpret the result in plain language and state its
+   limitations.
+5. **Summary.** The question, how you answered it, the main findings, what
+   they mean for the reader, the limitations, and what you would do next.
+6. **AI-use appendix** (the last section of the report; see below).
+
+Every number in your text comes from R (inline code), never typed by hand.
+A rendered report of roughly 2,000 to 3,500 words, not counting code, is
+typical; clarity matters more than length.
+
+### The video walkthrough
+
+A screen recording of **at most 5 minutes** (Zoom, Loom, NYU Stream, or
+similar) in which you present your question, your data, two or three key
+figures, your main finding, and one thing you learned or would do differently.
+Show your face or not, your choice. Put the link in your `README.md` and make
+sure anyone at NYU with the link can watch it.
+
+### The AI-use appendix
+
+AI assistants are permitted for this project (see the
+[AI policy](ai-policy.qmd)), and every use must be disclosed. For each
+substantive use, record:
+
+* the tool, and what you asked (a summary or the prompt itself);
+* what it produced and which parts you kept, changed, or rejected;
+* **how you verified** the result (checked it against a known value, read the
+  documentation, compared with a second method, tested edge cases).
+
+Include at least one example where the AI was wrong, incomplete, or needed
+changes, and what you learned from it. If you did not use AI at all, say so,
+and instead document how you verified two of your key results. Copying output
+you cannot explain is not allowed, whether it came from an AI or a person.
+
+## Grading rubric (100 points)
+
+| Component | Criteria | Points |
+|:---|:---|---:|
+| **Introduction** | Clear question and motivation; data and approach outlined; what the reader gains. | 5 |
+| **Packages & data preparation** | Packages loaded upfront and explained; source cited and described; cleaning steps logical and justified; final data shown compactly; variable summary. | 15 |
+| **Exploratory analysis** | Goes beyond the raw data (new variables, groups, reshaping, joins); at least three purposeful, well-labeled figures and one well-built table; insights explained with numbers from inline R. | 20 |
+| **Functions + simulation or modeling** | A reusable, checked custom function used more than once; a simulation or regression that fits the question, correctly interpreted, with limitations. | 10 |
+| **Summary** | Question, approach, findings, implications, limitations, next steps. | 5 |
+| **Reproducibility & code quality** | Renders from a fresh clone with no errors; relative paths only (no `setwd()`, no `install.packages()` in the report); seed set once for any randomness; readable, commented, well-organized code; `report.html` matches `report.qmd`. | 15 |
+| **Video walkthrough** | At most 5 minutes; covers question, data, key figures, main finding, and a reflection; clear and audible; link works. | 15 |
+| **AI-use appendix** | Every use disclosed with what was asked and kept; concrete verification for each; at least one documented AI error or fix, with reflection (or, if no AI used, two documented verifications). | 15 |
+| | **Total** | **100** |
+
+: {tbl-colwidths="[22,68,10]"}
+
+The rubric was adapted from the
+[UC Business Analytics R Programming Guide](http://uc-r.github.io/data_wrangling/final-project)
+final project rubric.
 
 ## Milestones
 
 | Date | Milestone |
-|---|---|
-| **Nov 11 (Week 10)** | Final Project released with sample public health datasets & starter template |
-| **Nov–Dec** | Drop-in project support available during instructor & CA weekly office hours |
-| **Dec 2 (Week 13)** | In-class project workshop & consultation clinic in Bobst LL138 |
-| **Dec 9 (Week 14)** | Lightning project presentations in class |
-| **Dec 16, 11:59 PM** | Final project submission due on GitHub. No late submissions accepted. |
+|:---|:---|
+| **Wed Nov 11** (Week 10) | Project released. Accept the assignment and pick a dataset. |
+| **Wed Nov 25** | Deadline to get your own dataset (Option D) approved. |
+| **Wed Dec 2** (Week 13) | In-class project workshop. Bring a draft that renders, with your introduction, data preparation, and at least two figures. |
+| **Wed Dec 9** (Week 14) | Lightning presentations: a 2-minute work-in-progress share in class. Not graded as part of the project; counts toward that week's in-class credit. |
+| **Wed Dec 16, 11:59 PM** | Final submission: last push to your project repository. |
 
+Drop-in help is available in instructor and CA office hours throughout.
+
+## Submission checklist
+
+- [ ] `report.qmd` renders from top to bottom with no errors on a fresh clone.
+- [ ] `report.html` is rendered from the final `report.qmd` and committed.
+- [ ] Any data files you use (other than R packages) are in `data/` and read with relative paths.
+- [ ] `README.md` has your name, NetID, dataset choice, working video link, and signed integrity statement.
+- [ ] The AI-use appendix is the last section of the report.
+- [ ] Everything is pushed to GitHub before **11:59 PM ET on Wednesday, December 16**.
