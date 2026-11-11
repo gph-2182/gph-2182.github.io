@@ -16,7 +16,7 @@
 ##     gph_help()         show the loop again
 ## ---------------------------------------------------------------------------
 
-.gph_version <- "2026-11-11"
+.gph_version <- "2026-11-11b"
 
 .gph_org       <- "gph-2182"
 .gph_classroom <- "gph-gu-2182-fall-2026"
@@ -51,10 +51,28 @@
     .gph_stop("Give the exercise number, for example gph_start(2).")
   }
   n <- as.integer(exercise)
-  if (n < 1L || n > .gph_n_max) {
-    .gph_stop("There are only exercises 1 to ", .gph_n_max, ". You asked for ", n, ".")
+  n_max <- .gph_n_max
+  # An old copy of these helpers (for example the one gph_setup() saved in
+  # your home folder) may not know about newer exercises yet. Fetch the
+  # current helpers once and check again before saying no.
+  if (n > n_max && .gph_refresh()) n_max <- get(".gph_n_max", envir = globalenv())
+  if (n < 1L || n > n_max) {
+    .gph_stop("There are only exercises 1 to ", n_max, ". You asked for ", n, ".")
   }
   n
+}
+
+#' Load the newest helpers from the course site into this session and update
+#' the saved copy. TRUE if that worked.
+.gph_refresh <- function() {
+  old <- options(timeout = 15); on.exit(options(old))
+  src <- tryCatch(suppressWarnings(readLines(paste0(.gph_site, "/gph2182.R"), warn = FALSE)),
+                  error = function(e) NULL)
+  if (length(src) < 100) return(FALSE)
+  ok <- tryCatch({ eval(parse(text = src), envir = globalenv()); TRUE }, error = function(e) FALSE)
+  if (ok && file.exists(.gph_cache())) try(writeLines(src, .gph_cache()), silent = TRUE)
+  if (ok) .gph_ok("Updated the course helpers to version ", get(".gph_version", envir = globalenv()))
+  ok
 }
 
 .gph_spec <- function(n, login) {
@@ -433,7 +451,14 @@
   writeLines(src, .gph_cache())
 
   writeLines(c(old, .gph_mark[1],
-               'if (interactive()) try(suppressWarnings(source("~/.gph2182-helpers.R")), silent = TRUE)',
+               # Refresh the saved copy from the site at startup (5-second limit,
+               # so it never blocks offline), then load whatever copy we have.
+               'if (interactive()) try(suppressWarnings(local({',
+               '  f <- "~/.gph2182-helpers.R"; o <- options(timeout = 5); on.exit(options(o))',
+               '  s <- tryCatch(readLines("https://gph-2182.github.io/gph2182.R", warn = FALSE), error = function(e) NULL)',
+               '  if (length(s) > 100) writeLines(s, f)',
+               '  source(f)',
+               '})), silent = TRUE)',
                .gph_mark[2]), rc)
 
   .gph_ok("Done. The course commands will now load in every R session.")
