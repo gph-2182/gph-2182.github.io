@@ -27,17 +27,20 @@ the instructor well before the deadline.
    gph_project()
    ```
 
-3. **Pick your dataset** from the menu below and write it in your `README.md`.
-4. **Write `report.qmd`**, render it to `report.html`, and push often with
+3. **Pick your dataset** from the menu below and submit a
+   [dataset proposal](#dataset-proposal-5-points) in `proposal.md` by
+   **Wednesday, November 18**.
+4. **Once it is approved, write `report.qmd`**, render it to `report.html`, and push often with
    `gph_submit()` (or commit and push from the Git tab). Every push is a backup.
 
 The starter repository contains:
 
 | File | What it is |
 |:---|:---|
+| `proposal.md` | Your dataset proposal (5 points). |
 | `report.qmd` | Your report. Its section headings match the rubric below. |
 | `data/` | The COVID-19 data files (Option A) and a data dictionary for every option. Put your own data files here too. |
-| `README.md` | Your name, dataset choice, video link, and integrity statement. |
+| `README.md` | Your name, NetID, video link, and integrity statement. |
 
 ## Choose a dataset
 
@@ -99,13 +102,43 @@ for example from [NYC Open Data](https://opendata.cityofnewyork.us/),
 [WHO Global Health Observatory](https://www.who.int/data/gho), or
 [Our World in Data](https://ourworldindata.org/).
 
-* **Approval required by Wednesday, November 25:** email the instructor a link
-  to the data and a short paragraph with your question and the variables you
-  plan to use.
+* Describe it in your [dataset proposal](#dataset-proposal-5-points), like
+  every other option: the source link, its license or terms of use, and the
+  exact column names you plan to use.
 * Files must be under 50 MB each so they fit in your repository.
 * No individual-level data that is not already public and de-identified.
 
 :::
+
+## Dataset proposal (5 points)
+
+Every student submits a short proposal, whichever option they choose. It is
+graded, and you write your report only on an **approved** dataset and question.
+
+1. Open your project (`gph_project()`) and fill in every line of
+   **`proposal.md`**: your option, the dataset and its source link, a
+   one-sentence research question, the 3 to 6 exact column names you plan to
+   use, and your planned analysis. Tick the three data-checklist boxes.
+2. Run **`gph_submit()`**, the same way you push homework.
+3. Check the decision with **`gph_proposal()`** in the Console. It says
+   **approved**, **needs changes** (with comments), or **waiting for review**.
+   The decision also appears in your repository as `proposal-review.md` and
+   as a comment on your repository's Feedback pull request, and GitHub e-mails
+   you when it arrives.
+4. If it needs changes, edit `proposal.md` and run `gph_submit()` again. You
+   can revise as many times as you need; revising costs nothing.
+
+| Proposal points | When |
+|:---|:---|
+| 5 | First version pushed by **Wed Nov 18, 11:59 PM ET**, and the approved version pushed by **Wed Nov 25, 11:59 PM ET**. |
+| 2.5 | Approved, but the first version came after Nov 18 or the approved version after Nov 25. |
+| 0 | Never approved. |
+
+A good proposal names a question one dataset can answer, lists real column
+names (for example `SleepHrsNight` and `BMI` in NHANES, or `cases` in the COVID
+files), and says what you will compute from them (daily new cases from the
+cumulative counts is fine). Option C proposals must go beyond what we did with
+`gm` in class.
 
 ## What your report must contain
 
@@ -169,9 +202,10 @@ you cannot explain is not allowed, whether it came from an AI or a person.
 
 | Component | Criteria | Points |
 |:---|:---|---:|
+| **Dataset proposal** | Submitted in `proposal.md` by Nov 18 and approved by Nov 25 (see [Dataset proposal](#dataset-proposal-5-points)). | 5 |
 | **Introduction** | Clear question and motivation; data and approach outlined; what the reader gains. | 5 |
 | **Packages & data preparation** | Packages loaded upfront and explained; source cited and described; cleaning steps logical and justified; final data shown compactly; variable summary. | 15 |
-| **Exploratory analysis** | Goes beyond the raw data (new variables, groups, reshaping, joins); at least three purposeful, well-labeled figures and one well-built table; insights explained with numbers from inline R. | 20 |
+| **Exploratory analysis** | Goes beyond the raw data (new variables, groups, reshaping, joins); at least three purposeful, well-labeled figures and one well-built table; insights explained with numbers from inline R. | 15 |
 | **Functions + simulation or modeling** | A reusable, checked custom function used more than once; a simulation or regression that fits the question, correctly interpreted, with limitations. | 10 |
 | **Summary** | Question, approach, findings, implications, limitations, next steps. | 5 |
 | **Reproducibility & code quality** | Renders from a fresh clone with no errors; relative paths only (no `setwd()`, no `install.packages()` in the report); seed set once for any randomness; readable, commented, well-organized code; `report.html` matches `report.qmd`. | 15 |
@@ -190,7 +224,8 @@ final project rubric.
 | Date | Milestone |
 |:---|:---|
 | **Wed Nov 11** (Week 10) | Project released. Accept the assignment and pick a dataset. |
-| **Wed Nov 25** | Deadline to get your own dataset (Option D) approved. |
+| **Wed Nov 18, 11:59 PM** | Dataset proposal: first version pushed (`proposal.md`). |
+| **Wed Nov 25, 11:59 PM** | Dataset proposal: approved version pushed. |
 | **Wed Dec 2** (Week 13) | In-class project workshop. Bring a draft that renders, with your introduction, data preparation, and at least two figures. |
 | **Wed Dec 9** (Week 14) | Lightning presentations: a 2-minute work-in-progress share in class. Not graded as part of the project; counts toward that week's in-class credit. |
 | **Wed Dec 16, 11:59 PM** | Final submission: last push to your project repository. |
@@ -202,6 +237,7 @@ Drop-in help is available in instructor and CA office hours throughout.
 - [ ] `report.qmd` renders from top to bottom with no errors on a fresh clone.
 - [ ] `report.html` is rendered from the final `report.qmd` and committed.
 - [ ] Any data files you use (other than R packages) are in `data/` and read with relative paths.
-- [ ] `README.md` has your name, NetID, dataset choice, working video link, and signed integrity statement.
+- [ ] `gph_proposal()` says your dataset proposal is approved, and your report uses that dataset and question.
+- [ ] `README.md` has your name, NetID, working video link, and signed integrity statement.
 - [ ] The AI-use appendix is the last section of the report.
 - [ ] Everything is pushed to GitHub before **11:59 PM ET on Wednesday, December 16**.

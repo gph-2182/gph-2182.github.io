@@ -9,13 +9,14 @@
 ##     gph_setup()        once per computer: connect RStudio to GitHub
 ##     gph_start(2)       open Weekly Exercise 2 as an RStudio project
 ##     gph_project()      open your final project repository
+##     gph_proposal()     see whether your dataset proposal is approved
 ##     gph_check()        run the autograder's checks on your own machine
 ##     gph_submit()       stage, commit, push, and report the result
 ##     gph_doctor()       tell me what is wrong with my setup
 ##     gph_help()         show the loop again
 ## ---------------------------------------------------------------------------
 
-.gph_version <- "2026-11-04"
+.gph_version <- "2026-11-11"
 
 .gph_org       <- "gph-2182"
 .gph_classroom <- "gph-gu-2182-fall-2026"
@@ -447,8 +448,8 @@
 #' Print the weekly loop.
 gph_help <- function() {
   cat("
-GPH-GU 2182  |  eight commands, and that is all of them
-=======================================================
+GPH-GU 2182  |  nine commands, and that is all of them
+======================================================
 
 ONCE per computer
   gph_setup()      connect to GitHub, and load these in every session
@@ -461,6 +462,7 @@ ONCE per exercise
 
 ONCE for the final project
   gph_project()    download and open your final project repository
+  gph_proposal()   see whether your dataset proposal is approved
 
 EVERY time, until it passes
   gph_check()      run the autograder's checks on your own machine
@@ -642,7 +644,9 @@ gph_project <- function(where = NULL) {
     ),
     after_open = c(
       "",
-      "Write report.qmd, render it, then push with gph_submit().",
+      "First fill in proposal.md and push it with gph_submit();",
+      "check the decision any time with gph_proposal().",
+      "Then write report.qmd, render it, and push with gph_submit().",
       "Instructions and rubric: https://gph-2182.github.io/project.html"
     )
   )
@@ -738,6 +742,7 @@ gph_submit <- function(message = NULL, wait = TRUE) {
 
   gert::git_add(".", repo = ".")
   staged <- tryCatch(gert::git_status(staged = TRUE, repo = "."), error = function(e) NULL)
+  proposal_changed <- !is.null(staged) && any(staged$file == "proposal.md")
   if (!is.null(staged) && nrow(staged) > 0) {
     gert::git_commit(message, repo = ".")
     .gph_ok("Committed ", nrow(staged), " file(s): ", message)
@@ -771,6 +776,9 @@ gph_submit <- function(message = NULL, wait = TRUE) {
   if (!dir.exists(file.path(".github", "workflows"))) {
     .gph_ok("Submitted. This repository has no autograder; your last push before")
     .gph_dot("the deadline is what gets graded. See it on GitHub: https://github.com/", slug)
+    if (isTRUE(proposal_changed)) {
+      .gph_ok("Your dataset proposal is in. Check the decision later with gph_proposal().")
+    }
     return(invisible(TRUE))
   }
 
@@ -876,6 +884,127 @@ gph_doctor <- function() {
 
 ## -- banner used by each exercise project's .Rprofile ----------------------
 
+## -- gph_proposal -----------------------------------------------------------
+
+## Labels in proposal.md that a student must fill in. Kept in step with the
+## template and with grading/project_proposals.py.
+.gph_proposal_fields <- c(
+  "Name", "NetID", "Option (A, B, C, or D)", "Dataset name", "Source link (URL)",
+  "Research question (one sentence, ending with a question mark)",
+  "Variables you plan to use (3 to 6 exact column names, separated by commas)"
+)
+
+#' Values of the "- **Label:** value" lines in a proposal, by label.
+.gph_proposal_values <- function(lines) {
+  hit <- grepl("^\\s*-\\s*\\*\\*[^*]+:\\*\\*", lines)
+  lab <- sub("^\\s*-\\s*\\*\\*([^*]+):\\*\\*.*$", "\\1", lines[hit])
+  val <- trimws(sub("^\\s*-\\s*\\*\\*[^*]+:\\*\\*", "", lines[hit]))
+  stats::setNames(val, lab)
+}
+
+#' Fetch one file from the repository on GitHub; NULL if it is not there.
+.gph_remote_file <- function(slug, path) {
+  res <- tryCatch(gh::gh(paste0("/repos/", slug, "/contents/", path)),
+                  error = function(e) NULL)
+  if (is.null(res) || is.null(res$content)) return(NULL)
+  txt <- rawToChar(jsonlite::base64_dec(gsub("\n", "", res$content)))
+  Encoding(txt) <- "UTF-8"
+  strsplit(txt, "\n", fixed = TRUE)[[1]]
+}
+
+#' The proposal's state as GitHub sees it:
+#' list(status, review = lines or NULL, values = named chr or NULL).
+#' status is one of "not_submitted", "waiting", "resubmitted", "approved",
+#' "revise", "offline".
+.gph_proposal_state <- function(slug) {
+  prop <- .gph_remote_file(slug, "proposal.md")
+  if (is.null(prop)) {
+    ok <- tryCatch({ gh::gh(paste0("/repos/", slug)); TRUE }, error = function(e) FALSE)
+    return(list(status = if (ok) "not_submitted" else "offline"))
+  }
+  vals <- .gph_proposal_values(prop)
+  filled <- vals[intersect(names(vals), .gph_proposal_fields)]
+  if (!length(filled) || all(!nzchar(filled))) {
+    return(list(status = "not_submitted", values = vals))
+  }
+  review <- .gph_remote_file(slug, "proposal-review.md")
+  if (is.null(review)) return(list(status = "waiting", values = vals))
+
+  marker <- grep("gph2182-proposal-review", review, value = TRUE)[1]
+  status <- sub(".*status=([a-z]+).*", "\\1", marker)
+  rsha   <- sub(".*sha=([0-9a-f]+).*", "\\1", marker)
+  last <- tryCatch(gh::gh(paste0("/repos/", slug, "/commits"),
+                          path = "proposal.md", per_page = 1)[[1]]$sha,
+                   error = function(e) NA_character_)
+  if (!is.na(last) && !is.na(rsha) && !startsWith(last, rsha) && !startsWith(rsha, last)) {
+    status <- "resubmitted"
+  }
+  list(status = status, review = review, values = vals)
+}
+
+.gph_proposal_headline <- function(status) {
+  switch(status,
+    approved      = "Dataset proposal: APPROVED. Go ahead with report.qmd.",
+    revise        = "Dataset proposal: NEEDS CHANGES. Run gph_proposal() to read the comments.",
+    resubmitted   = "Dataset proposal: revised version received, WAITING FOR REVIEW.",
+    waiting       = "Dataset proposal: received, WAITING FOR REVIEW.",
+    not_submitted = "Dataset proposal: NOT SUBMITTED yet. Fill in proposal.md, then gph_submit().",
+    offline       = "Dataset proposal: could not reach GitHub to check.",
+    paste("Dataset proposal:", status))
+}
+
+#' Is my dataset proposal approved? Prints the status and the instructor's
+#' comments, and pulls the review file into this project.
+gph_proposal <- function() {
+  if (!.gph_project_here()) {
+    .gph_no("This is not your final project. Open it with gph_project(), then run gph_proposal() there.")
+    return(invisible(NA))
+  }
+  slug <- .gph_slug()
+  if (is.na(slug) || !requireNamespace("gh", quietly = TRUE)) {
+    .gph_no("Cannot find this project's GitHub repository. Run gph_doctor().")
+    return(invisible(NA))
+  }
+
+  # Unsubmitted edits to proposal.md: the reviewer cannot see them yet.
+  st <- tryCatch(gert::git_status(repo = "."), error = function(e) NULL)
+  local_edit <- !is.null(st) && any(st$file == "proposal.md")
+  ab <- tryCatch(gert::git_ahead_behind(repo = "."), error = function(e) NULL)
+
+  state <- .gph_proposal_state(slug)
+  cat("\n")
+  if (state$status == "approved") .gph_ok(.gph_proposal_headline(state$status))
+  else if (state$status %in% c("revise", "not_submitted", "offline")) .gph_no(.gph_proposal_headline(state$status))
+  else .gph_dot(.gph_proposal_headline(state$status))
+
+  if (!is.null(state$review) && state$status %in% c("approved", "revise", "resubmitted")) {
+    body <- state$review[!grepl("^<!--|^# |^_Do not edit", state$review)]
+    if (state$status == "resubmitted") body <- body[!grepl("^\\*\\*Next step:", body)]
+    while (length(body) && !nzchar(body[length(body)])) body <- body[-length(body)]
+    while (length(body) && !nzchar(body[1])) body <- body[-1]
+    if (state$status == "resubmitted") cat("\nComments on your previous version:\n")
+    cat("\n", paste(body, collapse = "\n"), "\n\n", sep = "")
+  }
+  if (local_edit) {
+    .gph_no("You have changes to proposal.md that are not submitted yet. Run gph_submit().")
+  } else if (!is.null(ab) && ab$ahead > 0) {
+    .gph_no("You have commits that are not on GitHub yet. Run gph_submit().")
+  }
+  if (state$status == "revise") {
+    .gph_dot("Edit proposal.md to address the comments, then run gph_submit() again.")
+  }
+  if (state$status %in% c("waiting", "resubmitted")) {
+    .gph_dot("Reviews usually come within a day or two. Run gph_proposal() again later.")
+  }
+
+  # Bring proposal-review.md into the Files pane when that is safe.
+  if (!is.null(st) && nrow(st) == 0) {
+    try(invisible(utils::capture.output(suppressMessages(
+      gert::git_pull(repo = ".", verbose = FALSE)))), silent = TRUE)
+  }
+  invisible(state$status)
+}
+
 .gph_banner <- function() {
   slug <- .gph_slug()
   in_class <- !is.na(slug) && grepl("in-class-exercises", slug, fixed = TRUE)
@@ -883,6 +1012,11 @@ gph_doctor <- function() {
   cat("\n")
   if (.gph_project_here()) {
     cat("GPH-GU 2182  |  final project\n")
+    slug_p <- .gph_slug()
+    if (!is.na(slug_p) && requireNamespace("gh", quietly = TRUE)) {
+      st <- tryCatch(.gph_proposal_state(slug_p)$status, error = function(e) "offline")
+      if (!identical(st, "offline")) cat(.gph_proposal_headline(st), "\n", sep = "")
+    }
     cat("Write report.qmd, render it, then push with gph_submit().\n")
     cat("Instructions and rubric: https://gph-2182.github.io/project.html\n")
   } else if (in_class) {
