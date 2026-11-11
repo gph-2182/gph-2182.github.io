@@ -1,0 +1,162 @@
+---
+title: "Week 2 In-Class Exercise: Vectors & Subsetting"
+subtitle: "GPH-GU 2182 · Statistical Programming in R"
+author: "YOUR NAME & PARTNER NAME"
+date: "September 9, 2026"
+format:
+  html:
+    toc: true
+    number-sections: true
+    code-tools:
+      source: true
+      toggle: false
+      caption: "Source Code"
+---
+
+::: {.callout-note}
+### Instructions
+Work in pairs during class. 
+
+* 📥 **[Download `week-02-inclass.qmd`](https://gph-2182.github.io/weeks/inclass/week-02-inclass.qmd)** to open and edit in RStudio (or use the **`</> Source Code`** button at the top right).
+* Render this Quarto document to HTML and push it to your GitHub repository by the end of class for participation credit.
+:::
+
+# Cycle 1: Vector Types & Implicit Coercion
+
+## Type Predictions and Verification
+
+In the code chunk below, write R code to check the `typeof()` of each of the following expressions:
+
+- `vec_a <- c(4, 7, FALSE)`
+- `vec_b <- c(3L, 5.5, "control")`
+- `vec_c <- c(TRUE, FALSE) + 5`
+
+```{r type-checks}
+# Create the vectors and check their types:
+
+```
+
+## Public Health Prevalence Calculation
+
+A study recorded the HIV viral load copies/mL for 8 participants:
+`1200, 450, 0, 8900, 320, 0, 1500, 60`.
+
+1. Create a numeric vector named `viral_load` with these measurements.
+2. Use a logical comparison and the `mean()` function to calculate the **proportion of patients with undetectable viral load** ($\text{viral load} = 0$).
+
+```{r viral-load}
+# Calculate undetectable proportion:
+
+```
+
+---
+
+# Cycle 2: Creating Patterned Vectors
+
+## Dosage Schedules with `seq()`
+
+An intravenous antibiotic is administered every **8 hours** across a **72-hour** hospital observation period.
+
+Create a sequence named `dose_hours` starting at hour 0 up to hour 72 with increments of 8.
+
+```{r dose-seq}
+# Create dosage hours:
+
+```
+
+## Cohort Generation with `rep()`
+
+A vaccine trial requires creating treatment labels for 12 participants:
+- 4 "Control"
+- 4 "Low-Dose"
+- 4 "High-Dose"
+
+Generate this character vector using the `rep()` function and assign it to `treatment_groups`.
+
+```{r treatment-rep}
+# Generate treatment labels:
+
+```
+
+## Extracting Multiples with Modulo `%%`
+
+Given the sequence `numbers <- 1:50`, extract all numbers that are divisible by 7.
+
+```{r modulo-filter}
+numbers <- 1:50
+# Extract multiples of 7:
+
+```
+
+---
+
+# Cycle 3: Subsetting & Mutating Vectors
+
+## Glucose Filtering and Cleaning
+
+A metabolic health study collected fasting blood glucose levels (mg/dL) from 8 patients:
+`glucose <- c(95, 142, 180, 88, 210, 115, -1, 104)`
+
+1. Extract all values in the **pre-diabetes range** ($100 \le \text{glucose} \le 125$).
+2. The measurement `-1` is a missing value code. Replace all negative values in `glucose` with `NA`.
+3. Extract all valid readings ($\ge 126$, excluding `NA`) indicating **diabetes**.
+
+```{r glucose-subset}
+glucose <- c(95, 142, 180, 88, 210, 115, -1, 104)
+
+# 1. Pre-diabetes subset:
+
+# 2. In-place replacement of negative values with NA:
+
+# 3. Diabetes subset (>= 126, non-NA):
+
+```
+
+---
+
+# Cycle 4: Sorting, Ranking & AI Verification
+
+## Patient Rankings
+
+A clinic recorded wait times (minutes) for 5 emergency room patients:
+`wait_times <- c(45, 12, 85, 30, 45)`
+
+1. Sort the wait times in **descending order** (longest to shortest).
+2. Compute the ranks of each patient's wait time using `rank(..., ties.method = "first")`.
+
+```{r wait-times}
+wait_times <- c(45, 12, 85, 30, 45)
+
+# 1. Descending sort:
+
+# 2. First-appearance ranking:
+
+```
+
+## AI Corner: Spotting Vector Recycling Errors
+
+An AI assistant was asked to calculate the Body Mass Index for 4 patients with heights (in meters) `c(1.70, 1.85, 1.62, 1.78)` and weights (in kg) `c(65, 82)`.
+
+The AI produced this code:
+
+```{r ai-recycling}
+# AI Generated code:
+heights <- c(1.70, 1.85, 1.62, 1.78)
+weights <- c(65, 82)
+bmi_calc <- weights / (heights^2)
+```
+
+### Questions:
+
+1. What did R do when computing `bmi_calc`? Why is the result clinically invalid?
+2. How would you write a defensive check in R to prevent vector recycling when calculating BMI?
+
+*(Write your explanation and defensive check below)*
+
+---
+
+## Submission Checklist
+
+- [ ] Both your name and your partner's name are in the `author` field at the top.
+- [ ] Click **Render** in RStudio and verify the HTML compiles cleanly.
+- [ ] Commit and push your changes to your GitHub repository.
