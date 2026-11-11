@@ -19,7 +19,7 @@ All sessions meet **Wednesdays 2:00–4:40 PM** in Bobst LL138. Readings should 
 | **Nov 4** | [Week 9: Writing Custom Functions & purrr](weeks/week-09.qmd) | R02Pro Ch 13 | Weekly exercise 8 · In-class exercise 9 · **Quiz 4** |
 | **Nov 11** | [Week 10: Statistical Simulation & Sampling](weeks/week-10.qmd) | R02Pro Ch 11.1–11.4 | Weekly exercise 9 · In-class exercise 10 · *Final Project Released* |
 | **Nov 18** | [Week 11: Statistical Modeling & Regression](weeks/week-11.qmd) | R02Pro Ch 11.5–11.6 | Weekly exercise 10 · In-class exercise 11 · **Quiz 5** · [Project proposal](project.qmd#dataset-proposal-5-points) due |
-| **Nov 25** | [Week 12: Advanced Quarto, Tables & Case Studies](weeks/week-12.qmd) | R02Pro Ch 14 | Weekly exercise 11 · In-class exercise 12 · Project proposal approved |
+| **Nov 25** | [Week 12: Advanced Quarto, Tables & Case Studies](weeks/week-12.qmd) (**on Zoom**; link on Brightspace) | R02Pro Ch 14 | Weekly exercise 11 · In-class exercise 12 · Project proposal approved |
 | **Dec 2** | [Week 13: Scientific Communication & Project Workshop](weeks/week-13.qmd) | Supplementary | Weekly exercise 12 · In-class exercise 13 |
 | **Dec 9** | [Week 14: Project Presentations & The Future of R](weeks/week-14.qmd) | Supplementary | In-class exercise 14 |
 | **Dec 16** | **Final Project Due (11:59 PM)** | | Final Report + 5-min Video + AI Appendix |
