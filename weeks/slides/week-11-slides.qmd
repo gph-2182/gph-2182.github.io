@@ -287,7 +287,7 @@ gm04_eu <- gm04 |>
 coef(lm(life_expectancy ~ sanitation + continent, data = gm04_eu))
 ```
 
-* `fct_relevel()` (forcats, Week 7) moves a level to the front: it becomes the reference.
+* `fct_relevel()` (forcats, new today; it joins `fct_reorder()` and `fct_lump()` from Week 7) moves a level to the front: it becomes the reference.
 * Same model, same fit; the coefficients now compare each continent with Europe.
 
 ---
