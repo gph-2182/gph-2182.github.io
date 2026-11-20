@@ -936,13 +936,28 @@ gph_doctor <- function() {
 )
 .gph_proposal_values <- function(lines) {
   clean <- function(v) trimws(gsub("^[*_]+|[*_]+$", "", trimws(v)))
-  lines <- lines[grepl("^\\s*-\\s*\\*\\*", lines)]
-  body <- trimws(gsub("**", "", sub("^\\s*-\\s*", "", lines), fixed = TRUE))
+  # Join each item with the indented lines after it: editors wrap long
+  # items, and RStudio's visual editor puts answers on indented lines below
+  # the label. Links lose their <> brackets.
+  joined <- character(0)
+  for (l in lines) {
+    n <- length(joined)
+    if (n && grepl("^\\s+\\S", l) && !grepl("^\\s*-\\s*(\\*\\*|\\[)", l) &&
+        grepl("^\\s*-", joined[n])) {
+      joined[n] <- paste(sub("\\s+$", "", joined[n]), trimws(l))
+    } else if (nzchar(trimws(l)) || !n) {
+      joined <- c(joined, l)
+    }
+  }
+  lines <- gsub("<(https?://[^>[:space:]]+)>", "\\1", joined)
+  is_field <- grepl("^\\s*-\\s*\\*\\*", lines)
   lab <- character(0); val <- character(0)
-  for (b in body) {
+  for (i in which(is_field)) {
+    b <- trimws(gsub("**", "", sub("^\\s*-\\s*", "", lines[i]), fixed = TRUE))
     hit <- .gph_proposal_labels[startsWith(tolower(b), tolower(paste0(.gph_proposal_labels, ":")))]
     if (length(hit)) {
-      lab <- c(lab, hit[1]); val <- c(val, clean(substring(b, nchar(hit[1]) + 2)))
+      v <- clean(substring(b, nchar(hit[1]) + 2))
+      lab <- c(lab, hit[1]); val <- c(val, v)
     } else if (grepl("^[^:]+:", b) && !grepl("^https?:", b)) {
       lab <- c(lab, trimws(sub(":.*$", "", b))); val <- c(val, clean(sub("^[^:]+:", "", b)))
     } else if (nzchar(clean(b))) {
