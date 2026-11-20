@@ -920,10 +920,35 @@ gph_doctor <- function() {
 )
 
 #' Values of the "- **Label:** value" lines in a proposal, by label.
+#' Bold markers are ignored, so "**Name:Ann**", "**Name: Ann" (closing **
+#' deleted) and "**Name:*Ann*" all read as Name = "Ann". Known labels are
+#' matched first because one of them contains a colon. Bold lines that match
+#' no label (labels overwritten with answers) come back named ".unknown".
+#' Kept in step with grading/proposallib.py.
+.gph_proposal_labels <- c(
+  "Name", "NetID", "Option (A, B, C, or D)", "Dataset name", "Source link (URL)",
+  "License or terms of use (for A, B, C write \"course data\")",
+  "Extra public data you plan to join (or \"none\")",
+  "Research question (one sentence, ending with a question mark)",
+  "Why it matters (one or two sentences)",
+  "Variables you plan to use (3 to 6 exact column names, separated by commas)",
+  "Planned analysis (one or two sentences: figures, a simulation, or a regression)"
+)
 .gph_proposal_values <- function(lines) {
-  hit <- grepl("^\\s*-\\s*\\*\\*[^*]+:\\*\\*", lines)
-  lab <- sub("^\\s*-\\s*\\*\\*([^*]+):\\*\\*.*$", "\\1", lines[hit])
-  val <- trimws(sub("^\\s*-\\s*\\*\\*[^*]+:\\*\\*", "", lines[hit]))
+  clean <- function(v) trimws(gsub("^[*_]+|[*_]+$", "", trimws(v)))
+  lines <- lines[grepl("^\\s*-\\s*\\*\\*", lines)]
+  body <- trimws(gsub("**", "", sub("^\\s*-\\s*", "", lines), fixed = TRUE))
+  lab <- character(0); val <- character(0)
+  for (b in body) {
+    hit <- .gph_proposal_labels[startsWith(tolower(b), tolower(paste0(.gph_proposal_labels, ":")))]
+    if (length(hit)) {
+      lab <- c(lab, hit[1]); val <- c(val, clean(substring(b, nchar(hit[1]) + 2)))
+    } else if (grepl("^[^:]+:", b) && !grepl("^https?:", b)) {
+      lab <- c(lab, trimws(sub(":.*$", "", b))); val <- c(val, clean(sub("^[^:]+:", "", b)))
+    } else if (nzchar(clean(b))) {
+      lab <- c(lab, ".unknown"); val <- c(val, clean(b))
+    }
+  }
   stats::setNames(val, lab)
 }
 
@@ -948,7 +973,7 @@ gph_doctor <- function() {
     return(list(status = if (ok) "not_submitted" else "offline"))
   }
   vals <- .gph_proposal_values(prop)
-  filled <- vals[intersect(names(vals), .gph_proposal_fields)]
+  filled <- vals[names(vals) %in% c(.gph_proposal_fields, ".unknown")]
   if (!length(filled) || all(!nzchar(filled))) {
     return(list(status = "not_submitted", values = vals))
   }
