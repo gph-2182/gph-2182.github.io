@@ -936,14 +936,16 @@ gph_doctor <- function() {
 )
 .gph_proposal_values <- function(lines) {
   clean <- function(v) trimws(gsub("^[*_]+|[*_]+$", "", trimws(v)))
-  # Join each item with the indented lines after it: editors wrap long
-  # items, and RStudio's visual editor puts answers on indented lines below
-  # the label. Links lose their <> brackets.
+  # Join each item with the lines after it, up to the next item, heading,
+  # or quote: editors wrap long items, RStudio's visual editor puts answers
+  # on indented lines below the label, and some students type the answer on
+  # an unindented line below it. Links lose their <> brackets.
   joined <- character(0)
   for (l in lines) {
     n <- length(joined)
-    if (n && grepl("^\\s+\\S", l) && !grepl("^\\s*-\\s*(\\*\\*|\\[)", l) &&
-        grepl("^\\s*-", joined[n])) {
+    cont <- nzchar(trimws(l)) && !grepl("^\\s*-\\s*(\\*\\*|\\[)", l) &&
+      (grepl("^\\s", l) || !grepl("^\\s*([-#>|*]|[0-9]+\\.)", l))
+    if (n && cont && grepl("^\\s*-", joined[n])) {
       joined[n] <- paste(sub("\\s+$", "", joined[n]), trimws(l))
     } else if (nzchar(trimws(l)) || !n) {
       joined <- c(joined, l)
