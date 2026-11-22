@@ -940,6 +940,10 @@ gph_doctor <- function() {
   # or quote: editors wrap long items, RStudio's visual editor puts answers
   # on indented lines below the label, and some students type the answer on
   # an unindented line below it. Links lose their <> brackets.
+  # RStudio's visual editor escapes markdown ("\\*\\*Label:" and a trailing
+  # "\\" for a hard line break); undo both so the label is seen.
+  lines <- gsub("\\\\\\*", "*", lines)
+  lines <- sub("\\\\[ \t]*$", "", lines)
   joined <- character(0)
   for (l in lines) {
     n <- length(joined)
