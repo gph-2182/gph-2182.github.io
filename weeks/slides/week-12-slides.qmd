@@ -135,7 +135,8 @@ quarto render report.qmd -P continent:Asia -P year:2010
 
 ```{r}
 child_health_table <- function(cont, yr) {
-  stopifnot(cont %in% gm$continent)
+  stopifnot("cont must be a continent in gm, such as 'Africa'" =
+              cont %in% gm$continent)
   gm |>
     filter(continent == cont, year == yr,
            !is.na(life_expectancy), !is.na(child_mortality)) |>
@@ -160,6 +161,8 @@ child_health_table("Africa", 2015)
 
 child_health_table("Antarctica", 2015)
 ```
+
+* Naming the condition, `stopifnot("message" = condition)`, makes the error say what went wrong in plain words.
 
 ---
 
