@@ -1,0 +1,129 @@
+---
+title: "Week 11 In-Class Exercises: Statistical Modeling & Regression"
+subtitle: "GPH-GU 2182 · Fall 2026 · Paired Programming"
+author: "YOUR NAME & PARTNER NAME"
+date: "November 18, 2026"
+format:
+  html:
+    toc: true
+    number-sections: true
+    code-tools:
+      source: true
+      toggle: false
+      caption: "Source Code"
+---
+
+::: {.callout-note}
+### Instructions
+Work in pairs. One person types (driver), the other reviews and advises (navigator). Swap roles halfway through!
+
+* 📥 **[Download `week-11-inclass.qmd`](https://gph-2182.github.io/weeks/inclass/week-11-inclass.qmd)** to open and edit in RStudio (or use the **`</> Source Code`** button at the top right).
+* Render this Quarto document to HTML and push it to your GitHub repository **before Quiz 5 starts** (last 30 minutes of class) for participation credit.
+* If the `NHANES` package is missing, run `install.packages("NHANES")` once in the Console (not in this document).
+:::
+
+```{r}
+#| label: setup
+#| message: false
+library(dplyr)
+library(purrr)
+library(ggplot2)
+library(forcats)
+library(broom)
+library(r02pro)
+library(NHANES)
+```
+
+# Exercise 1: Hypothesis Tests (Cycle 1)
+
+```{r}
+#| label: ex1-data
+# NHANES adults: one row per participant, age 20 and over
+adults <- NHANES |>
+  distinct(ID, .keep_all = TRUE) |>
+  filter(Age >= 20)
+```
+
+```{r}
+#| label: ex1-tests
+# 1. Compare total cholesterol (TotChol, mmol/L) between physically active and
+#    inactive adults (PhysActive) with t.test(). Report the two group means,
+#    the 95% CI for the difference, and the p-value
+# 2. Count adults with diabetes by Sex: drop rows with a missing Diabetes value,
+#    then group_by(Sex) and summarize() the number with Diabetes == "Yes" and
+#    the group size. Compare the two shares with prop.test(x = ..., n = ...)
+# 3. Is ever smoking (Smoke100) related to BMI category (BMI_WHO)?
+#    Build the two-way table with table() and run chisq.test() on it
+# 4. Write one plain-language sentence for each p-value (as comments or in the
+#    text below)
+
+```
+
+*Your interpretation here.*
+
+# Exercise 2: Linear Regression (Cycle 2)
+
+```{r}
+#| label: ex2-data
+# Countries in 2004 (GDP_per_capita is in $1,000 per person)
+gm04 <- gm |>
+  filter(year == 2004, !is.na(continent),
+         !is.na(life_expectancy), !is.na(sanitation))
+fit_le <- lm(life_expectancy ~ sanitation, data = gm04)
+```
+
+```{r}
+#| label: ex2-lm
+# 1. Fit fit_gdp <- lm(life_expectancy ~ GDP_per_capita, data = gm04)
+#    and look at coef(fit_gdp). Interpret the slope in words: what is the
+#    difference in life expectancy for a $1,000 difference in GDP per person?
+# 2. Compare the R-squared of fit_gdp with that of fit_le (sanitation model)
+#    using summary(...)$r.squared. Which predictor explains more?
+# 3. Plot life_expectancy against GDP_per_capita with geom_point() and
+#    geom_smooth(method = "lm"). Does a straight line fit well?
+# 4. In adults, fit lm(BPSysAve ~ Age + Sex + BMI). Interpret the BMI
+#    coefficient. Then make "male" the reference level of Sex with
+#    fct_relevel() and refit. Which coefficient changes, and how?
+
+```
+
+# Exercise 3: Logistic Regression (Cycle 3)
+
+```{r}
+#| label: ex3-glm
+# 1. Check levels(adults$Smoke100). Then fit
+#    fit_smoke <- glm(Smoke100 ~ Age + Sex + Education, family = binomial,
+#                     data = adults)
+# 2. Turn the coefficients into odds ratios with exp(coef(...)) and get 95% CIs
+#    with exp(confint(...))
+# 3. Interpret the odds ratios for Sexmale and EducationCollege Grad.
+#    What is the reference group for each?
+# 4. Predict the probability of ever smoking for two 30-year-old women: one a
+#    college graduate ("College Grad") and one with an 8th-grade education
+#    ("8th Grade"). Use a tibble of new data and
+#    predict(..., newdata = ..., type = "response")
+
+```
+
+# Exercise 4: Tidy Models + AI Corner (Cycle 4)
+
+```{r}
+#| label: ex4-broom
+# 1. Fit BPSysAve ~ Age + Sex and BPSysAve ~ Age + Sex + BMI in adults.
+#    Compare them with glance() and map_dfr(..., .id = "model"), keeping
+#    model, r.squared, adj.r.squared, and nobs
+# 2. augment() your fit_gdp model from Exercise 2 and plot .resid against
+#    .fitted with a dashed horizontal line at 0. What pattern do you see?
+# 3. Make a publication table of odds ratios for fit_smoke (Exercise 3):
+#    tidy(..., exponentiate = TRUE, conf.int = TRUE), drop the intercept,
+#    keep the term, odds ratio, CI, and p-value columns, and print it with
+#    knitr::kable(digits = 2)
+# 4. AI Corner: asked for "the odds ratio of ever smoking for men versus women,
+#    adjusting for age", an AI wrote:
+#      fit_ai <- glm(Smoke100 ~ Sex + Age, family = binomial, data = adults)
+#      tidy(fit_ai, conf.int = TRUE) |> filter(term == "Sexmale")
+#    and reported the estimate column as "the odds ratio".
+#    Run it. What is wrong, and why? Write a fixed version and state the odds
+#    ratio and its 95% CI in one sentence.
+
+```

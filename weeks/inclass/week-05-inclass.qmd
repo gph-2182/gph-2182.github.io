@@ -1,0 +1,89 @@
+---
+title: "Week 5 In-Class Exercises: Data Wrangling with dplyr & Pipes"
+subtitle: "GPH-GU 2182 · Fall 2026 · Paired Programming"
+author: "YOUR NAME & PARTNER NAME"
+date: "September 30, 2026"
+format:
+  html:
+    toc: true
+    number-sections: true
+    code-tools:
+      source: true
+      toggle: false
+      caption: "Source Code"
+---
+
+::: {.callout-note}
+### Instructions
+Work in pairs. One person types (driver), the other reviews and advises (navigator). Swap roles halfway through!
+
+* 📥 **[Download `week-05-inclass.qmd`](https://gph-2182.github.io/weeks/inclass/week-05-inclass.qmd)** to open and edit in RStudio (or use the **`</> Source Code`** button at the top right).
+* Render this Quarto document to HTML and push it to your GitHub repository by the end of class for participation credit.
+:::
+
+```{r}
+#| label: setup
+#| message: false
+library(r02pro)
+library(dplyr)
+```
+
+# Exercise 1: High Male Smoking Rates (Cycle 1)
+
+Use the `gm` global health dataset to find the countries with the heaviest male smoking burden in 2004 (the most recent year with smoking data).
+
+```{r}
+#| label: ex1-filter-arrange
+# 1. Starting from gm, filter to rows for the year 2004
+# 2. Keep only rows where smoking_male is not missing (!is.na())
+# 3. Keep only rows where smoking_male > 50
+# 4. Arrange from highest to lowest smoking_male
+# 5. Report the number of remaining countries with nrow()
+
+```
+
+# Exercise 2: A Tidy Lung Cancer Table (Cycle 2)
+
+Build a compact table of lung cancer incidence by country.
+
+```{r}
+#| label: ex2-select-rename
+# 1. Filter gm to the year 2008
+# 2. Select country, continent, and every column that contains "lungcancer"
+# 3. Rename lungcancer_newcases_female to lung_f and lungcancer_newcases_male to lung_m
+# 4. Arrange by lung_m in descending order and display the top rows with head()
+
+```
+
+# Exercise 3: Food Supply & Longevity (Cycle 3)
+
+Investigate how food supply relates to life expectancy using new derived variables.
+
+```{r}
+#| label: ex3-mutate
+# 1. Filter gm to 2008 rows with non-missing food_supply and life_expectancy
+# 2. Select country, continent, food_supply, life_expectancy
+# 3. Use one mutate() call to create BOTH:
+#      food_kcal_deficit = 2500 - food_supply
+#      long_lived        = life_expectancy >= 75
+# 4. Arrange by food_kcal_deficit (largest deficit first) and inspect the top 10 rows
+
+```
+
+# Exercise 4: Full Pipeline + AI Corner (Cycle 4)
+
+An AI assistant claims the following pipeline computes *"sugar consumption per continent"*, but it uses tools we have not verified and contains bugs. Rebuild it correctly using only Week 1–5 tools.
+
+```{r}
+#| label: ex4-pipeline
+# The AI's (flawed) suggestion:
+#   gm %>% group_by(continent) %>% summarize(mean_sugar = mean(sugar))
+#
+# Your corrected, verifiable version:
+# 1. Filter gm to year == 2008, continent == "Europe", and non-missing sugar
+# 2. Select country and sugar; rename sugar to sugar_g_per_day
+# 3. Assign the pipeline result to europe_sugar
+# 4. Compute mean(europe_sugar$sugar_g_per_day) and compare with a classmate:
+#    can you explain every line of your pipeline?
+
+```

@@ -1,0 +1,97 @@
+---
+title: "Week 8 In-Class Exercises: Control Flow & Iteration"
+subtitle: "GPH-GU 2182 · Fall 2026 · Paired Programming"
+author: "YOUR NAME & PARTNER NAME"
+date: "October 28, 2026"
+format:
+  html:
+    toc: true
+    number-sections: true
+    code-tools:
+      source: true
+      toggle: false
+      caption: "Source Code"
+---
+
+::: {.callout-note}
+### Instructions
+Work in pairs. One person types (driver), the other reviews and advises (navigator). Swap roles halfway through!
+
+* 📥 **[Download `week-08-inclass.qmd`](https://gph-2182.github.io/weeks/inclass/week-08-inclass.qmd)** to open and edit in RStudio (or use the **`</> Source Code`** button at the top right).
+* Render this Quarto document to HTML and push it to your GitHub repository by the end of class for participation credit.
+:::
+
+```{r}
+#| label: setup
+#| message: false
+library(dplyr)
+```
+
+# Exercise 1: Blood Pressure Stage Classifier (Cycle 1)
+
+```{r}
+#| label: ex1-data
+sbp_clinic <- c(118, 152, 141, 129, 183, 136, 147)
+```
+
+```{r}
+#| label: ex1-ifelse
+# 1. Assign sbp <- 152 and write an if / else if / else chain that prints:
+#    "crisis" if sbp >= 180, "stage 2" if >= 140, "stage 1" if >= 130, else "normal"
+# 2. Re-run your chain with sbp <- 128 and sbp <- 185 to confirm each branch
+# 3. For the sbp_clinic vector, use ifelse() to label each reading
+#    "refer" (>= 140) or "routine"
+# 4. Rewrite step 3 with case_when() adding a third tier: "crisis" (>= 180)
+
+```
+
+# Exercise 2: Outbreak Accumulator (Cycle 2)
+
+```{r}
+#| label: ex2-data
+daily_cases <- c(3, 7, 12, 20, 31, 26, 18, 40, 22, 15)
+```
+
+```{r}
+#| label: ex2-forloop
+# 1. Write a for loop with an accumulator that builds cumulative_cases
+#    (pre-allocate with numeric(length(daily_cases)), index with seq_along())
+# 2. Verify your result equals cumsum(daily_cases) using identical() or all.equal()
+# 3. Inside the SAME loop, maintain a second counter: how many days exceeded 25 cases?
+# 4. Verify the counter equals sum(daily_cases > 25)
+
+```
+
+# Exercise 3: Elimination Countdown with while (Cycle 3)
+
+A vaccination campaign reduces monthly measles cases by 35%, starting from 5,000 cases.
+
+```{r}
+#| label: ex3-while
+# 1. Use a while loop to count how many months until cases fall below 50
+# 2. Record the case count history in a vector as the loop runs
+# 3. Add a guard rail so the loop can never run more than 100 months
+# 4. Re-run with a 10% monthly reduction: how many months now?
+
+```
+
+# Exercise 4: Looping Over Groups + AI Corner (Cycle 4)
+
+```{r}
+#| label: ex4-data
+#| message: false
+library(r02pro)
+```
+
+```{r}
+#| label: ex4-integration
+# 1. Write a for loop over continents <- c("Africa", "Asia", "Europe") that, for each,
+#    filters gm to year 2008, that continent, non-missing life_expectancy >= 75,
+#    and prints "<continent> has <n> countries with life expectancy >= 75"
+# 2. AI Corner: an AI wrote this to flag high-mortality countries:
+#      flags <- c()
+#      for (i in 1:nrow(df)) { flags <- c(flags, if (df$child_mortality[i] > 50) "high" else "low") }
+#    List two problems with it, then write the one-line vectorized replacement
+#    using ifelse() on gm's child_mortality for 2008.
+
+```
